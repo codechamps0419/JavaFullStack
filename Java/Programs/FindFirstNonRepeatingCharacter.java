@@ -1,4 +1,4 @@
-//Write a program to find the first non-repeating character of given string
+//Write a program to find the first non-repeating character in a given string
 
 import java.util.LinkedHashMap;
 import java.util.function.Function;
@@ -9,9 +9,7 @@ import java.util.HashMap;
 
 public class FindFirstNonRepeatingCharacter {
   
-    static final int MAX_CHAR = 26;
-
-    public static void main(String[] args) {
+   public static void main(String[] args) {
       String msg = "Hey, CodeChamps!";
       
       System.out.println("First non-repeating character: "+ findFirstNonRepeatingChar(msg)); //using java 8 features
@@ -78,7 +76,7 @@ public class FindFirstNonRepeatingCharacter {
         Map<Character, Integer> charCounts = new HashMap<>();
         
         //Count occurrences of each character
-        for (char c : input.toLowerCase().toCharArray()) {
+        for (char c : input.toCharArray()) {     //input.toLowerCase().toCharArray() - Ignore case of repeating char
             charCounts.put(c, charCounts.getOrDefault(c, 0) + 1);
         }
 
@@ -102,6 +100,6 @@ Output:
 First non-repeating character: H
 First non-repeating character: y
 First non-occurring character: H
-First non-occurring character: y
+First non-occurring character: H
 
 */
