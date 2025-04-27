@@ -85,7 +85,8 @@ public class FindFirstRepeatingCharacter {
         //Return null character if no repeating character is found
         return '\0'; 
     }
-    
+
+  //TC : O(n), SC : O(n)
   public static char findFirstOccurringCharacterUsingHS(String input) {
         Set<Character> seen = new LinkedHashSet<>();
         for (char c : input.toCharArray()) {
