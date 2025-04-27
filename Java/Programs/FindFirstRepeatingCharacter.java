@@ -18,9 +18,9 @@ public class FindFirstRepeatingCharacter {
       System.out.println("First repeating character: "+ findFirstRepeatingChar(msg)); //using java 8 features
       System.out.println("First repeating character: "+ findFirstRepeatingCharIgnoreCase(msg)); ///using java 8 features
       
-      System.out.println("First occurring character: "+ findFirstOccurringCharacter(msg)); //without using HashMap
-      System.out.println("First occurring character: "+ findFirstOccurringCharacterUsingHM(msg)); //using HashMap
-      System.out.println("First occurring character: "+ findFirstOccurringCharacterUsingHS(msg)); //using HashMap
+      System.out.println("First occurring character: "+ findFirstOccurringCharacter(msg)); //without using Map
+      System.out.println("First occurring character: "+ findFirstOccurringCharacterUsingHM(msg)); //using Map
+      System.out.println("First occurring character: "+ findFirstOccurringCharacterUsingHS(msg)); //using Set
       
   }
   
