@@ -1,4 +1,4 @@
-//Write a program to find the first non-repeating character in a given string
+//Write a program to find the first repeating character in a given string
 
 import java.util.LinkedHashMap;
 import java.util.function.Function;
@@ -6,30 +6,32 @@ import java.util.stream.Collectors;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.LinkedHashSet;
 
-public class FindFirstNonRepeatingCharacter {
+public class FindFirstRepeatingCharacter {
   
-    static final int MAX_CHAR = 26;
-
     public static void main(String[] args) {
+      
       String msg = "Hey, CodeChamps!";
       
-      System.out.println("First non-repeating character: "+ findFirstNonRepeatingChar(msg)); //using java 8 features
-      System.out.println("First non-repeating character: "+ findFirstNonRepeatingCharIgnoreCase(msg)); ///using java 8 features
+      System.out.println("First repeating character: "+ findFirstRepeatingChar(msg)); //using java 8 features
+      System.out.println("First repeating character: "+ findFirstRepeatingCharIgnoreCase(msg)); ///using java 8 features
       
-      System.out.println("First non-occurring character: "+ findFirstNonOccurringCharacter(msg)); //without using HashMap
-      System.out.println("First non-occurring character: "+ findFirstNonOccurringCharacterUsingHM(msg)); //using HashMap
+      System.out.println("First occurring character: "+ findFirstOccurringCharacter(msg)); //without using HashMap
+      System.out.println("First occurring character: "+ findFirstOccurringCharacterUsingHM(msg)); //using HashMap
+      System.out.println("First occurring character: "+ findFirstOccurringCharacterUsingHS(msg)); //using HashMap
       
   }
   
   //TC : O(n), SC : O(K) - k is the number of unique characters in the string
-  public static Character findFirstNonRepeatingChar(String input) {
+  public static Character findFirstRepeatingChar(String input) {
     
         return input.chars()
                 .mapToObj(c -> (char) c)
                 .collect(Collectors.groupingBy(Function.identity(), LinkedHashMap::new, Collectors.counting()))
                 .entrySet().stream()
-                .filter(entry -> entry.getValue() == 1)
+                .filter(entry -> entry.getValue() > 1)
                 .map(entry -> entry.getKey())
                 .findFirst()
                 .orElse(null);
@@ -37,13 +39,13 @@ public class FindFirstNonRepeatingCharacter {
   }
   
   //TC : O(n), SC : O(K) - k is the number of unique characters in the string
-  public static Character findFirstNonRepeatingCharIgnoreCase(String input) {
+  public static Character findFirstRepeatingCharIgnoreCase(String input) {
     
         return input.toLowerCase().chars()
                 .mapToObj(c -> (char) c)
                 .collect(Collectors.groupingBy(Function.identity(), LinkedHashMap::new, Collectors.counting()))
                 .entrySet().stream()
-                .filter(entry -> entry.getValue() == 1)
+                .filter(entry -> entry.getValue() > 1)
                 .map(entry -> entry.getKey())
                 .findFirst()
                 .orElse(null);
@@ -51,17 +53,17 @@ public class FindFirstNonRepeatingCharacter {
   }
   
   //TC : O(n), SC : O(1)
-  public static char findFirstNonOccurringCharacter(String input) {
+  public static char findFirstOccurringCharacter(String input) {
         //Array to store character counts
         int[] charCount = new int[256]; 
         //Count occurrences of each character
-        for (char c : input.toCharArray()) {   //input.toLowerCase().toCharArray() - Ignore case of repeating char
+        for (char c : input.toCharArray()) {
             charCount[c]++;
         }
  
         //Find the first non-repeating character
         for (char c : input.toCharArray()) {
-            if (charCount[c] == 1) {
+            if (charCount[c] > 1) {
                 return c; // Return the first non-repeating character
             }
         }
@@ -69,39 +71,42 @@ public class FindFirstNonRepeatingCharacter {
         return '\0'; 
     }
     
-    //TC : O(n), SC : O(n)
-    public static Character findFirstNonOccurringCharacterUsingHM(String input) {
-        if (input == null || input.isEmpty()) {
-            return null;
-        }
-        
-        Map<Character, Integer> charCounts = new HashMap<>();
-        
-        //Count occurrences of each character
-        for (char c : input.toCharArray()) {
-            charCounts.put(c, charCounts.getOrDefault(c, 0) + 1);
-        }
+  //TC : O(n), SC : O(K) - k is the number of unique characters in the string
+  public static char findFirstOccurringCharacterUsingHM(String input) {
+        HashMap<Character, Integer> charMap = new HashMap<>();
 
-        //Find the first character with count 1
-        for (char c : input.toCharArray()) {
-            if (charCounts.getOrDefault(c,0) == 1) {
+        for (char c : input.toCharArray()) {     //input.toLowerCase().toCharArray() - Ignore case of repeating char
+            if (charMap.containsKey(c)) {
                 return c;
+            } else {
+                charMap.put(c, 1);
             }
         }
-
-        return null;
+        //Return null character if no repeating character is found
+        return '\0'; 
     }
+    
+  public static char findFirstOccurringCharacterUsingHS(String input) {
+        Set<Character> seen = new LinkedHashSet<>();
+        for (char c : input.toCharArray()) {
+            if (seen.contains(c)) {
+                return c;
+            }
+            seen.add(c);
+        }
+        //Return null character if no repeating character is found
+        return '\0';
+  }
       
 }
 
 
 /*
 
-Output:
-
-First non-repeating character: H
-First non-repeating character: y
-First non-occurring character: H
-First non-occurring character: H
+First repeating character: e
+First repeating character: h
+First occurring character: e
+First occurring character: e
+First occurring character: e
 
 */
