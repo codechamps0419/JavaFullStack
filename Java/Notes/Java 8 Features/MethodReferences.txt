@@ -1,0 +1,12 @@
+Method reference :
+==================
+It's used to refer method of functional interface. It is compact and easy form of lambda expression.
+The method is referred through use of double colon (::) operator.
+Method reference makes the code simple and more readable.
+
+
+Types of Method References :
+-----------------------------
+~ Reference to a static method.
+~ Reference to an instance method.
+~ Reference to a constructor.

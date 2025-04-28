@@ -1,0 +1,85 @@
+Functional Interface:
+=====================
+An Interface that contains exactly one abstract method is known as functional interface. 
+It can have any number of default, static methods and methods of object class.
+Functional Interface is also known as Single Abstract Method Interfaces or SAM Interfaces. 
+It helps to achieve functional programming approach.
+
+Functional programming (FP) is the process of building software by composing pure functions.
+A Pure Function is a function (a block of code) that always returns the same result if the same 
+arguments are passed. They do not modify any arguments or input/output streams (i.e Immutability).
+
+Ref. https://www.javatpoint.com/java-8-functional-interfaces
+
+Java 8 included four main kinds of functional interfaces which can be applied in multiple situations. These are:
+~ Consumer
+~ Predicate
+~ Function 
+~ Supplier
+
+* Consumer and it's variants: [ use method name: accept(...) ]
+------------------------------
+1. Consumer : It represents an operation that accepts a single argument and returns no result
+2. BiConsumer : It represents an operation that accepts two arguments and returns no result
+3. IntConsumer: Accepts a single integer type argument and returns no result
+4. LongConsumer: Accepts a single long type argument and returns no result
+5. DoubleConsumer: Accepts a single double type argument and returns no result
+6. ObjIntConsumer: Accepts an object and integer type argument and returns no result
+7. ObjLongConsumer: Accepts an object and long type argument and returns no result
+8. ObjDoubleConsumer: Accepts an object and double type argument and returns no result
+
+* Function and it's variants: [ use method name: apply(...) ]
+------------------------------
+1. Function : It represents an operation that accepts a single argument and returns a result
+2. BiFunction : It represents an operation that accepts two arguments and returns a result
+3. UnaryOperator : It represents operation on a single operand and returns a result of same type as 
+				   the operand. [ IntUnaryOperator, LongUnaryOperator, DoubleUnaryOperator ]
+4. BinaryOperator : It represents operation on two operands and returns a result of same type as 
+					the operands [ IntBinaryOperator, LongBinaryOperator, DoubleBinaryOperator ]
+... ( DoubleFunction, IntFunction, LongFunction, DoubleToIntFunction [applyAsInt()], DoubleToLongFunction, 
+IntToLongFunction, IntToDoubleFunction, LongToIntFunction, LongToDoubleFunction, ToIntFunction, 
+ToLongFunction, ToDoubleFunction, ToIntBiFunction, ToLongBiFunction, ToDoubleBiFunction )
+					
+* Predicate and it's variants: [ use method name: test(...) ]
+-------------------------------
+1. Predicate : It represents a predicate (boolean-valued function) of one argument
+2. BiPredicate : It represents a predicate of two arguments
+3. IntPredicate : It represents a predicate of one integer type argument
+4. LongPredicate : It represents a predicate of one long type argument
+5. DoublePredicate : It represents a predicate of one double type argument
+
+* Supplier and it's variants: ( generally used in the lazy generation of values )
+-------------------------------
+1. Supplier : It represents a supplier of results [ get() method ]
+2. IntSupplier : It represents a supplier of integer type results [ getAsInt() method ]
+3. LongSupplier : It represents a supplier of long type results [ getAsLong() method ]
+4. DoubleSupplier : It represents a supplier of double type results [ getAsDouble() method ]
+5. BooleanSupplier : It represents a supplier of boolean type results [ getAsBoolean() method ]
+
+Example:
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
+public class JavaSupplier<T> {
+
+    public static void main(String[] args) {
+
+        JavaSupplier<String> obj = new JavaSupplier();
+
+        List<String> list = obj.supplier().get();
+
+    }
+
+    public Supplier<List<T>> supplier() {
+
+        // lambda
+        // return () -> new ArrayList<>();
+
+        // constructor reference
+        return ArrayList::new;
+
+    }
+
+}

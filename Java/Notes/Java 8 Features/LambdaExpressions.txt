@@ -1,0 +1,20 @@
+Lambda Expressions :
+=====================
+
+Lambda expression provides implementation of functional interface.
+It provides a clear and concise way to represent functional interface using an expression.
+It is very useful in collection library. It helps to iterate, filter and 
+extract data from collection. It can be treated as any other java object.
+
+Lambda expression in java is an anonymous (no name) function that 
+does not need to define the data type of input parameters and does not need to have a return type.
+
+Syntax:
+----------
+(args) 			-> 			 {}
+{arguments} {Arrow-token}  {body}	
+
+* Why use Lambda Expression?
+-----------------------------
+~ To provide the implementation of Functional interface.
+~ Less coding	

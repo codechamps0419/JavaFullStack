@@ -1,0 +1,31 @@
+Nashorn Java script Engine:
+===========================
+
+Nashorn is a JavaScript engine. It is used to execute JavaScript code dynamically at JVM.
+Java provides a command-line tool jjs which is used to execute JavaScript code.
+
+We can execute JavaScript code by two ways:
+-------------------------------------------
+1. Using jjs command-line tool
+2. By embedding into Java source code
+
+1.
+//hello.js
+var hello = function(){  
+    print("Hello Nashorn");  
+};  
+hello();  
+
+> jjs hello.js
+
+2.
+import javax.script.*;  
+import java.io.*;  
+public class NashornExample {  
+    public static void main(String[] args) throws Exception{  
+        // Creating script engine  
+        ScriptEngine ee = new ScriptEngineManager().getEngineByName("Nashorn");  
+        // Reading Nashorn file  
+        ee.eval(new FileReader("js/hello.js"));  
+    }  
+}
