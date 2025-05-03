@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.Arrays;
 import java.util.stream.Stream;
+//import java.util.stream.IntStream;
 import java.util.stream.Collectors;
 
 public class SumOfIntegers {
@@ -17,7 +18,7 @@ public class SumOfIntegers {
       //Using reduce
       System.out.println("Sum of given numbers - "+ 
       Stream.of(4,1,9,7).reduce(0, Integer::sum)); 
-                       //reduce(0, (a, b) -> a+b)
+      //IntStream.of(4,1,9,7).reduce(0, (a, b) -> a+b)
       
       //Using summingInt and collect
       System.out.println("Sum of given numbers - "+ 
@@ -26,5 +27,17 @@ public class SumOfIntegers {
                      
       System.out.println("Sum of given numbers in array - "+
       Arrays.stream(numbersArr).sum());
+      
   }
 }
+
+
+/*
+Output:
+
+Sum of given numbers - 21
+Sum of given numbers - 21
+Sum of given numbers - 21
+Sum of given numbers in array - 21
+
+*/
