@@ -17,7 +17,8 @@ public class SumOfDigitsInNumber {
       
       int number = 4179;
       System.out.println("Sum of digits in given number - " + sumDigits(number));
-      
+
+      //Using Java 8 
       System.out.println("Sum of digits in given number - " +
       String.valueOf(number).chars().map(Character::getNumericValue).sum());
       
