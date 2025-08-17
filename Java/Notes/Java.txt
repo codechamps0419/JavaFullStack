@@ -53,4 +53,4 @@ JVM acts as a platform for execution of Java programs on the underlying OS.
 JVM provides support for datatypes, libraries, multithreading, jre, jit compiler, etc for the Java applications.
 A Java compiler converts all the classes of a java program into respective binary executable files termed as "bytecode".
 Bytecode is inputted to a JVM, that on the fly compiles it and makes it OS compatible, for execution.
-It can be said that a compiled Java program is JVM dependent but OS independent.
+It can be said that a compiled Java program is JVM dependent but OS/Platform independent.
