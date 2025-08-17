@@ -1,3 +1,5 @@
+FAQs
+__________________________________
 
 1. What is Docker and why do we use it?
 Answer: Docker is a containerization platform that isolates applications in lightweight environments called containers. Each container includes all dependencies, ensuring consistent behavior across development, testing, and production environments—eliminating “works on my machine” issues.
@@ -256,5 +258,6 @@ Or configure Docker daemon daemon.json with a reliable DNS.
 
 50. What does docker inspect return?
 Answer: Low-level JSON metadata of containers/images—including network settings, volumes, env vars, ports, mount points—useful for debugging.
+
 
 
