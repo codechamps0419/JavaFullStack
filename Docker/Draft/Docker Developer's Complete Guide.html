@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="Docker learning guide for Java developers, levels 1 and 2" name="description"/>
+<title>Docker Complete Guide | Dynamic Duo Learners</title>
+<style>
+:root{
+  --ink:#25344a;
+  --muted:#66758a;
+  --line:#d9e8f4;
+  --sky:#87ceeb;
+  --sky-deep:#4da6d8;
+  --sky-soft:#eaf8ff;
+  --pink:#f5a7c7;
+  --pink-deep:#d96a9d;
+  --pink-soft:#fff0f6;
+  --violet:#cfc3ff;
+  --violet-deep:#7b6bc8;
+  --mint:#ccefdc;
+  --mint-deep:#4e9f7f;
+  --yellow:#fff3b8;
+  --white:#ffffff;
+  --code:#263244;
+  --code-ink:#f8fbff;
+  --shadow:0 14px 34px rgba(61,111,150,.12);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;max-width:100%;overflow-x:hidden}
+body{
+  margin:0;max-width:100%;overflow-x:hidden;
+  color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 10% 8%,rgba(135,206,235,.30),transparent 25rem),
+    radial-gradient(circle at 90% 10%,rgba(245,167,199,.28),transparent 25rem),
+    linear-gradient(180deg,#f7fcff,#fff8fc 48%,#f8fcff);
+}
+body:before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    linear-gradient(rgba(255,255,255,.80),rgba(255,255,255,.80)),
+    repeating-linear-gradient(0deg,transparent 0,transparent 29px,#dfeef8 30px);
+}
+.page{width:min(1120px,calc(100% - 28px));margin:auto;padding:28px 0 70px}
+.hero{
+  position:relative;overflow:hidden;text-align:center;
+  padding:56px 28px;border:1px solid var(--line);border-radius:30px;
+  background:linear-gradient(135deg,rgba(234,248,255,.96),rgba(255,240,246,.96));
+  box-shadow:var(--shadow)
+}
+.hero:before,.hero:after{
+  content:"";position:absolute;border-radius:50%;filter:blur(.2px)
+}
+.hero:before{width:180px;height:180px;left:-60px;top:-70px;background:rgba(135,206,235,.45)}
+.hero:after{width:200px;height:200px;right:-70px;bottom:-85px;background:rgba(245,167,199,.40)}
+.hero-inner{position:relative;z-index:2}
+.badge{
+  display:inline-block;padding:8px 14px;border-radius:999px;
+  background:#fff;border:1px solid var(--line);
+  color:var(--sky-deep);font-size:12px;font-weight:900;letter-spacing:.05em
+}
+h1{margin:20px auto 13px;font-size:clamp(40px,6vw,68px);line-height:.98;letter-spacing:-.055em}
+.accent{
+  background:linear-gradient(90deg,var(--sky-deep),var(--pink-deep));
+  -webkit-background-clip:text;background-clip:text;color:transparent
+}
+.hero p{max-width:800px;margin:auto;color:var(--muted);font-size:clamp(16px,2vw,20px);line-height:1.7}
+.duo-row{display:flex;justify-content:center;gap:12px;margin:20px 0 7px}
+.duo{
+  width:54px;height:54px;display:grid;place-items:center;border-radius:18px;
+  font-size:28px;border:1px solid var(--line);box-shadow:0 7px 16px rgba(61,111,150,.08)
+}
+.duo:first-child{background:linear-gradient(135deg,var(--sky-soft),var(--pink-soft));transform:rotate(-3deg)}
+.duo:last-child{background:linear-gradient(135deg,var(--mint),var(--violet));transform:rotate(3deg)}
+.creator{font-weight:850;color:#6d5c7a}
+.nav{
+  position:sticky;top:10px;z-index:20;margin:20px 0;padding:12px;
+  display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+  border:1px solid var(--line);border-radius:18px;
+  background:rgba(255,255,255,.90);backdrop-filter:blur(16px);box-shadow:var(--shadow)
+}
+.nav a{
+  text-decoration:none;color:var(--ink);font-weight:850;
+  padding:9px 13px;border-radius:12px;border:1px solid var(--line)
+}
+.nav a:nth-child(1){background:var(--sky-soft)}
+.nav a:nth-child(2n+1){background:var(--sky-soft)}
+.nav a:nth-child(2n){background:var(--pink-soft)}
+.level{
+  margin-top:22px;border:1px solid var(--line);border-radius:24px;
+  background:rgba(255,255,255,.95);box-shadow:var(--shadow);overflow:hidden
+}
+.level-head{
+  padding:24px;
+  background:linear-gradient(135deg,var(--sky-soft),#fff 55%,var(--pink-soft));
+  border-bottom:1px solid var(--line)
+}
+.level-head h2{margin:0;font-size:clamp(28px,4vw,40px)}
+.level-head p{margin:7px 0 0;color:var(--muted);line-height:1.6}
+.level-body{padding:22px}
+.section{
+  position:relative;margin-top:16px;padding:21px;
+  border:1px solid var(--line);border-radius:18px;background:#fff;
+  box-shadow:0 7px 18px rgba(61,111,150,.06);max-width:100%
+}
+.section:nth-child(odd){background:linear-gradient(180deg,#fff,#f8fcff)}
+.section:nth-child(even){background:linear-gradient(180deg,#fff,#fff9fc)}
+.section:before{
+  content:"";position:absolute;top:-6px;left:28px;width:48px;height:13px;
+  border-radius:3px;background:rgba(135,206,235,.56);transform:rotate(-2deg)
+}
+.section:nth-child(even):before{
+  left:auto;right:30px;background:rgba(245,167,199,.56);transform:rotate(3deg)
+}
+.section h2{margin:0 0 8px;font-size:24px}
+.lead{margin:0 0 14px;color:var(--muted);line-height:1.62}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:11px}
+.card{padding:15px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.card:nth-child(4n+1){background:#f3fbff}.card:nth-child(4n+2){background:#fff4f8}
+.card:nth-child(4n+3){background:#f7fff9}.card:nth-child(4n){background:#faf8ff}
+.card h3{margin:0 0 7px;font-size:16px}
+.card p{margin:0;color:var(--muted);line-height:1.56;font-size:14px}
+.flow{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;padding:8px 1px 10px}
+.node{
+  min-width:0;flex:1 1 130px;max-width:180px;padding:12px;text-align:center;
+  border:1px solid var(--line);border-radius:13px;background:#fff;font-weight:850
+}
+.arrow{color:var(--pink-deep);font-size:20px;font-weight:900}
+.note,.good,.warn,.interview{margin-top:11px;padding:13px 14px;border-radius:13px;line-height:1.56}
+.note{background:#fff9df;border:1px solid #efdda5;color:#6f5d42}
+.good{background:#ecfaf4;border:1px solid #c8e6d9;color:#416f63}
+.warn{background:#fff0f5;border:1px solid #ebc8d7;color:#7d5265}
+.interview{background:#f1efff;border:1px solid #d8cff2;color:#65527f}
+pre{
+  position:relative;margin:12px 0 0;padding:44px 16px 16px;border-radius:13px;
+  background:var(--code);overflow:hidden;white-space:pre-wrap;word-break:break-word;max-width:100%
+}
+pre code{
+  color:var(--code-ink);font-family:"Cascadia Code",Consolas,monospace;
+  font-size:12.8px;line-height:1.62;white-space:pre-wrap;word-break:break-word
+}
+.copy{
+  position:absolute;right:8px;top:8px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);
+  color:#eef6ff;padding:6px 9px;border-radius:8px;font-size:11px;font-weight:850
+}
+.table-wrap{width:100%;overflow:visible}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
+th{text-align:left;padding:10px;background:#eef7fd;border-bottom:1px solid #d6e6f1}
+td{padding:10px;border-bottom:1px solid #e8eef4;vertical-align:top;line-height:1.5;word-break:break-word}
+tr:nth-child(even){background:#fffafd}
+.kbd{font-family:monospace;background:#eef5fb;border:1px solid #d5e2ec;padding:2px 6px;border-radius:6px}
+.qa{border:1px solid var(--line);border-radius:13px;margin-top:9px;overflow:hidden;background:#fff}
+.qa summary{cursor:pointer;list-style:none;padding:13px 15px;font-weight:900;background:linear-gradient(135deg,#f7fcff,#fff8fc)}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary:after{content:"＋";float:right;color:var(--pink-deep)}
+.qa[open] summary:after{content:"−"}
+.answer{padding:0 15px 14px;color:#5d6674;line-height:1.6}
+.footer{text-align:center;color:var(--muted);padding-top:26px}
+.brand{font-weight:950;color:#7c5b7f}
+img,svg,video,canvas{max-width:100%;height:auto}
+@media(max-width:700px){
+  .page{width:min(100% - 18px,1120px)}
+  .level-body,.section{padding:17px}
+  .arrow{transform:rotate(90deg)}
+  .table-wrap table,.table-wrap thead,.table-wrap tbody,.table-wrap th,.table-wrap td,.table-wrap tr{display:block;width:100%}
+  .table-wrap thead{display:none}
+  .table-wrap tr{margin-bottom:12px;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
+  .table-wrap td{border-bottom:1px solid #e8eef4;padding:10px 12px}
+  .table-wrap td:last-child{border-bottom:0}
+}
+@media print{
+  body{background:#fff}.hero,.level,.section{box-shadow:none}.nav,.copy{display:none}
+  .page{width:100%;padding:0}.level{break-before:page}.level:first-of-type{break-before:auto}
+  pre,.card,.note,.good,.warn,.interview,.qa{break-inside:avoid}
+}
+
+
+.level-intro{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:16px;
+  align-items:center;
+  margin:0 0 18px;
+  padding:18px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:linear-gradient(135deg,#f3fbff,#fff7fb);
+}
+.level-intro h3{
+  margin:0 0 7px;
+  font-size:20px;
+}
+.level-intro p{
+  margin:0;
+  color:var(--muted);
+  line-height:1.65;
+}
+.level-intro ul{
+  margin:10px 0 0;
+  padding-left:20px;
+  color:var(--muted);
+  line-height:1.55;
+}
+.mascot-box{
+  width:120px;
+  min-width:120px;
+  height:96px;
+  display:grid;
+  place-items:center;
+  border-radius:20px;
+  background:linear-gradient(135deg,var(--sky-soft),var(--pink-soft));
+  border:1px solid var(--line);
+  box-shadow:0 8px 18px rgba(61,111,150,.08);
+}
+.mascot-box svg{
+  width:104px;
+  height:82px;
+}
+.section-intro{
+  margin:0 0 14px;
+  padding:12px 14px;
+  border-radius:13px;
+  background:linear-gradient(135deg,#f6fcff,#fff8fb);
+  border:1px dashed #cfe3f1;
+  color:var(--muted);
+  line-height:1.6;
+}
+.cute-strip{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+.cute-chip{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:11px 12px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:#fff;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.4;
+}
+.cute-chip span{
+  font-size:23px;
+}
+.level-head{
+  position:relative;
+  overflow:hidden;
+}
+.level-head:after{
+  content:"";
+  position:absolute;
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  right:-34px;
+  top:-42px;
+  background:rgba(135,206,235,.18);
+}
+.level:nth-of-type(even) .level-head:after{
+  background:rgba(245,167,199,.18);
+}
+.topic-note{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  margin:12px 0;
+  padding:12px 14px;
+  border-radius:13px;
+  background:#fffdf8;
+  border:1px solid var(--line);
+}
+.topic-note .icon{
+  font-size:22px;
+  line-height:1;
+}
+.topic-note p{
+  margin:0;
+  color:var(--muted);
+  line-height:1.55;
+}
+@media(max-width:700px){
+  .level-intro{
+    grid-template-columns:1fr;
+  }
+  .mascot-box{
+    width:100%;
+    min-width:0;
+  }
+}
+</style>
+</head>
+<body>
+<main class="page">
+<header class="hero">
+<div class="hero-inner">
+<span class="badge">🐳 Docker Learning Guide • Java Developer Path</span>
+<h1>Docker <span class="accent">Complete Guide</span></h1>
+<p>A brief, detailed Docker guide for Java Developers.</p>
+<div class="duo-row"><span class="duo">🎀</span><span class="duo">🌼</span></div>
+<div class="creator">© Dynamic Duo Learners</div>
+</div>
+</header>
+<div class="cute-strip">
+<div class="cute-chip"><span>𑣲𝑨</span>, Learn one concept at a time</div>
+<div class="cute-chip"><span>🤖</span> Understand how it works internally</div>
+<div class="cute-chip"><span>🤔</span> Keep production thinking simple</div>
+<div class="cute-chip"><span>👩🏻‍💻</span> Practise with Java examples</div>
+</div>
+
+<nav class="nav">
+<a href="#level1">🌱 Level 1 - Foundations</a>
+<a href="#level2">☕ Level 2 - Java &amp; Spring Boot</a>
+<a href="#level3">🧩 Level 3 - Dockerfile</a><a href="#level4">🌐 Level 4 - Networking</a><a href="#level5">📦 Level 5 - Production</a><a href="#level6">🧠 Level 6 - JVM</a><a href="#level7">🚀 Level 7 - BuildKit</a><a href="#level8">🛡️ Level 8 - Security</a><a href="#level9">🔁 Level 9 - CI/CD</a><a href="#level10">🧪 Level 10 - Testing</a><a href="#level11">🔍 Level 11 - Troubleshooting</a></nav>
+<section class="level" id="level1">
+<header class="level-head">
+<h2>🌱 Level 1 - Beginner Foundations</h2>
+<p>Docker basics, images, containers, Dockerfile, Engine, registry, tags and lifecycle.</p>
+</header>
+<div class="level-body">
+<div class="level-intro">
+<div>
+<h3>Start with the mental model</h3>
+<p>This level builds the foundation for everything that follows. You will understand what Docker is, how images become containers, how Docker Engine works  and how container lifecycle states connect.</p>
+<ul><li>Why Docker is useful for Java applications</li><li>Image, container, registry, Dockerfile and Engine</li><li>Repository, tag, digest and lifecycle</li></ul>
+</div>
+<div class="mascot-box">
+<svg aria-label="Cute cat and robot learning together" role="img" viewbox="0 0 120 90">
+<ellipse cx="60" cy="80" fill="#dbeaf4" rx="48" ry="6"></ellipse>
+<g transform="translate(8 17)">
+<path d="M11 18 L18 7 L25 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<path d="M31 18 L38 7 L45 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<rect fill="#ffddea" height="34" rx="14" stroke="#8c6680" stroke-width="2" width="36" x="10" y="16"></rect>
+<circle cx="22" cy="31" fill="#465568" r="2.5"></circle>
+<circle cx="35" cy="31" fill="#465568" r="2.5"></circle>
+<path d="M26 38 Q29 41 32 38" fill="none" stroke="#8c6680" stroke-linecap="round" stroke-width="2"></path>
+<path d="M9 34 H2 M47 34 H54" stroke="#8c6680" stroke-linecap="round" stroke-width="1.5"></path>
+</g>
+<g transform="translate(66 19)">
+<rect fill="#dff3ff" height="35" rx="9" stroke="#547d9e" stroke-width="2" width="38" x="4" y="8"></rect>
+<rect fill="#ffffff" height="14" rx="5" stroke="#8eb8d2" width="22" x="12" y="15"></rect>
+<circle cx="18" cy="22" fill="#547d9e" r="2.4"></circle>
+<circle cx="29" cy="22" fill="#547d9e" r="2.4"></circle>
+<path d="M18 34 Q23 38 28 34" fill="none" stroke="#547d9e" stroke-linecap="round" stroke-width="2"></path>
+<path d="M23 8 V2" stroke="#547d9e" stroke-width="2"></path>
+<circle cx="23" cy="1.5" fill="#f7a8c7" r="2.5"></circle>
+<path d="M4 24 H0 M42 24 H46" stroke="#547d9e" stroke-width="2"></path>
+</g>
+<path d="M47 66 Q60 57 72 66" fill="none" stroke="#8b75ce" stroke-linecap="round" stroke-width="3"></path>
+<rect fill="#f0ebff" height="14" rx="3" stroke="#8b75ce" width="31" x="45" y="64"></rect>
+<path d="M60.5 64 V78" stroke="#8b75ce"></path>
+</svg>
+</div>
+</div>
+<section class="section">
+<h2>🎯 Goal of This Level</h2>
+<p class="lead">
+    By the end of Level 1, you should understand why Docker is useful,
+    how containers differ from virtual machines  and the purpose of
+    Docker images, Dockerfiles, Docker Engine, registries and the container lifecycle.
+  </p>
+<div class="good">
+<strong>Simple outcome:</strong> you should be able to explain Docker clearly
+    before writing a production Dockerfile.
+  </div>
+</section><section class="section">
+<h2>🫧 1. What Is Docker?</h2>
+<p class="lead">
+    Docker is a platform used to build, package, distribute and run applications
+    as isolated containers.
+  </p>
+<p>
+    A Java application normally depends on a specific JDK or JRE, configuration,
+    ports, certificates and operating-system libraries. Docker helps package
+    these expectations into a repeatable image.
+  </p>
+<div class="flow">
+<div class="node">Java Code</div>
+<div class="arrow">→</div>
+<div class="node">JAR</div>
+<div class="arrow">+</div>
+<div class="node">JRE</div>
+<div class="arrow">+</div>
+<div class="node">Config</div>
+<div class="arrow">→</div>
+<div class="node">Docker Image</div>
+</div>
+<div class="note">
+<strong>Why Java developers use it:</strong> the same packaged application
+    can run consistently on a developer machine, CI server and deployment platform.
+  </div>
+</section><section class="section">
+<h2>📦 2. Image</h2><p class="section-intro">This section explains image in a practical Java-container context, including why it matters and how it is used.</p>
+<div class="grid">
+<div class="card">
+<h3>Read-only template</h3>
+<p>An image is used as the base for creating one or more containers.</p>
+</div>
+<div class="card">
+<h3>Layered</h3>
+<p>Java runtime, dependencies and application files are stored in reusable layers.</p>
+</div>
+<div class="card">
+<h3>Portable</h3>
+<p>The same image can be shared through a registry and run on different machines.</p>
+</div>
+<div class="card">
+<h3>Versioned</h3>
+<p>Images are identified using repository names, tags and digests.</p>
+</div>
+</div>
+<div class="note">
+<strong>Example:</strong> an image may contain an Eclipse Temurin Java 21 runtime
+    and a packaged Spring Boot JAR.
+  </div>
+</section><section class="section">
+<h2>🚢 3. Container</h2>
+<p class="lead">
+    A container is a running instance of an image.
+  </p>
+<p>
+    Docker creates an isolated process from the image and adds runtime settings
+    such as environment variables, networking, mounts and a writable layer.
+  </p>
+<div class="grid">
+<div class="card"><h3>Image</h3><p>The application template.</p></div>
+<div class="card"><h3>Container</h3><p>The running application process.</p></div>
+<div class="card"><h3>Writable layer</h3><p>Temporary changes made by that specific container.</p></div>
+<div class="card"><h3>Replaceable</h3><p>Containers should be recreated from images rather than manually repaired.</p></div>
+</div>
+</section><section class="section">
+<h2>📝 4. Dockerfile</h2>
+<p class="lead">
+    A Dockerfile is a plain-text file containing instructions that Docker uses
+    to build an image.
+  </p>
+<pre><button class="copy">Copy</button><code>FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+
+COPY target/orders-api.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]</code></pre>
+<div class="grid" style="margin-top:12px">
+<div class="card"><h3>FROM</h3><p>Selects the base image.</p></div>
+<div class="card"><h3>WORKDIR</h3><p>Sets the working directory.</p></div>
+<div class="card"><h3>COPY</h3><p>Copies the JAR into the image.</p></div>
+<div class="card"><h3>ENTRYPOINT</h3><p>Defines how the Java application starts.</p></div>
+</div>
+<div class="good">
+    The Dockerfile makes image creation repeatable and keeps the runtime definition
+    with the application code.
+  </div>
+</section><section class="section">
+<h2>⚙️ 5. Docker Engine</h2>
+<p class="lead">
+    Docker Engine is the main runtime platform that builds and runs containers.
+  </p>
+<div class="flow">
+<div class="node">Docker Client</div>
+<div class="arrow">→</div>
+<div class="node">Docker API</div>
+<div class="arrow">→</div>
+<div class="node">Docker Daemon</div>
+<div class="arrow">→</div>
+<div class="node">Images &amp; Containers</div>
+</div>
+<div class="grid">
+<div class="card">
+<h3>Docker client</h3>
+<p>The CLI or application that sends commands such as build and run.</p>
+</div>
+<div class="card">
+<h3>Docker API</h3>
+<p>The communication interface used by clients to talk to Docker Engine.</p>
+</div>
+<div class="card">
+<h3>Docker daemon</h3>
+<p>The background service that performs container and image operations.</p>
+</div>
+<div class="card">
+<h3>Managed resources</h3>
+<p>Images, containers, networks and volumes.</p>
+</div>
+</div>
+<div class="note">
+<strong>Simple understanding:</strong> Docker Engine is the overall platform;
+    the daemon is the background service that performs the actual work.
+  </div>
+</section><section class="section">
+<h2>🖥️ 6. Container vs Virtual Machine</h2><p class="section-intro">This section explains container vs virtual machine in a practical Java-container context, including why it matters and how it is used.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Container</th><th>Virtual Machine</th></tr></thead>
+<tbody>
+<tr><td>Shares the host kernel</td><td>Runs a full guest operating system</td></tr>
+<tr><td>Usually starts quickly</td><td>Usually takes longer to boot</td></tr>
+<tr><td>Uses fewer resources</td><td>Needs resources for the guest OS</td></tr>
+<tr><td>Isolates processes</td><td>Virtualizes an entire machine</td></tr>
+</tbody>
+</table>
+</div>
+<div class="warn">
+<strong>Interview trap:</strong> do not describe a container as a lightweight VM.
+    It is an isolated process that shares the host kernel.
+  </div>
+</section><section class="section">
+<h2>🏪 7. Docker Registry and Docker Hub</h2><p class="section-intro">This section explains docker registry and docker hub in a practical Java-container context, including why it matters and how it is used.</p>
+<div class="grid">
+<div class="card">
+<h3>Docker registry</h3>
+<p>A service that stores and distributes Docker images.</p>
+</div>
+<div class="card">
+<h3>Docker Hub</h3>
+<p>A widely used public registry containing official and community images.</p>
+</div>
+<div class="card">
+<h3>Private registry</h3>
+<p>An organization-controlled registry used for internal application images.</p>
+</div>
+<div class="card">
+<h3>Pull and push</h3>
+<p>Pull downloads an image; push uploads an image to a registry.</p>
+</div>
+</div>
+<pre><button class="copy">Copy</button><code>docker pull eclipse-temurin:21-jre
+
+docker push registry.example.com/team/orders-api:1.0.0</code></pre>
+</section><section class="section">
+<h2>🏷️ 8. Image Repository, Tag and Digest</h2><p class="section-intro">This section explains image repository, tag and digest in a practical Java-container context, including why it matters and how it is used.</p>
+<pre><button class="copy">Copy</button><code>registry.example.com/team/orders-api:1.0.0
+|------------------| |------------| |---|
+       registry        repository    tag</code></pre>
+<div class="grid" style="margin-top:12px">
+<div class="card">
+<h3>Image repository</h3>
+<p>A named collection of related image versions, such as <span class="kbd">orders-api</span>.</p>
+</div>
+<div class="card">
+<h3>Image tag</h3>
+<p>A readable label such as <span class="kbd">1.0.0</span> or <span class="kbd">java21</span>.</p>
+</div>
+<div class="card">
+<h3>Registry path</h3>
+<p>Identifies where the image repository is stored.</p>
+</div>
+<div class="card">
+<h3>Digest</h3>
+<p>An immutable hash that identifies exact image content.</p>
+</div>
+</div>
+<div class="note">
+    A tag may later point to different image content. A digest identifies exact
+    immutable content and is better for strict production traceability.
+  </div>
+</section><section class="section">
+<h2>🔄 9. Container Lifecycle</h2><p class="section-intro">This section explains container lifecycle in a practical Java-container context, including why it matters and how it is used.</p>
+<div class="flow">
+<div class="node">Created</div>
+<div class="arrow">→</div>
+<div class="node">Running</div>
+<div class="arrow">→</div>
+<div class="node">Paused</div>
+<div class="arrow">→</div>
+<div class="node">Stopped / Exited</div>
+<div class="arrow">→</div>
+<div class="node">Restarted</div>
+<div class="arrow">→</div>
+<div class="node">Removed</div>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>State</th><th>Meaning</th><th>Typical command</th></tr></thead>
+<tbody>
+<tr><td>Created</td><td>Container exists but its main process has not started.</td><td><span class="kbd">docker create</span></td></tr>
+<tr><td>Running</td><td>The container's main process is active.</td><td><span class="kbd">docker start</span></td></tr>
+<tr><td>Paused</td><td>Processes are temporarily suspended.</td><td><span class="kbd">docker pause</span></td></tr>
+<tr><td>Stopped / Exited</td><td>The container exists, but its main process is not running.</td><td><span class="kbd">docker stop</span></td></tr>
+<tr><td>Restarted</td><td>The stopped process is started again.</td><td><span class="kbd">docker restart</span></td></tr>
+<tr><td>Removed</td><td>The container metadata and writable layer are deleted.</td><td><span class="kbd">docker rm</span></td></tr>
+</tbody>
+</table>
+</div>
+<pre><button class="copy">Copy</button><code>docker create --name java-demo   eclipse-temurin:21-jre   java -version
+
+docker start java-demo
+docker pause java-demo
+docker unpause java-demo
+docker stop java-demo
+docker restart java-demo
+docker rm -f java-demo</code></pre>
+</section><section class="section">
+<h2>🧭 10. What Happens During docker run?</h2><p class="section-intro">This section explains what happens during docker run? in a practical Java-container context, including why it matters and how it is used.</p>
+<div class="flow">
+<div class="node">Find Image</div>
+<div class="arrow">→</div>
+<div class="node">Pull if Missing</div>
+<div class="arrow">→</div>
+<div class="node">Create Container</div>
+<div class="arrow">→</div>
+<div class="node">Configure Runtime</div>
+<div class="arrow">→</div>
+<div class="node">Start Process</div>
+</div>
+<ol>
+<li>Docker checks whether the image is available locally.</li>
+<li>The image is pulled from a registry if it is missing.</li>
+<li>A new container and writable layer are created.</li>
+<li>Networking, mounts, variables and limits are applied.</li>
+<li>The configured entrypoint and command are started.</li>
+</ol>
+</section><section class="section">
+<h2>🪄 11. Essential Level 1 Commands</h2><p class="section-intro">This section explains essential level 1 commands in a practical Java-container context, including why it matters and how it is used.</p>
+<pre><button class="copy">Copy</button><code>docker version
+docker info
+
+docker pull eclipse-temurin:21-jre
+docker image ls
+
+docker run --name java-demo   eclipse-temurin:21-jre   java -version
+
+docker container ls
+docker container ls -a
+
+docker stop java-demo
+docker start java-demo
+docker restart java-demo
+
+docker rm java-demo
+docker rmi eclipse-temurin:21-jre</code></pre>
+</section><section class="section">
+<h2>🎤 12. Level 1 Interview Questions</h2><p class="section-intro">This section explains level 1 interview questions in a practical Java-container context, including why it matters and how it is used.</p>
+<details class="qa">
+<summary>What is Docker Engine?</summary>
+<div class="answer">
+      Docker Engine is the runtime platform used to build and run containers.
+      It includes the Docker daemon, APIs and client interaction.
+    </div>
+</details>
+<details class="qa">
+<summary>What is a Dockerfile?</summary>
+<div class="answer">
+      A Dockerfile is a text file containing instructions used to build a repeatable Docker image.
+    </div>
+</details>
+<details class="qa">
+<summary>What is the difference between an image and a container?</summary>
+<div class="answer">
+      An image is an immutable application template. A container is a running
+      instance of that image with runtime configuration and a writable layer.
+    </div>
+</details>
+<details class="qa">
+<summary>What is an image repository and tag?</summary>
+<div class="answer">
+      A repository groups related image versions. A tag is a readable label
+      identifying one version, such as <span class="kbd">orders-api:1.0.0</span>.
+    </div>
+</details>
+<details class="qa">
+<summary>What are the main container lifecycle states?</summary>
+<div class="answer">
+      Created, running, paused, stopped or exited, restarted and removed.
+    </div>
+</details>
+</section><section class="section">
+<h2>✅ Level 1 Completion Check</h2><p class="section-intro">This section explains level 1 completion check in a practical Java-container context, including why it matters and how it is used.</p>
+<div class="grid">
+<div class="card"><h3>Explain Docker</h3><p>Why it is used and what problem it solves.</p></div>
+<div class="card"><h3>Explain components</h3><p>Engine, client, daemon, registry and Docker Hub.</p></div>
+<div class="card"><h3>Explain images</h3><p>Repository, tag, digest and Dockerfile.</p></div>
+<div class="card"><h3>Explain lifecycle</h3><p>Created, running, paused, stopped and removed.</p></div>
+</div>
+<div class="good">
+    All requested Level 1 beginner concepts are now covered explicitly.
+  </div>
+</section></div>
+</section>
+<section class="level" id="level2">
+<header class="level-head">
+<h2>☕ Level 2 - Running Java and Spring Boot Applications</h2>
+<p>JDK and JRE images, ports, environment variables, logs, interactive sessions and basic Spring Boot Dockerfiles.</p>
+</header>
+<div class="level-body">
+<div class="level-intro">
+<div>
+<h3>Run your first Spring Boot container</h3>
+<p>This level turns a packaged JAR into a running service. You will learn the difference between JDK and JRE images, how ports are published, how logs are viewed  and how runtime configuration is supplied.</p>
+<ul><li>Build a Spring Boot image</li><li>Run in detached mode with a name</li><li>Inspect logs, processes and resource usage</li></ul>
+</div>
+<div class="mascot-box">
+<svg aria-label="Cute cat and robot learning together" role="img" viewbox="0 0 120 90">
+<ellipse cx="60" cy="80" fill="#dbeaf4" rx="48" ry="6"></ellipse>
+<g transform="translate(8 17)">
+<path d="M11 18 L18 7 L25 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<path d="M31 18 L38 7 L45 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<rect fill="#ffddea" height="34" rx="14" stroke="#8c6680" stroke-width="2" width="36" x="10" y="16"></rect>
+<circle cx="22" cy="31" fill="#465568" r="2.5"></circle>
+<circle cx="35" cy="31" fill="#465568" r="2.5"></circle>
+<path d="M26 38 Q29 41 32 38" fill="none" stroke="#8c6680" stroke-linecap="round" stroke-width="2"></path>
+<path d="M9 34 H2 M47 34 H54" stroke="#8c6680" stroke-linecap="round" stroke-width="1.5"></path>
+</g>
+<g transform="translate(66 19)">
+<rect fill="#dff3ff" height="35" rx="9" stroke="#547d9e" stroke-width="2" width="38" x="4" y="8"></rect>
+<rect fill="#ffffff" height="14" rx="5" stroke="#8eb8d2" width="22" x="12" y="15"></rect>
+<circle cx="18" cy="22" fill="#547d9e" r="2.4"></circle>
+<circle cx="29" cy="22" fill="#547d9e" r="2.4"></circle>
+<path d="M18 34 Q23 38 28 34" fill="none" stroke="#547d9e" stroke-linecap="round" stroke-width="2"></path>
+<path d="M23 8 V2" stroke="#547d9e" stroke-width="2"></path>
+<circle cx="23" cy="1.5" fill="#f7a8c7" r="2.5"></circle>
+<path d="M4 24 H0 M42 24 H46" stroke="#547d9e" stroke-width="2"></path>
+</g>
+<path d="M47 66 Q60 57 72 66" fill="none" stroke="#8b75ce" stroke-linecap="round" stroke-width="3"></path>
+<rect fill="#f0ebff" height="14" rx="3" stroke="#8b75ce" width="31" x="45" y="64"></rect>
+<path d="M60.5 64 V78" stroke="#8b75ce"></path>
+</svg>
+</div>
+</div>
+<section class="section">
+<h2>🎯 Goal of This Level</h2>
+<p class="lead">
+    Run a packaged Java or Spring Boot application inside a Docker container
+    and understand the basic runtime settings required to access and observe it.
+  </p>
+<div class="good">
+<strong>By the end:</strong> you should be able to build a Spring Boot JAR,
+    create an image, start a named container, publish its port and inspect the running application.
+  </div>
+</section><section class="section">
+<h2>🧰 1. JDK Image and JRE Image</h2><p class="section-intro">This section explains jdk image and jre image in a practical Java-container context, including why it matters and how it is used.</p>
+<div class="grid">
+<div class="card">
+<h3>JDK image</h3>
+<p>
+        Contains the Java compiler and development tools in addition to the runtime.
+        It is required when Java source code must be compiled inside the image.
+      </p>
+</div>
+<div class="card">
+<h3>JRE or runtime image</h3>
+<p>
+        Contains what is required to execute an already compiled Java application.
+        It normally has fewer tools than a JDK image.
+      </p>
+</div>
+<div class="card">
+<h3>Builder use</h3>
+<p>
+        Maven or Gradle builds commonly use a JDK-based image because compilation is required.
+      </p>
+</div>
+<div class="card">
+<h3>Runtime use</h3>
+<p>
+        A packaged Spring Boot JAR can normally run using a Java runtime image.
+      </p>
+</div>
+</div>
+<div class="flow">
+<div class="node">Java Source</div>
+<div class="arrow">→</div>
+<div class="node">JDK + Maven</div>
+<div class="arrow">→</div>
+<div class="node">JAR</div>
+<div class="arrow">→</div>
+<div class="node">JRE Image</div>
+</div>
+<div class="note">
+<strong>For this level:</strong> the JAR is built on the developer machine,
+    so the Docker image needs only a Java runtime to execute it.
+  </div>
+</section><section class="section">
+<h2>📦 2. Basic Spring Boot Dockerfile</h2><p class="section-intro">This section explains basic spring boot dockerfile in a practical Java-container context, including why it matters and how it is used.</p>
+<pre><button class="copy">Copy</button><code>FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+
+COPY target/orders-service.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]</code></pre>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Instruction</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="kbd">FROM eclipse-temurin:21-jre</span></td>
+<td>Uses a Java 21 runtime image as the base.</td>
+</tr>
+<tr>
+<td><span class="kbd">WORKDIR /app</span></td>
+<td>Sets the working directory inside the image.</td>
+</tr>
+<tr>
+<td><span class="kbd">COPY ... app.jar</span></td>
+<td>Copies the packaged Spring Boot JAR into the image.</td>
+</tr>
+<tr>
+<td><span class="kbd">EXPOSE 8080</span></td>
+<td>Documents that the application is expected to listen on port 8080.</td>
+</tr>
+<tr>
+<td><span class="kbd">ENTRYPOINT</span></td>
+<td>Defines the command used to start the Spring Boot application.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="warn">
+<strong>Important:</strong> the file name in the COPY instruction must match
+    the actual JAR generated inside the <span class="kbd">target</span> directory.
+  </div>
+</section><section class="section">
+<h2>🔨 3. Build the JAR and Docker Image</h2><p class="section-intro">This section explains build the jar and docker image in a practical Java-container context, including why it matters and how it is used.</p>
+<pre><button class="copy">Copy</button><code>mvn clean package
+
+docker build -t orders-api:1.0 .</code></pre>
+<div class="grid">
+<div class="card">
+<h3>mvn clean package</h3>
+<p>
+        Deletes previous build output, compiles the code, runs configured tests
+        and creates the application JAR.
+      </p>
+</div>
+<div class="card">
+<h3>docker build</h3>
+<p>
+        Reads the Dockerfile and creates a Docker image from the current build context.
+      </p>
+</div>
+<div class="card">
+<h3>-t orders-api:1.0</h3>
+<p>
+        Assigns repository name <span class="kbd">orders-api</span>
+        and tag <span class="kbd">1.0</span>.
+      </p>
+</div>
+<div class="card">
+<h3>Final dot</h3>
+<p>
+        The dot means the current directory is used as the Docker build context.
+      </p>
+</div>
+</div>
+<div class="good">
+    Verify the image using <span class="kbd">docker image ls</span>
+    before starting the container.
+  </div>
+</section><section class="section">
+<h2>🚀 4. Run the Spring Boot Container</h2><p class="section-intro">This section explains run the spring boot container in a practical Java-container context, including why it matters and how it is used.</p>
+<pre><button class="copy">Copy</button><code>docker run -d   --name orders-api   -p 8080:8080   orders-api:1.0</code></pre>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Option</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><span class="kbd">docker run</span></td><td>Creates and starts a new container from the image.</td></tr>
+<tr><td><span class="kbd">-d</span></td><td>Runs the container in detached mode.</td></tr>
+<tr><td><span class="kbd">--name orders-api</span></td><td>Assigns a readable name to the container.</td></tr>
+<tr><td><span class="kbd">-p 8080:8080</span></td><td>Publishes container port 8080 on host port 8080.</td></tr>
+<tr><td><span class="kbd">orders-api:1.0</span></td><td>Specifies the image repository and tag.</td></tr>
+</tbody>
+</table>
+</div>
+</section><section class="section">
+<h2>🌉 5. Host Port, Container Port and Port Publishing</h2><p class="section-intro">This section explains host port, container port and port publishing in a practical Java-container context, including why it matters and how it is used.</p>
+<pre><button class="copy">Copy</button><code>-p 8085:8080
+   │      │
+   │      └── Container port
+   └───────── Host port</code></pre>
+<div class="grid">
+<div class="card">
+<h3>Container port</h3>
+<p>
+        The port inside the container where Spring Boot is listening.
+        In this example, the application listens on port 8080.
+      </p>
+</div>
+<div class="card">
+<h3>Host port</h3>
+<p>
+        The port exposed on the developer machine.
+        Here, port 8085 is used to access the application.
+      </p>
+</div>
+<div class="card">
+<h3>Port publishing</h3>
+<p>
+        Docker forwards traffic from the host port to the container port.
+      </p>
+</div>
+<div class="card">
+<h3>Application URL</h3>
+<p>
+        The service becomes available at
+        <span class="kbd">http://localhost:8085</span>.
+      </p>
+</div>
+</div>
+<div class="note">
+    Different host ports may point to the same internal container port.
+    This is useful when running multiple instances locally.
+  </div>
+<pre><button class="copy">Copy</button><code>docker run -d --name orders-1 -p 8081:8080 orders-api:1.0
+docker run -d --name orders-2 -p 8082:8080 orders-api:1.0</code></pre>
+</section><section class="section">
+<h2>🌼 6. Environment Variables</h2>
+<p class="lead">
+    Environment variables allow runtime configuration to be supplied
+    without rebuilding the Docker image.
+  </p>
+<pre><button class="copy">Copy</button><code>docker run -d   --name orders-api   -p 8080:8080   -e SPRING_PROFILES_ACTIVE=docker   -e SERVER_PORT=8080   -e ORDER_TIMEOUT_SECONDS=10   orders-api:1.0</code></pre>
+<div class="grid">
+<div class="card">
+<h3>Spring profiles</h3>
+<p>
+<span class="kbd">SPRING_PROFILES_ACTIVE</span> selects the Spring profile
+        used by the application.
+      </p>
+</div>
+<div class="card">
+<h3>Application properties</h3>
+<p>
+        Spring Boot can map environment variables to configuration properties.
+      </p>
+</div>
+<div class="card">
+<h3>Same image</h3>
+<p>
+        Development and production can use the same image with different runtime values.
+      </p>
+</div>
+<div class="card">
+<h3>Secrets</h3>
+<p>
+        Avoid placing sensitive passwords directly in reusable scripts or shell history.
+      </p>
+</div>
+</div>
+<div class="good">
+<strong>Good practice:</strong> keep environment-specific settings outside the image.
+  </div>
+</section><section class="section">
+<h2>🧾 7. Container Logs</h2><p class="section-intro">This section explains container logs in a practical Java-container context, including why it matters and how it is used.</p>
+<pre><button class="copy">Copy</button><code>docker logs orders-api
+
+docker logs -f orders-api
+
+docker logs --tail 100 orders-api</code></pre>
+<div class="grid">
+<div class="card">
+<h3>docker logs</h3>
+<p>Displays output written by the container to stdout and stderr.</p>
+</div>
+<div class="card">
+<h3>-f</h3>
+<p>Follows the logs continuously, similar to a live stream.</p>
+</div>
+<div class="card">
+<h3>--tail</h3>
+<p>Shows only the most recent number of log lines.</p>
+</div>
+<div class="card">
+<h3>Java logging</h3>
+<p>Spring Boot applications should normally log to the console in containers.</p>
+</div>
+</div>
+<div class="warn">
+<strong>Common issue:</strong> if the container exits immediately,
+    inspect its logs before changing the Dockerfile.
+  </div>
+</section><section class="section">
+<h2>🖥️ 8. Interactive Container</h2>
+<p class="lead">
+    An interactive session allows you to run a shell or command inside a running container.
+  </p>
+<pre><button class="copy">Copy</button><code>docker exec -it orders-api sh</code></pre>
+<div class="grid">
+<div class="card">
+<h3>docker exec</h3>
+<p>Runs an additional command inside an already running container.</p>
+</div>
+<div class="card">
+<h3>-i</h3>
+<p>Keeps standard input open.</p>
+</div>
+<div class="card">
+<h3>-t</h3>
+<p>Allocates a terminal for easier interaction.</p>
+</div>
+<div class="card">
+<h3>sh</h3>
+<p>Starts a shell if the runtime image includes one.</p>
+</div>
+</div>
+<div class="note">
+    Minimal images may not include Bash. Use <span class="kbd">sh</span>
+    when available  or use inspection and logs instead.
+  </div>
+</section><section class="section">
+<h2>🌙 9. Detached Mode</h2>
+<p class="lead">
+    Detached mode runs the container in the background and immediately returns control to the terminal.
+  </p>
+<pre><button class="copy">Copy</button><code>docker run -d orders-api:1.0</code></pre>
+<div class="grid">
+<div class="card">
+<h3>With -d</h3>
+<p>The container runs in the background.</p>
+</div>
+<div class="card">
+<h3>Without -d</h3>
+<p>The container output remains attached to the current terminal.</p>
+</div>
+<div class="card">
+<h3>Production style</h3>
+<p>Services usually run in detached or orchestrated mode.</p>
+</div>
+<div class="card">
+<h3>Observe separately</h3>
+<p>Use <span class="kbd">docker logs -f</span> to follow output.</p>
+</div>
+</div>
+</section><section class="section">
+<h2>🏷️ 10. Container Name</h2>
+<p class="lead">
+    A readable container name makes commands and troubleshooting easier.
+  </p>
+<pre><button class="copy">Copy</button><code>docker run -d   --name orders-api   -p 8080:8080   orders-api:1.0</code></pre>
+<p>
+    Without <span class="kbd">--name</span>, Docker automatically generates a name.
+    A custom name allows simple commands such as:
+  </p>
+<pre><button class="copy">Copy</button><code>docker logs orders-api
+docker stop orders-api
+docker inspect orders-api
+docker exec -it orders-api sh</code></pre>
+<div class="warn">
+    Two containers on the same Docker host cannot use the same container name at the same time.
+  </div>
+</section><section class="section">
+<h2>🔎 11. Important Inspection Commands</h2><p class="section-intro">This section explains important inspection commands in a practical Java-container context, including why it matters and how it is used.</p>
+<pre><button class="copy">Copy</button><code>docker inspect orders-api
+
+docker stats orders-api
+
+docker top orders-api</code></pre>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Command</th><th>What it shows</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="kbd">docker inspect</span></td>
+<td>Detailed JSON configuration, state, networking, mounts and runtime settings.</td>
+</tr>
+<tr>
+<td><span class="kbd">docker stats</span></td>
+<td>Live CPU, memory, network and block I/O usage.</td>
+</tr>
+<tr>
+<td><span class="kbd">docker top</span></td>
+<td>Processes running inside the container.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section><section class="section">
+<h2>🧭 12. Complete Level 2 Flow</h2><p class="section-intro">This section explains complete level 2 flow in a practical Java-container context, including why it matters and how it is used.</p>
+<div class="flow">
+<div class="node">Write Code</div>
+<div class="arrow">→</div>
+<div class="node">Build JAR</div>
+<div class="arrow">→</div>
+<div class="node">Build Image</div>
+<div class="arrow">→</div>
+<div class="node">Run Container</div>
+<div class="arrow">→</div>
+<div class="node">Publish Port</div>
+<div class="arrow">→</div>
+<div class="node">Check Logs</div>
+</div>
+<pre><button class="copy">Copy</button><code>mvn clean package
+
+docker build -t orders-api:1.0 .
+
+docker run -d   --name orders-api   -p 8085:8080   orders-api:1.0
+
+docker logs -f orders-api</code></pre>
+<div class="good">
+    Open <span class="kbd">http://localhost:8085</span>
+    after the Spring Boot startup logs confirm that the application is running.
+  </div>
+</section><section class="section">
+<h2>🌷 13. Common Level 2 Problems</h2><p class="section-intro">This section explains common level 2 problems in a practical Java-container context, including why it matters and how it is used.</p>
+<div class="grid">
+<div class="card">
+<h3>JAR not found</h3>
+<p>The Dockerfile COPY path does not match the generated file name.</p>
+</div>
+<div class="card">
+<h3>Port not reachable</h3>
+<p>The port was not published or the application is listening on another port.</p>
+</div>
+<div class="card">
+<h3>Name already in use</h3>
+<p>An existing container already has the requested name.</p>
+</div>
+<div class="card">
+<h3>Container exits</h3>
+<p>The Java process failed, the JAR path is wrong  or required configuration is missing.</p>
+</div>
+<div class="card">
+<h3>Shell not found</h3>
+<p>The selected runtime image may not contain Bash or another shell.</p>
+</div>
+<div class="card">
+<h3>Old application code</h3>
+<p>The image was not rebuilt after creating a new JAR.</p>
+</div>
+</div>
+</section><section class="section">
+<h2>🎤 14. Interview Questions and Answers</h2><p class="section-intro">This section explains interview questions and answers in a practical Java-container context, including why it matters and how it is used.</p>
+<details class="qa">
+<summary>What is the difference between EXPOSE and -p?</summary>
+<div class="answer">
+<span class="kbd">EXPOSE</span> documents the port expected by the image.
+      The <span class="kbd">-p</span> option actually publishes a container port
+      on a host port.
+    </div>
+</details>
+<details class="qa">
+<summary>How do you view container logs?</summary>
+<div class="answer">
+      Use <span class="kbd">docker logs container-name</span>.
+      Add <span class="kbd">-f</span> to follow the logs continuously,
+      or <span class="kbd">--tail</span> to limit the number of lines.
+    </div>
+</details>
+<details class="qa">
+<summary>How do you enter a running container?</summary>
+<div class="answer">
+      Use <span class="kbd">docker exec -it container-name sh</span>
+      when the image contains a shell. This starts an additional interactive process
+      inside the running container.
+    </div>
+</details>
+<details class="qa">
+<summary>What is detached mode?</summary>
+<div class="answer">
+      Detached mode runs the container in the background.
+      It is enabled with <span class="kbd">-d</span>.
+      Logs can still be viewed separately using <span class="kbd">docker logs</span>.
+    </div>
+</details>
+<details class="qa">
+<summary>Why might a Spring Boot container exit immediately?</summary>
+<div class="answer">
+      The main Java process may fail because the JAR is missing, the entrypoint is wrong,
+      required configuration is unavailable, the port configuration is invalid,
+      or the application throws an exception during startup. Check the exit state
+      and logs first.
+    </div>
+</details>
+<details class="qa">
+<summary>Why use a JRE image for the final Spring Boot application?</summary>
+<div class="answer">
+      The application is already compiled into a JAR, so it normally needs only
+      a Java runtime to execute. A JDK is mainly required during compilation and packaging.
+    </div>
+</details>
+<details class="qa">
+<summary>Can multiple containers use container port 8080?</summary>
+<div class="answer">
+      Yes. Each container has its own network namespace.
+      They must use different host ports if both are published on the same Docker host,
+      such as <span class="kbd">8081:8080</span> and <span class="kbd">8082:8080</span>.
+    </div>
+</details>
+</section><section class="section">
+<h2>✅ Level 2 Completion Check</h2><p class="section-intro">This section explains level 2 completion check in a practical Java-container context, including why it matters and how it is used.</p>
+<div class="grid">
+<div class="card"><h3>Build</h3><p>Create the Spring Boot JAR and Docker image.</p></div>
+<div class="card"><h3>Run</h3><p>Start a named detached container.</p></div>
+<div class="card"><h3>Publish</h3><p>Map a host port to the container port.</p></div>
+<div class="card"><h3>Configure</h3><p>Pass safe environment variables at runtime.</p></div>
+<div class="card"><h3>Observe</h3><p>Use logs, inspect, stats and top.</p></div>
+<div class="card"><h3>Interact</h3><p>Run an interactive shell or command with exec.</p></div>
+</div>
+<div class="interview">
+<strong>Ready for Level 3 when:</strong> you can build and run the application
+    without copying commands blindly  and can explain every option used in
+    <span class="kbd">docker run</span>.
+  </div>
+</section></div>
+</section>
+<section class="level" id="level3">
+<header class="level-head"><h2>🧩 Level 3 - Dockerfile Knowledge</h2><p>Write efficient, readable and maintainable Dockerfiles for Java applications.</p></header>
+<div class="level-body">
+<div class="level-intro">
+<div>
+<h3>Write Dockerfiles you can maintain</h3>
+<p>This level explains the instructions that shape an image. The goal is not only to make a Dockerfile work, but to make it readable, cache-friendly and safe for Java applications.</p>
+<ul><li>Understand each Dockerfile instruction</li><li>Compare RUN, CMD and ENTRYPOINT</li><li>Use build context and .dockerignore correctly</li></ul>
+</div>
+<div class="mascot-box">
+<svg aria-label="Cute cat and robot learning together" role="img" viewbox="0 0 120 90">
+<ellipse cx="60" cy="80" fill="#dbeaf4" rx="48" ry="6"></ellipse>
+<g transform="translate(8 17)">
+<path d="M11 18 L18 7 L25 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<path d="M31 18 L38 7 L45 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<rect fill="#ffddea" height="34" rx="14" stroke="#8c6680" stroke-width="2" width="36" x="10" y="16"></rect>
+<circle cx="22" cy="31" fill="#465568" r="2.5"></circle>
+<circle cx="35" cy="31" fill="#465568" r="2.5"></circle>
+<path d="M26 38 Q29 41 32 38" fill="none" stroke="#8c6680" stroke-linecap="round" stroke-width="2"></path>
+<path d="M9 34 H2 M47 34 H54" stroke="#8c6680" stroke-linecap="round" stroke-width="1.5"></path>
+</g>
+<g transform="translate(66 19)">
+<rect fill="#dff3ff" height="35" rx="9" stroke="#547d9e" stroke-width="2" width="38" x="4" y="8"></rect>
+<rect fill="#ffffff" height="14" rx="5" stroke="#8eb8d2" width="22" x="12" y="15"></rect>
+<circle cx="18" cy="22" fill="#547d9e" r="2.4"></circle>
+<circle cx="29" cy="22" fill="#547d9e" r="2.4"></circle>
+<path d="M18 34 Q23 38 28 34" fill="none" stroke="#547d9e" stroke-linecap="round" stroke-width="2"></path>
+<path d="M23 8 V2" stroke="#547d9e" stroke-width="2"></path>
+<circle cx="23" cy="1.5" fill="#f7a8c7" r="2.5"></circle>
+<path d="M4 24 H0 M42 24 H46" stroke="#547d9e" stroke-width="2"></path>
+</g>
+<path d="M47 66 Q60 57 72 66" fill="none" stroke="#8b75ce" stroke-linecap="round" stroke-width="3"></path>
+<rect fill="#f0ebff" height="14" rx="3" stroke="#8b75ce" width="31" x="45" y="64"></rect>
+<path d="M60.5 64 V78" stroke="#8b75ce"></path>
+</svg>
+</div>
+</div>
+
+<section class="section"><h2>🎯 Goal</h2><p class="lead">Understand the instructions used to build Java images and how instruction order affects layers, caching and maintainability.</p></section>
+<section class="section"><h2>📘 Core Dockerfile Instructions</h2><p class="section-intro">These are the Dockerfile instructions a Java developer uses most often. Learn what each one does and where it belongs.</p>
+<div class="table-wrap"><table><thead><tr><th>Instruction</th><th>Purpose</th><th>Java developer note</th></tr></thead><tbody>
+<tr><td>FROM</td><td>Selects the base image.</td><td>Use a JDK builder or JRE runtime image depending on the stage.</td></tr>
+<tr><td>WORKDIR</td><td>Sets the working directory.</td><td>Keeps paths predictable and avoids writing into root directories.</td></tr>
+<tr><td>COPY</td><td>Copies files into the image.</td><td>Use it for JARs, source and build descriptors.</td></tr>
+<tr><td>RUN</td><td>Executes commands while building.</td><td>Used for Maven, Gradle or operating-system setup.</td></tr>
+<tr><td>ENV</td><td>Defines runtime defaults.</td><td>Use only for non-sensitive configuration.</td></tr>
+<tr><td>ARG</td><td>Defines build-time values.</td><td>Not safe for secrets.</td></tr>
+<tr><td>EXPOSE</td><td>Documents the expected container port.</td><td>Does not publish the port.</td></tr>
+<tr><td>USER</td><td>Selects the runtime user.</td><td>Production containers should normally be non-root.</td></tr>
+<tr><td>ENTRYPOINT</td><td>Defines the main executable.</td><td>Prefer exec form for proper Java signal handling.</td></tr>
+<tr><td>CMD</td><td>Provides the default command or arguments.</td><td>Useful for overridable defaults.</td></tr>
+</tbody></table></div></section>
+<section class="section"><h2>⚖️ Important Differences</h2><p class="section-intro">These comparisons are common interview topics because they reveal whether you understand build-time and runtime behaviour.</p>
+<div class="grid"><div class="card"><h3>RUN vs CMD</h3><p>RUN executes while the image is built. CMD is evaluated when a container starts.</p></div><div class="card"><h3>ENTRYPOINT vs CMD</h3><p>ENTRYPOINT is the main executable; CMD usually supplies default arguments.</p></div><div class="card"><h3>COPY vs ADD</h3><p>Prefer COPY for normal file transfer. Use ADD only when its special behaviour is deliberately required.</p></div><div class="card"><h3>Build context</h3><p>The files sent to the builder. Keep it small to improve speed and reduce accidental exposure.</p></div></div>
+<pre><button class="copy">Copy</button><code>ENTRYPOINT ["java"]\nCMD ["-jar", "app.jar"]</code></pre>
+<pre><button class="copy">Copy</button><code>COPY target/app.jar app.jar</code></pre>
+</section>
+<section class="section"><h2>🧹 .dockerignore</h2><p class="lead">A .dockerignore file excludes unnecessary files before the build context is sent to Docker.</p>
+<pre><button class="copy">Copy</button><code>.git\n.idea\n.vscode\ntarget/\nbuild/\n*.log\n.env\nREADME.md</code></pre>
+<div class="good"><strong>Benefit:</strong> smaller contexts, faster builds and less risk of copying secrets or local files.</div></section>
+<section class="section"><h2>🎤 Interview Questions</h2><p class="section-intro">These questions test whether you can explain the concept and apply it to a real Java service.</p><details class="qa"><summary>What is a Dockerfile?</summary><div class="answer">A text file containing ordered instructions that Docker uses to construct an image.</div></details><details class="qa"><summary>RUN vs CMD?</summary><div class="answer">RUN executes during build; CMD provides a default runtime command or arguments.</div></details><details class="qa"><summary>CMD vs ENTRYPOINT?</summary><div class="answer">ENTRYPOINT defines the executable, while CMD supplies default arguments that may be overridden.</div></details><details class="qa"><summary>COPY vs ADD?</summary><div class="answer">COPY performs explicit file copying. ADD has extra behaviours and should be used only when they are required.</div></details><details class="qa"><summary>What is a build context?</summary><div class="answer">The directory contents made available to the builder.</div></details><details class="qa"><summary>Why is .dockerignore important?</summary><div class="answer">It reduces build context size and excludes sensitive or irrelevant files.</div></details><details class="qa"><summary>What creates an image layer?</summary><div class="answer">Most filesystem-changing Dockerfile instructions create or contribute to cached image layers.</div></details></section>
+</div></section>
+<section class="level" id="level4">
+<header class="level-head"><h2>🌐 Level 4 - Networking, Volumes and Docker Compose</h2><p>Run Spring Boot with PostgreSQL, Redis, Kafka and other dependencies.</p></header>
+<div class="level-body">
+<div class="level-intro">
+<div>
+<h3>Connect services and preserve data</h3>
+<p>Most Java services depend on databases, caches or brokers. This level explains how containers discover each other, why localhost often fails  and how Compose makes local multi-service environments repeatable.</p>
+<ul><li>Docker networking and DNS</li><li>Volumes, bind mounts and tmpfs</li><li>Compose health checks and dependencies</li></ul>
+</div>
+<div class="mascot-box">
+<svg aria-label="Cute cat and robot learning together" role="img" viewbox="0 0 120 90">
+<ellipse cx="60" cy="80" fill="#dbeaf4" rx="48" ry="6"></ellipse>
+<g transform="translate(8 17)">
+<path d="M11 18 L18 7 L25 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<path d="M31 18 L38 7 L45 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<rect fill="#ffddea" height="34" rx="14" stroke="#8c6680" stroke-width="2" width="36" x="10" y="16"></rect>
+<circle cx="22" cy="31" fill="#465568" r="2.5"></circle>
+<circle cx="35" cy="31" fill="#465568" r="2.5"></circle>
+<path d="M26 38 Q29 41 32 38" fill="none" stroke="#8c6680" stroke-linecap="round" stroke-width="2"></path>
+<path d="M9 34 H2 M47 34 H54" stroke="#8c6680" stroke-linecap="round" stroke-width="1.5"></path>
+</g>
+<g transform="translate(66 19)">
+<rect fill="#dff3ff" height="35" rx="9" stroke="#547d9e" stroke-width="2" width="38" x="4" y="8"></rect>
+<rect fill="#ffffff" height="14" rx="5" stroke="#8eb8d2" width="22" x="12" y="15"></rect>
+<circle cx="18" cy="22" fill="#547d9e" r="2.4"></circle>
+<circle cx="29" cy="22" fill="#547d9e" r="2.4"></circle>
+<path d="M18 34 Q23 38 28 34" fill="none" stroke="#547d9e" stroke-linecap="round" stroke-width="2"></path>
+<path d="M23 8 V2" stroke="#547d9e" stroke-width="2"></path>
+<circle cx="23" cy="1.5" fill="#f7a8c7" r="2.5"></circle>
+<path d="M4 24 H0 M42 24 H46" stroke="#547d9e" stroke-width="2"></path>
+</g>
+<path d="M47 66 Q60 57 72 66" fill="none" stroke="#8b75ce" stroke-linecap="round" stroke-width="3"></path>
+<rect fill="#f0ebff" height="14" rx="3" stroke="#8b75ce" width="31" x="45" y="64"></rect>
+<path d="M60.5 64 V78" stroke="#8b75ce"></path>
+</svg>
+</div>
+</div>
+
+<section class="section"><h2>🎯 Goal</h2><p class="lead">Connect containers through Docker networks, persist data correctly and define a complete local stack with Compose.</p></section>
+<section class="section"><h2>🛤️ Docker Networking</h2><p class="section-intro">Containers need predictable service discovery. Docker networks provide isolation and name-based communication.</p>
+<pre><button class="copy">Copy</button><code>docker network create backend-network\n\ndocker run -d \\\n  --name postgres \\\n  --network backend-network \\\n  -e POSTGRES_PASSWORD=secret \\\n  postgres:17\n\ndocker run -d \\\n  --name orders-api \\\n  --network backend-network \\\n  -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/orders \\\n  orders-api:1.0</code></pre>
+<div class="warn"><strong>Important:</strong> inside orders-api, localhost means the orders-api container itself. Use hostname <span class="kbd">postgres</span> to reach PostgreSQL.</div>
+<div class="grid"><div class="card"><h3>User-defined network</h3><p>Provides container-to-container communication and DNS resolution.</p></div><div class="card"><h3>Docker DNS</h3><p>Resolves container or Compose service names to current container IP addresses.</p></div><div class="card"><h3>Container IP</h3><p>Should not be hard-coded because containers are replaceable.</p></div><div class="card"><h3>Published port</h3><p>Required only when the host or external clients need access.</p></div></div></section>
+<section class="section"><h2>🪴 Volumes and Storage</h2><p class="section-intro">Containers are disposable, so important data must live outside the writable container layer.</p>
+<pre><button class="copy">Copy</button><code>docker volume create postgres-data\n\ndocker run -d \\\n  --name postgres \\\n  -v postgres-data:/var/lib/postgresql/data \\\n  postgres:17</code></pre>
+<div class="grid"><div class="card"><h3>Named volume</h3><p>Docker-managed persistent storage; suitable for database data.</p></div><div class="card"><h3>Bind mount</h3><p>Maps a known host path; useful for development files and configuration.</p></div><div class="card"><h3>Container layer</h3><p>Temporary writable storage that disappears when the container is removed.</p></div><div class="card"><h3>tmpfs</h3><p>In-memory temporary storage that is not persisted to disk.</p></div></div></section>
+<section class="section"><h2>🏡 Docker Compose</h2><p class="section-intro">Compose turns multiple container commands into one readable application definition.</p>
+<pre><button class="copy">Copy</button><code>services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: orders
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: appsecret
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d orders"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  orders-api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/orders
+      SPRING_DATASOURCE_USERNAME: appuser
+      SPRING_DATASOURCE_PASSWORD: appsecret
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-data:</code></pre>
+<pre><button class="copy">Copy</button><code>docker compose up -d\ndocker compose up -d --build\ndocker compose ps\ndocker compose logs -f\ndocker compose stop\ndocker compose down\ndocker compose down -v</code></pre>
+<div class="note"><strong>Readiness:</strong> depends_on controls startup coordination. Health checks improve readiness, but the Java application still needs retry and timeout logic.</div></section>
+<section class="section"><h2>🎤 Interview Questions</h2><p class="section-intro">These questions test whether you can explain the concept and apply it to a real Java service.</p><details class="qa"><summary>What is a Docker network?</summary><div class="answer">An isolated networking layer that lets containers communicate.</div></details><details class="qa"><summary>Why does localhost fail between containers?</summary><div class="answer">Each container has its own network namespace; localhost refers to the current container.</div></details><details class="qa"><summary>What is Docker DNS?</summary><div class="answer">Automatic name resolution for containers on the same user-defined network.</div></details><details class="qa"><summary>Volume vs bind mount?</summary><div class="answer">Volumes are Docker-managed; bind mounts map specific host paths.</div></details><details class="qa"><summary>Why is container storage temporary?</summary><div class="answer">The writable layer belongs to the container and is deleted when the container is removed.</div></details><details class="qa"><summary>What is Docker Compose?</summary><div class="answer">A declarative way to define and run multi-container applications.</div></details><details class="qa"><summary>Does depends_on guarantee readiness?</summary><div class="answer">Not by itself. Health conditions help initial startup, but runtime resilience is still needed.</div></details></section>
+</div></section>
+<section class="level" id="level5">
+<header class="level-head"><h2>📦 Level 5 - Production Java Containers</h2><p>Create smaller, safer and more efficient Java runtime images.</p></header>
+<div class="level-body">
+<div class="level-intro">
+<div>
+<h3>Create production-ready Java images</h3>
+<p>This level focuses on reducing image size, separating build and runtime concerns  and improving deployment speed through Spring Boot layers or Buildpacks.</p>
+<ul><li>Multi-stage Maven builds</li><li>JDK builder vs JRE runtime</li><li>Layered images and Buildpacks</li></ul>
+</div>
+<div class="mascot-box">
+<svg aria-label="Cute cat and robot learning together" role="img" viewbox="0 0 120 90">
+<ellipse cx="60" cy="80" fill="#dbeaf4" rx="48" ry="6"></ellipse>
+<g transform="translate(8 17)">
+<path d="M11 18 L18 7 L25 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<path d="M31 18 L38 7 L45 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<rect fill="#ffddea" height="34" rx="14" stroke="#8c6680" stroke-width="2" width="36" x="10" y="16"></rect>
+<circle cx="22" cy="31" fill="#465568" r="2.5"></circle>
+<circle cx="35" cy="31" fill="#465568" r="2.5"></circle>
+<path d="M26 38 Q29 41 32 38" fill="none" stroke="#8c6680" stroke-linecap="round" stroke-width="2"></path>
+<path d="M9 34 H2 M47 34 H54" stroke="#8c6680" stroke-linecap="round" stroke-width="1.5"></path>
+</g>
+<g transform="translate(66 19)">
+<rect fill="#dff3ff" height="35" rx="9" stroke="#547d9e" stroke-width="2" width="38" x="4" y="8"></rect>
+<rect fill="#ffffff" height="14" rx="5" stroke="#8eb8d2" width="22" x="12" y="15"></rect>
+<circle cx="18" cy="22" fill="#547d9e" r="2.4"></circle>
+<circle cx="29" cy="22" fill="#547d9e" r="2.4"></circle>
+<path d="M18 34 Q23 38 28 34" fill="none" stroke="#547d9e" stroke-linecap="round" stroke-width="2"></path>
+<path d="M23 8 V2" stroke="#547d9e" stroke-width="2"></path>
+<circle cx="23" cy="1.5" fill="#f7a8c7" r="2.5"></circle>
+<path d="M4 24 H0 M42 24 H46" stroke="#547d9e" stroke-width="2"></path>
+</g>
+<path d="M47 66 Q60 57 72 66" fill="none" stroke="#8b75ce" stroke-linecap="round" stroke-width="3"></path>
+<rect fill="#f0ebff" height="14" rx="3" stroke="#8b75ce" width="31" x="45" y="64"></rect>
+<path d="M60.5 64 V78" stroke="#8b75ce"></path>
+</svg>
+</div>
+</div>
+
+<section class="section"><h2>🎯 Goal</h2><p class="lead">Separate build tools from runtime, improve cache reuse and choose between Dockerfiles and Spring Boot Buildpacks.</p></section>
+<section class="section"><h2>🧱 Multi-Stage Maven Build</h2><p class="section-intro">The builder and runtime stages have different responsibilities. Separating them keeps production images smaller and safer.</p>
+<pre><button class="copy">Copy</button><code># syntax=docker/dockerfile:1
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /workspace
+
+COPY pom.xml .
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn -B dependency:go-offline
+
+COPY src ./src
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn -B clean package -DskipTests
+
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+
+RUN addgroup --system spring \
+    &amp;&amp; adduser --system --ingroup spring spring
+
+COPY --from=build /workspace/target/*.jar app.jar
+USER spring:spring
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]</code></pre>
+<div class="grid"><div class="card"><h3>Build tools excluded</h3><p>Maven and the JDK stay in the builder stage.</p></div><div class="card"><h3>Source excluded</h3><p>Only the packaged JAR is copied to runtime.</p></div><div class="card"><h3>Smaller runtime</h3><p>Fewer tools and files reduce pull size.</p></div><div class="card"><h3>Reduced attack surface</h3><p>The final image contains fewer exploitable components.</p></div></div></section>
+<section class="section"><h2>🧁 Spring Boot Layered Images</h2><p class="section-intro">Layering lets stable dependencies remain cached while business code changes more frequently.</p>
+<div class="flow"><div class="node">dependencies</div><div class="arrow">→</div><div class="node">spring-boot-loader</div><div class="arrow">→</div><div class="node">snapshot-dependencies</div><div class="arrow">→</div><div class="node">application</div></div>
+<p>Dependencies change less often than application classes. Separating them improves cache reuse and reduces registry transfer during deployments.</p></section>
+<section class="section"><h2>🎁 Spring Boot Buildpacks</h2><p class="section-intro">Buildpacks create production images without requiring a hand-written Dockerfile for common Spring Boot services.</p>
+<pre><button class="copy">Copy</button><code>./mvnw spring-boot:build-image \\\n  -Dspring-boot.build-image.imageName=orders-api:1.0\n\n./gradlew bootBuildImage \\\n  --imageName=orders-api:1.0</code></pre>
+<div class="table-wrap"><table><thead><tr><th>Dockerfile</th><th>Buildpacks</th></tr></thead><tbody>
+<tr><td>Full customization</td><td>Less manual configuration</td></tr>
+<tr><td>You maintain runtime setup</td><td>Secure and maintained defaults</td></tr>
+<tr><td>Useful for native packages</td><td>Good for standard Spring Boot services</td></tr>
+<tr><td>More maintenance</td><td>Automatic application layering</td></tr>
+</tbody></table></div></section>
+<section class="section"><h2>🎤 Interview Questions</h2><p class="section-intro">These questions test whether you can explain the concept and apply it to a real Java service.</p><details class="qa"><summary>Why use a multi-stage build?</summary><div class="answer">To keep build tools and source code out of the runtime image.</div></details><details class="qa"><summary>Why use a JRE instead of a JDK in the final image?</summary><div class="answer">The application is already compiled, so runtime tools are normally enough.</div></details><details class="qa"><summary>What are Spring Boot image layers?</summary><div class="answer">Separate groups for dependencies, loader, snapshot dependencies and application code.</div></details><details class="qa"><summary>Dockerfile vs Buildpacks?</summary><div class="answer">Dockerfiles provide control; Buildpacks provide standardization and lower maintenance.</div></details><details class="qa"><summary>How do layers affect build speed?</summary><div class="answer">Stable layers can be reused when later application code changes.</div></details><details class="qa"><summary>How would you reduce Java image size?</summary><div class="answer">Use multi-stage builds, a suitable runtime base, good .dockerignore rules and avoid copying build tools or source.</div></details></section>
+</div></section>
+<section class="level" id="level6">
+<header class="level-head"><h2>🧠 Level 6 - JVM and Container Resource Management</h2><p>Understand Java behaviour under memory and CPU limits.</p></header>
+<div class="level-body">
+<div class="level-intro">
+<div>
+<h3>Make the JVM fit inside container limits</h3>
+<p>Containers limit the whole Java process, not only heap. This level explains memory areas, CPU throttling, OOMKilled, Java OutOfMemoryError and correct signal handling.</p>
+<ul><li>Container-aware JVM behaviour</li><li>Heap vs native memory</li><li>PID 1 and graceful shutdown</li></ul>
+</div>
+<div class="mascot-box">
+<svg aria-label="Cute cat and robot learning together" role="img" viewbox="0 0 120 90">
+<ellipse cx="60" cy="80" fill="#dbeaf4" rx="48" ry="6"></ellipse>
+<g transform="translate(8 17)">
+<path d="M11 18 L18 7 L25 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<path d="M31 18 L38 7 L45 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<rect fill="#ffddea" height="34" rx="14" stroke="#8c6680" stroke-width="2" width="36" x="10" y="16"></rect>
+<circle cx="22" cy="31" fill="#465568" r="2.5"></circle>
+<circle cx="35" cy="31" fill="#465568" r="2.5"></circle>
+<path d="M26 38 Q29 41 32 38" fill="none" stroke="#8c6680" stroke-linecap="round" stroke-width="2"></path>
+<path d="M9 34 H2 M47 34 H54" stroke="#8c6680" stroke-linecap="round" stroke-width="1.5"></path>
+</g>
+<g transform="translate(66 19)">
+<rect fill="#dff3ff" height="35" rx="9" stroke="#547d9e" stroke-width="2" width="38" x="4" y="8"></rect>
+<rect fill="#ffffff" height="14" rx="5" stroke="#8eb8d2" width="22" x="12" y="15"></rect>
+<circle cx="18" cy="22" fill="#547d9e" r="2.4"></circle>
+<circle cx="29" cy="22" fill="#547d9e" r="2.4"></circle>
+<path d="M18 34 Q23 38 28 34" fill="none" stroke="#547d9e" stroke-linecap="round" stroke-width="2"></path>
+<path d="M23 8 V2" stroke="#547d9e" stroke-width="2"></path>
+<circle cx="23" cy="1.5" fill="#f7a8c7" r="2.5"></circle>
+<path d="M4 24 H0 M42 24 H46" stroke="#547d9e" stroke-width="2"></path>
+</g>
+<path d="M47 66 Q60 57 72 66" fill="none" stroke="#8b75ce" stroke-linecap="round" stroke-width="3"></path>
+<rect fill="#f0ebff" height="14" rx="3" stroke="#8b75ce" width="31" x="45" y="64"></rect>
+<path d="M60.5 64 V78" stroke="#8b75ce"></path>
+</svg>
+</div>
+</div>
+
+<section class="section"><h2>🎯 Goal</h2><p class="lead">Size the JVM safely inside containers and understand OOMKilled, native memory, CPU throttling and graceful shutdown.</p></section>
+<section class="section"><h2>🧠 Container-Aware JVM</h2><p class="section-intro">Modern JVMs understand container limits, but the whole process still needs careful memory planning.</p>
+<div class="grid"><div class="card"><h3>Heap memory</h3><p>Stores Java objects and is managed by the garbage collector.</p></div><div class="card"><h3>Metaspace</h3><p>Stores class metadata outside the Java heap.</p></div><div class="card"><h3>Thread stacks</h3><p>Each platform thread consumes native stack memory.</p></div><div class="card"><h3>Direct buffers</h3><p>Off-heap buffers used by NIO and networking libraries.</p></div><div class="card"><h3>Native memory</h3><p>Includes JVM internals, GC, libraries and operating-system allocations.</p></div><div class="card"><h3>CPU throttling</h3><p>Strict CPU limits can increase latency and affect GC behaviour.</p></div></div>
+<pre><button class="copy">Copy</button><code>docker run \\\n  --memory=768m \\\n  --cpus=1.5 \\\n  -e JAVA_TOOL_OPTIONS="\\\n-XX:MaxRAMPercentage=70 \\\n-XX:InitialRAMPercentage=25 \\\n-XX:+ExitOnOutOfMemoryError" \\\n  orders-api:1.0</code></pre>
+<div class="warn"><strong>Do not set Java heap equal to the complete container limit.</strong> Leave room for metaspace, stacks, direct memory, code cache and native libraries.</div></section>
+<section class="section"><h2>💥 OOMKilled vs Java OutOfMemoryError</h2><p class="section-intro">These failures look similar but happen at different layers and require different diagnosis.</p>
+<div class="grid"><div class="card"><h3>Java heap OOM</h3><p>The JVM cannot allocate more objects in the configured heap.</p></div><div class="card"><h3>OOMKilled</h3><p>The operating system kills the process because total container memory exceeds the limit.</p></div><div class="card"><h3>Why they differ</h3><p>A process can exceed total memory because of non-heap or native allocations even when heap still has space.</p></div><div class="card"><h3>Diagnosis</h3><p>Inspect container state, limits, heap settings, threads, direct memory and native usage.</p></div></div></section>
+<section class="section"><h2>🍃 PID 1 and Signals</h2><p class="section-intro">The process running as PID 1 controls how termination signals reach the Java application.</p>
+<pre><button class="copy">Copy</button><code>ENTRYPOINT ["java", "-jar", "app.jar"]\n\n# Avoid shell form\nENTRYPOINT java -jar app.jar</code></pre>
+<p>Exec form makes Java the main process so it receives termination signals directly. This supports Spring Boot graceful shutdown.</p></section>
+<section class="section"><h2>🎤 Interview Questions</h2><p class="section-intro">These questions test whether you can explain the concept and apply it to a real Java service.</p><details class="qa"><summary>Is the JVM container-aware?</summary><div class="answer">Modern JVMs detect container CPU and memory limits.</div></details><details class="qa"><summary>What is MaxRAMPercentage?</summary><div class="answer">The percentage of available container memory the JVM may use for maximum heap.</div></details><details class="qa"><summary>Why can a container be OOMKilled without a heap OOM?</summary><div class="answer">Total process memory includes many non-heap and native areas.</div></details><details class="qa"><summary>Why should heap be lower than container memory?</summary><div class="answer">The process needs memory for metaspace, stacks, buffers and native code.</div></details><details class="qa"><summary>Why is PID 1 important?</summary><div class="answer">The main process receives container lifecycle signals.</div></details><details class="qa"><summary>How does Docker affect graceful shutdown?</summary><div class="answer">Correct entrypoint and signal handling allow Spring Boot to shut down before forced termination.</div></details></section>
+</div></section>
+<section class="level" id="level7">
+<header class="level-head"><h2>🚀 Level 7 - BuildKit, Caching and Image Optimization</h2><p>Build images efficiently on developer machines and CI agents.</p></header>
+<div class="level-body">
+<div class="level-intro">
+<div>
+<h3>Make builds fast and predictable</h3>
+<p>This level explains how BuildKit decides whether work can be reused and how dependency cache, remote cache and layer ordering speed up both local and CI builds.</p>
+<ul><li>Cache invalidation</li><li>BuildKit cache mounts</li><li>Registry cache and layer inspection</li></ul>
+</div>
+<div class="mascot-box">
+<svg aria-label="Cute cat and robot learning together" role="img" viewbox="0 0 120 90">
+<ellipse cx="60" cy="80" fill="#dbeaf4" rx="48" ry="6"></ellipse>
+<g transform="translate(8 17)">
+<path d="M11 18 L18 7 L25 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<path d="M31 18 L38 7 L45 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<rect fill="#ffddea" height="34" rx="14" stroke="#8c6680" stroke-width="2" width="36" x="10" y="16"></rect>
+<circle cx="22" cy="31" fill="#465568" r="2.5"></circle>
+<circle cx="35" cy="31" fill="#465568" r="2.5"></circle>
+<path d="M26 38 Q29 41 32 38" fill="none" stroke="#8c6680" stroke-linecap="round" stroke-width="2"></path>
+<path d="M9 34 H2 M47 34 H54" stroke="#8c6680" stroke-linecap="round" stroke-width="1.5"></path>
+</g>
+<g transform="translate(66 19)">
+<rect fill="#dff3ff" height="35" rx="9" stroke="#547d9e" stroke-width="2" width="38" x="4" y="8"></rect>
+<rect fill="#ffffff" height="14" rx="5" stroke="#8eb8d2" width="22" x="12" y="15"></rect>
+<circle cx="18" cy="22" fill="#547d9e" r="2.4"></circle>
+<circle cx="29" cy="22" fill="#547d9e" r="2.4"></circle>
+<path d="M18 34 Q23 38 28 34" fill="none" stroke="#547d9e" stroke-linecap="round" stroke-width="2"></path>
+<path d="M23 8 V2" stroke="#547d9e" stroke-width="2"></path>
+<circle cx="23" cy="1.5" fill="#f7a8c7" r="2.5"></circle>
+<path d="M4 24 H0 M42 24 H46" stroke="#547d9e" stroke-width="2"></path>
+</g>
+<path d="M47 66 Q60 57 72 66" fill="none" stroke="#8b75ce" stroke-linecap="round" stroke-width="3"></path>
+<rect fill="#f0ebff" height="14" rx="3" stroke="#8b75ce" width="31" x="45" y="64"></rect>
+<path d="M60.5 64 V78" stroke="#8b75ce"></path>
+</svg>
+</div>
+</div>
+
+<section class="section"><h2>🎯 Goal</h2><p class="lead">Understand cache invalidation, BuildKit cache mounts, registry cache and image inspection.</p></section>
+<section class="section"><h2>🪜 Cache Optimization</h2><p class="section-intro">Dockerfile order determines how much work BuildKit can reuse.</p>
+<div class="warn"><strong>Bad order:</strong><pre><button class="copy">Copy</button><code>COPY . .\nRUN mvn package</code></pre></div>
+<div class="good"><strong>Better order:</strong><pre><button class="copy">Copy</button><code>COPY pom.xml .\nRUN mvn dependency:go-offline\n\nCOPY src ./src\nRUN mvn package</code></pre></div>
+<p>Dependency metadata changes less often than source code. Copying it first allows the dependency layer to remain reusable.</p></section>
+<section class="section"><h2>🧰 BuildKit Cache Mount</h2><p class="section-intro">Cache mounts speed up dependency-heavy Java builds without polluting the final image.</p>
+<pre><button class="copy">Copy</button><code>RUN --mount=type=cache,target=/root/.m2 \\\n    mvn -B clean package</code></pre>
+<p>The cache persists Maven downloads for future builds without copying them into the final image layer.</p></section>
+<section class="section"><h2>☁️ Registry Cache for CI</h2><p class="section-intro">Remote cache helps short-lived CI agents reuse work from earlier builds.</p>
+<pre><button class="copy">Copy</button><code>docker buildx build \\\n  --cache-from type=registry,ref=registry.example.com/orders-api:buildcache \\\n  --cache-to type=registry,ref=registry.example.com/orders-api:buildcache,mode=max \\\n  -t registry.example.com/orders-api:1.0 \\\n  --push .</code></pre>
+<p>This is useful for ephemeral CI agents that do not retain local cache after a build.</p></section>
+<section class="section"><h2>🔬 Image Inspection</h2><p class="section-intro">Inspection tools reveal where image size and build cache are being consumed.</p>
+<pre><button class="copy">Copy</button><code>docker history orders-api:1.0\ndocker image inspect orders-api:1.0\ndocker buildx du\ndocker system df</code></pre>
+<div class="grid"><div class="card"><h3>Multi-stage build</h3><p>Keep build tools outside the runtime image.</p></div><div class="card"><h3>Small context</h3><p>Use .dockerignore and avoid sending unnecessary files.</p></div><div class="card"><h3>Minimal packages</h3><p>Do not install tools that are not required at runtime.</p></div><div class="card"><h3>Separate layers</h3><p>Keep dependencies and application content in different layers.</p></div><div class="card"><h3>No build output</h3><p>Do not copy test reports, source or caches into runtime.</p></div><div class="card"><h3>Regular rebuilds</h3><p>Rebuild images to receive base-image security fixes.</p></div></div></section>
+<section class="section"><h2>🎤 Interview Questions</h2><p class="section-intro">These questions test whether you can explain the concept and apply it to a real Java service.</p><details class="qa"><summary>How does Docker layer caching work?</summary><div class="answer">BuildKit reuses a previous result when the instruction and its inputs remain unchanged.</div></details><details class="qa"><summary>What invalidates build cache?</summary><div class="answer">Changes to an instruction or any relevant file input.</div></details><details class="qa"><summary>Why copy pom.xml before src?</summary><div class="answer">It lets dependency resolution remain cached when only source code changes.</div></details><details class="qa"><summary>What are BuildKit cache mounts?</summary><div class="answer">Builder-managed persistent directories available to RUN instructions.</div></details><details class="qa"><summary>How do you cache on ephemeral CI agents?</summary><div class="answer">Export and import cache through a registry or another external backend.</div></details><details class="qa"><summary>How do you identify large layers?</summary><div class="answer">Use docker history and image inspection tools.</div></details></section>
+</div></section>
+<section class="level" id="level8">
+<header class="level-head"><h2>🛡️ Level 8 - Security Knowledge</h2><p>Run containers with minimum privileges and protect the software supply chain.</p></header>
+<div class="level-body">
+<div class="level-intro">
+<div>
+<h3>Reduce privileges and protect the supply chain</h3>
+<p>This level adds practical security habits for Java containers-from trusted base images and non-root users to secret handling, scanning, SBOMs and Docker socket protection.</p>
+<ul><li>Runtime hardening</li><li>Build-time secret safety</li><li>Tags, digests and software inventory</li></ul>
+</div>
+<div class="mascot-box">
+<svg aria-label="Cute cat and robot learning together" role="img" viewbox="0 0 120 90">
+<ellipse cx="60" cy="80" fill="#dbeaf4" rx="48" ry="6"></ellipse>
+<g transform="translate(8 17)">
+<path d="M11 18 L18 7 L25 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<path d="M31 18 L38 7 L45 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<rect fill="#ffddea" height="34" rx="14" stroke="#8c6680" stroke-width="2" width="36" x="10" y="16"></rect>
+<circle cx="22" cy="31" fill="#465568" r="2.5"></circle>
+<circle cx="35" cy="31" fill="#465568" r="2.5"></circle>
+<path d="M26 38 Q29 41 32 38" fill="none" stroke="#8c6680" stroke-linecap="round" stroke-width="2"></path>
+<path d="M9 34 H2 M47 34 H54" stroke="#8c6680" stroke-linecap="round" stroke-width="1.5"></path>
+</g>
+<g transform="translate(66 19)">
+<rect fill="#dff3ff" height="35" rx="9" stroke="#547d9e" stroke-width="2" width="38" x="4" y="8"></rect>
+<rect fill="#ffffff" height="14" rx="5" stroke="#8eb8d2" width="22" x="12" y="15"></rect>
+<circle cx="18" cy="22" fill="#547d9e" r="2.4"></circle>
+<circle cx="29" cy="22" fill="#547d9e" r="2.4"></circle>
+<path d="M18 34 Q23 38 28 34" fill="none" stroke="#547d9e" stroke-linecap="round" stroke-width="2"></path>
+<path d="M23 8 V2" stroke="#547d9e" stroke-width="2"></path>
+<circle cx="23" cy="1.5" fill="#f7a8c7" r="2.5"></circle>
+<path d="M4 24 H0 M42 24 H46" stroke="#547d9e" stroke-width="2"></path>
+</g>
+<path d="M47 66 Q60 57 72 66" fill="none" stroke="#8b75ce" stroke-linecap="round" stroke-width="3"></path>
+<rect fill="#f0ebff" height="14" rx="3" stroke="#8b75ce" width="31" x="45" y="64"></rect>
+<path d="M60.5 64 V78" stroke="#8b75ce"></path>
+</svg>
+</div>
+</div>
+
+<section class="section"><h2>🎯 Goal</h2><p class="lead">Secure Java images, credentials, runtime permissions and build pipelines.</p></section>
+<section class="section"><h2>🔐 Essential Security Practices</h2><p class="section-intro">Container security is layered: image choice, privileges, credentials, runtime flags and supply-chain evidence all matter.</p>
+<div class="grid"><div class="card"><h3>Trusted base images</h3><p>Use maintained images from trusted publishers.</p></div><div class="card"><h3>Non-root user</h3><p>Reduce privileges available to a compromised application.</p></div><div class="card"><h3>Immutable versions</h3><p>Avoid relying only on mutable latest tags.</p></div><div class="card"><h3>Image scanning</h3><p>Scan operating-system packages and Java dependencies.</p></div><div class="card"><h3>SBOM</h3><p>Generate a software inventory for traceability.</p></div><div class="card"><h3>Registry credentials</h3><p>Store them in CI credential management, not scripts.</p></div><div class="card"><h3>Read-only filesystem</h3><p>Make runtime files immutable where the application permits it.</p></div><div class="card"><h3>Capabilities</h3><p>Drop Linux capabilities that the application does not need.</p></div><div class="card"><h3>Docker socket</h3><p>Never expose it to untrusted builds or application containers.</p></div><div class="card"><h3>Regular rebuilds</h3><p>Rebuild to include updated base-image packages.</p></div></div></section>
+<section class="section"><h2>🧤 Runtime Hardening</h2><p class="section-intro">These flags restrict what a compromised application can change or access.</p>
+<pre><button class="copy">Copy</button><code>docker run \\\n  --read-only \\\n  --tmpfs /tmp \\\n  --cap-drop ALL \\\n  --security-opt no-new-privileges \\\n  orders-api:1.0</code></pre></section>
+<section class="section"><h2>🔑 Build Secrets</h2><p class="section-intro">Secrets required during a build should be temporary and must never become part of image history.</p>
+<div class="warn"><pre><button class="copy">Copy</button><code>ARG DB_PASSWORD\nENV DB_PASSWORD=$DB_PASSWORD</code></pre><strong>Do not use ARG or ENV to bake credentials into images.</strong></div>
+<div class="good"><pre><button class="copy">Copy</button><code>RUN --mount=type=secret,id=maven_settings \\\n    mvn -s /run/secrets/maven_settings package</code></pre>Use a temporary BuildKit secret mount instead.</div></section>
+<section class="section"><h2>⚠️ Docker Socket Risk</h2><p class="section-intro">The Docker socket is effectively a privileged control interface to the host.</p><p><span class="kbd">/var/run/docker.sock</span> provides powerful daemon access. A user with socket access may start privileged containers or mount host paths, effectively controlling the host.</p></section>
+<section class="section"><h2>🎤 Interview Questions</h2><p class="section-intro">These questions test whether you can explain the concept and apply it to a real Java service.</p><details class="qa"><summary>Why should containers not run as root?</summary><div class="answer">It limits the impact of application compromise.</div></details><details class="qa"><summary>Why are build arguments unsafe for secrets?</summary><div class="answer">Values may appear in history, metadata, logs or cache.</div></details><details class="qa"><summary>Why is Docker socket access dangerous?</summary><div class="answer">It can provide effective control over the Docker host.</div></details><details class="qa"><summary>Tag vs digest?</summary><div class="answer">A tag is readable and mutable; a digest identifies immutable content.</div></details><details class="qa"><summary>What is an SBOM?</summary><div class="answer">A machine-readable inventory of shipped software components.</div></details><details class="qa"><summary>How do you secure a Java runtime image?</summary><div class="answer">Use trusted bases, non-root users, minimal packages, scanning, external secrets and runtime hardening.</div></details><details class="qa"><summary>How do you scan images in CI?</summary><div class="answer">Run vulnerability and policy checks before pushing or promoting the image.</div></details></section>
+</div></section>
+<section class="level" id="level9">
+<header class="level-head"><h2>🔁 Level 9 - CI/CD Integration</h2><p>Build, scan, push and deploy immutable Java images.</p></header>
+<div class="level-body">
+<div class="level-intro">
+<div>
+<h3>Deliver one immutable image safely</h3>
+<p>This level shows how Docker fits into CI/CD. The same image that passes tests and scans should be promoted through every environment without being rebuilt.</p>
+<ul><li>Immutable tagging</li><li>Build once and promote</li><li>Pipeline security and rollback</li></ul>
+</div>
+<div class="mascot-box">
+<svg aria-label="Cute cat and robot learning together" role="img" viewbox="0 0 120 90">
+<ellipse cx="60" cy="80" fill="#dbeaf4" rx="48" ry="6"></ellipse>
+<g transform="translate(8 17)">
+<path d="M11 18 L18 7 L25 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<path d="M31 18 L38 7 L45 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<rect fill="#ffddea" height="34" rx="14" stroke="#8c6680" stroke-width="2" width="36" x="10" y="16"></rect>
+<circle cx="22" cy="31" fill="#465568" r="2.5"></circle>
+<circle cx="35" cy="31" fill="#465568" r="2.5"></circle>
+<path d="M26 38 Q29 41 32 38" fill="none" stroke="#8c6680" stroke-linecap="round" stroke-width="2"></path>
+<path d="M9 34 H2 M47 34 H54" stroke="#8c6680" stroke-linecap="round" stroke-width="1.5"></path>
+</g>
+<g transform="translate(66 19)">
+<rect fill="#dff3ff" height="35" rx="9" stroke="#547d9e" stroke-width="2" width="38" x="4" y="8"></rect>
+<rect fill="#ffffff" height="14" rx="5" stroke="#8eb8d2" width="22" x="12" y="15"></rect>
+<circle cx="18" cy="22" fill="#547d9e" r="2.4"></circle>
+<circle cx="29" cy="22" fill="#547d9e" r="2.4"></circle>
+<path d="M18 34 Q23 38 28 34" fill="none" stroke="#547d9e" stroke-linecap="round" stroke-width="2"></path>
+<path d="M23 8 V2" stroke="#547d9e" stroke-width="2"></path>
+<circle cx="23" cy="1.5" fill="#f7a8c7" r="2.5"></circle>
+<path d="M4 24 H0 M42 24 H46" stroke="#547d9e" stroke-width="2"></path>
+</g>
+<path d="M47 66 Q60 57 72 66" fill="none" stroke="#8b75ce" stroke-linecap="round" stroke-width="3"></path>
+<rect fill="#f0ebff" height="14" rx="3" stroke="#8b75ce" width="31" x="45" y="64"></rect>
+<path d="M60.5 64 V78" stroke="#8b75ce"></path>
+</svg>
+</div>
+</div>
+
+<section class="section"><h2>🎯 Goal</h2><p class="lead">Create a traceable pipeline where the exact tested image is promoted through all environments.</p></section>
+<section class="section"><h2>🛤️ Recommended Pipeline</h2><p class="section-intro">A good pipeline moves from source to a verified, traceable image in clear stages.</p>
+<div class="flow"><div class="node">Checkout</div><div class="arrow">→</div><div class="node">Compile</div><div class="arrow">→</div><div class="node">Tests</div><div class="arrow">→</div><div class="node">Package</div><div class="arrow">→</div><div class="node">Build Image</div><div class="arrow">→</div><div class="node">Scan</div><div class="arrow">→</div><div class="node">Push + Deploy</div></div></section>
+<section class="section"><h2>🏷️ Image Tagging</h2><p class="section-intro">Image names should uniquely connect deployed content to a release, build or commit.</p>
+<pre><button class="copy">Copy</button><code>orders-api:1.6.2\norders-api:build-452\norders-api:a82c4e1\norders-api:452-a82c4e1</code></pre>
+<div class="warn">Avoid relying only on <span class="kbd">orders-api:latest</span> because it does not uniquely identify a build.</div></section>
+<section class="section"><h2>📦 Build Once, Promote</h2><p class="section-intro">Reusing the same digest removes uncertainty between QA and production.</p>
+<div class="flow"><div class="node">Development</div><div class="arrow">→</div><div class="node">QA</div><div class="arrow">→</div><div class="node">Staging</div><div class="arrow">→</div><div class="node">Production</div></div>
+<p>Every environment should use the same tested image digest. Configuration differences should be external.</p></section>
+<section class="section"><h2>⚙️ Jenkins Example</h2><p class="section-intro">This example shows the basic image build and push flow inside a Jenkins pipeline.</p>
+<pre><button class="copy">Copy</button><code>environment {
+    IMAGE = "registry.example.com/orders-api:${BUILD_NUMBER}-${GIT_COMMIT_SHORT}"
+}
+
+stage('Build Image') {
+    steps {
+        sh 'docker build -t $IMAGE .'
+    }
+}
+
+stage('Push Image') {
+    steps {
+        sh 'docker push $IMAGE'
+    }
+}</code></pre></section>
+<section class="section"><h2>🎤 Interview Questions</h2><p class="section-intro">These questions test whether you can explain the concept and apply it to a real Java service.</p><details class="qa"><summary>How do you version images in CI/CD?</summary><div class="answer">Use release versions, build numbers, commit SHAs or a combination.</div></details><details class="qa"><summary>Why build once and promote?</summary><div class="answer">It guarantees the same tested content reaches every environment.</div></details><details class="qa"><summary>Why should configuration not be baked into images?</summary><div class="answer">Environment-specific values should not require rebuilding application content.</div></details><details class="qa"><summary>How do you prevent pipelines overwriting tags?</summary><div class="answer">Use immutable unique tags and concurrency controls.</div></details><details class="qa"><summary>How do you roll back a Dockerized service?</summary><div class="answer">Redeploy a known previous immutable tag or digest, considering database compatibility.</div></details><details class="qa"><summary>What should happen before pushing an image?</summary><div class="answer">Compile, test, build reproducibly, scan and attach traceable metadata.</div></details></section>
+</div></section>
+<section class="level" id="level10">
+<header class="level-head"><h2>🧪 Level 10 - Testing with Docker</h2><p>Use real dependencies in Java integration tests.</p></header>
+<div class="level-body">
+<div class="level-intro">
+<div>
+<h3>Test with real infrastructure</h3>
+<p>This level explains when mocks are not enough and how Testcontainers gives Java tests realistic PostgreSQL, Kafka, Redis and other dependencies.</p>
+<ul><li>Testcontainers lifecycle</li><li>Dynamic Spring properties</li><li>CI and parallel-test considerations</li></ul>
+</div>
+<div class="mascot-box">
+<svg aria-label="Cute cat and robot learning together" role="img" viewbox="0 0 120 90">
+<ellipse cx="60" cy="80" fill="#dbeaf4" rx="48" ry="6"></ellipse>
+<g transform="translate(8 17)">
+<path d="M11 18 L18 7 L25 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<path d="M31 18 L38 7 L45 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<rect fill="#ffddea" height="34" rx="14" stroke="#8c6680" stroke-width="2" width="36" x="10" y="16"></rect>
+<circle cx="22" cy="31" fill="#465568" r="2.5"></circle>
+<circle cx="35" cy="31" fill="#465568" r="2.5"></circle>
+<path d="M26 38 Q29 41 32 38" fill="none" stroke="#8c6680" stroke-linecap="round" stroke-width="2"></path>
+<path d="M9 34 H2 M47 34 H54" stroke="#8c6680" stroke-linecap="round" stroke-width="1.5"></path>
+</g>
+<g transform="translate(66 19)">
+<rect fill="#dff3ff" height="35" rx="9" stroke="#547d9e" stroke-width="2" width="38" x="4" y="8"></rect>
+<rect fill="#ffffff" height="14" rx="5" stroke="#8eb8d2" width="22" x="12" y="15"></rect>
+<circle cx="18" cy="22" fill="#547d9e" r="2.4"></circle>
+<circle cx="29" cy="22" fill="#547d9e" r="2.4"></circle>
+<path d="M18 34 Q23 38 28 34" fill="none" stroke="#547d9e" stroke-linecap="round" stroke-width="2"></path>
+<path d="M23 8 V2" stroke="#547d9e" stroke-width="2"></path>
+<circle cx="23" cy="1.5" fill="#f7a8c7" r="2.5"></circle>
+<path d="M4 24 H0 M42 24 H46" stroke="#547d9e" stroke-width="2"></path>
+</g>
+<path d="M47 66 Q60 57 72 66" fill="none" stroke="#8b75ce" stroke-linecap="round" stroke-width="3"></path>
+<rect fill="#f0ebff" height="14" rx="3" stroke="#8b75ce" width="31" x="45" y="64"></rect>
+<path d="M60.5 64 V78" stroke="#8b75ce"></path>
+</svg>
+</div>
+</div>
+
+<section class="section"><h2>🎯 Goal</h2><p class="lead">Use Testcontainers to validate repositories, messaging and infrastructure integration against real services.</p></section>
+<section class="section"><h2>🧪 Testcontainers Example</h2><p class="section-intro">The test starts a real dependency and supplies its generated connection values to Spring Boot.</p>
+<pre><button class="copy">Copy</button><code>@Testcontainers
+class OrderRepositoryIT {
+
+    @Container
+    static PostgreSQLContainer&lt;?&gt; postgres =
+        new PostgreSQLContainer&lt;&gt;("postgres:17")
+            .withDatabaseName("orders")
+            .withUsername("test")
+            .withPassword("test");
+
+    @DynamicPropertySource
+    static void configure(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
+}</code></pre></section>
+<section class="section"><h2>🧰 Useful Services</h2><p class="section-intro">Testcontainers supports many infrastructure components commonly used by Java microservices.</p>
+<div class="grid"><div class="card"><h3>Relational databases</h3><p>PostgreSQL and MySQL.</p></div><div class="card"><h3>Document and cache stores</h3><p>MongoDB and Redis.</p></div><div class="card"><h3>Messaging</h3><p>Kafka and RabbitMQ.</p></div><div class="card"><h3>Cloud emulation</h3><p>LocalStack.</p></div><div class="card"><h3>Search</h3><p>Elasticsearch.</p></div><div class="card"><h3>HTTP testing</h3><p>WireMock.</p></div></div></section>
+<section class="section"><h2>🧭 What to Understand</h2><p class="section-intro">These details determine whether Testcontainers remains reliable and fast in larger test suites.</p>
+<div class="grid"><div class="card"><h3>Lifecycle</h3><p>When containers start and stop during the test suite.</p></div><div class="card"><h3>Reusable containers</h3><p>Potential performance benefit with isolation trade-offs.</p></div><div class="card"><h3>Dynamic properties</h3><p>How Spring receives generated ports and credentials.</p></div><div class="card"><h3>CI availability</h3><p>The agent needs a supported container runtime.</p></div><div class="card"><h3>Parallel isolation</h3><p>Tests must not share unsafe mutable data.</p></div><div class="card"><h3>Startup time</h3><p>Heavy services increase test duration.</p></div><div class="card"><h3>Test initialization</h3><p>Create schema and test data predictably.</p></div></div></section>
+<section class="section"><h2>🎤 Interview Questions</h2><p class="section-intro">These questions test whether you can explain the concept and apply it to a real Java service.</p><details class="qa"><summary>Why use Testcontainers instead of mocks?</summary><div class="answer">It validates real database, broker and protocol behaviour.</div></details><details class="qa"><summary>Testcontainers vs embedded database?</summary><div class="answer">Testcontainers uses the actual database engine and avoids compatibility gaps.</div></details><details class="qa"><summary>How does Spring Boot receive dynamic properties?</summary><div class="answer">Through DynamicPropertySource or supported service-connection integration.</div></details><details class="qa"><summary>Can Testcontainers run in CI?</summary><div class="answer">Yes, when the CI agent has a supported container runtime and resources.</div></details><details class="qa"><summary>What are the disadvantages?</summary><div class="answer">Longer startup, resource usage, runtime dependency and more complex parallel isolation.</div></details></section>
+</div></section>
+<section class="level" id="level11">
+<header class="level-head"><h2>🔍 Level 11 - Production Troubleshooting</h2><p>Diagnose application, image, network and runtime failures systematically.</p></header>
+<div class="level-body">
+<div class="level-intro">
+<div>
+<h3>Troubleshoot methodically</h3>
+<p>This level teaches a repeatable production debugging sequence. Instead of changing random settings, you will inspect state, logs, network, resources, permissions and health evidence.</p>
+<ul><li>Exit codes and logs</li><li>Network and memory diagnosis</li><li>Image, volume and permission problems</li></ul>
+</div>
+<div class="mascot-box">
+<svg aria-label="Cute cat and robot learning together" role="img" viewbox="0 0 120 90">
+<ellipse cx="60" cy="80" fill="#dbeaf4" rx="48" ry="6"></ellipse>
+<g transform="translate(8 17)">
+<path d="M11 18 L18 7 L25 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<path d="M31 18 L38 7 L45 18" fill="#f7bfd4" stroke="#8c6680" stroke-width="2"></path>
+<rect fill="#ffddea" height="34" rx="14" stroke="#8c6680" stroke-width="2" width="36" x="10" y="16"></rect>
+<circle cx="22" cy="31" fill="#465568" r="2.5"></circle>
+<circle cx="35" cy="31" fill="#465568" r="2.5"></circle>
+<path d="M26 38 Q29 41 32 38" fill="none" stroke="#8c6680" stroke-linecap="round" stroke-width="2"></path>
+<path d="M9 34 H2 M47 34 H54" stroke="#8c6680" stroke-linecap="round" stroke-width="1.5"></path>
+</g>
+<g transform="translate(66 19)">
+<rect fill="#dff3ff" height="35" rx="9" stroke="#547d9e" stroke-width="2" width="38" x="4" y="8"></rect>
+<rect fill="#ffffff" height="14" rx="5" stroke="#8eb8d2" width="22" x="12" y="15"></rect>
+<circle cx="18" cy="22" fill="#547d9e" r="2.4"></circle>
+<circle cx="29" cy="22" fill="#547d9e" r="2.4"></circle>
+<path d="M18 34 Q23 38 28 34" fill="none" stroke="#547d9e" stroke-linecap="round" stroke-width="2"></path>
+<path d="M23 8 V2" stroke="#547d9e" stroke-width="2"></path>
+<circle cx="23" cy="1.5" fill="#f7a8c7" r="2.5"></circle>
+<path d="M4 24 H0 M42 24 H46" stroke="#547d9e" stroke-width="2"></path>
+</g>
+<path d="M47 66 Q60 57 72 66" fill="none" stroke="#8b75ce" stroke-linecap="round" stroke-width="3"></path>
+<rect fill="#f0ebff" height="14" rx="3" stroke="#8b75ce" width="31" x="45" y="64"></rect>
+<path d="M60.5 64 V78" stroke="#8b75ce"></path>
+</svg>
+</div>
+</div>
+
+<section class="section"><h2>🎯 Goal</h2><p class="lead">Gather evidence in a consistent order before changing configuration.</p></section>
+<section class="section"><h2>🧭 Debugging Sequence</h2><p class="section-intro">Follow the same evidence-first order during incidents to avoid random changes.</p>
+<div class="flow"><div class="node">Container State</div><div class="arrow">→</div><div class="node">Exit Code</div><div class="arrow">→</div><div class="node">Logs</div><div class="arrow">→</div><div class="node">Environment</div><div class="arrow">→</div><div class="node">Network</div><div class="arrow">→</div><div class="node">CPU / Memory</div><div class="arrow">→</div><div class="node">Permissions</div><div class="arrow">→</div><div class="node">Health</div></div></section>
+<section class="section"><h2>🛠️ Commands</h2><p class="section-intro">These commands provide the first layer of evidence during container troubleshooting.</p>
+<pre><button class="copy">Copy</button><code>docker ps -a\n\ndocker logs --tail 200 orders-api\ndocker logs -f orders-api\n\ndocker inspect orders-api\n\ndocker inspect \\\n  --format='{{.State.ExitCode}} {{.State.OOMKilled}}' \\\n  orders-api\n\ndocker stats orders-api\ndocker top orders-api\ndocker exec -it orders-api sh\ndocker network inspect backend-network\ndocker volume inspect postgres-data</code></pre></section>
+<section class="section"><h2>🚨 Common Problems</h2><p class="section-intro">Use the symptom to choose the next inspection step rather than guessing.</p>
+<div class="table-wrap"><table><thead><tr><th>Problem</th><th>What to check</th></tr></thead><tbody>
+<tr><td>Container exits immediately</td><td>Entrypoint, missing configuration, JAR path, exit code and logs.</td></tr>
+<tr><td>Application cannot reach database</td><td>Hostname, shared network, port, readiness and credentials.</td></tr>
+<tr><td>OOMKilled</td><td>Container limit and total JVM/native memory usage.</td></tr>
+<tr><td>Image is very large</td><td>Layer history, caches, source files and multi-stage design.</td></tr>
+<tr><td>Permission denied</td><td>Runtime user, ownership and mounted filesystem permissions.</td></tr>
+<tr><td>Health check fails</td><td>Endpoint, internal port, command availability and startup duration.</td></tr>
+<tr><td>Works locally but not in CI</td><td>Architecture, cache, credentials, context and runtime availability.</td></tr>
+<tr><td>Works on AMD but not ARM</td><td>Native dependencies, image platform and manifest.</td></tr>
+<tr><td>Data disappears</td><td>Data was stored in the temporary container layer instead of a persistent volume.</td></tr>
+</tbody></table></div></section>
+<section class="section"><h2>🎤 Interview Scenarios</h2><p class="section-intro">Scenario questions evaluate your troubleshooting process and production judgement.</p><details class="qa"><summary>A Spring Boot container exits immediately. What do you do?</summary><div class="answer">Check state, exit code, logs, entrypoint, JAR path and required environment variables.</div></details><details class="qa"><summary>The application cannot connect to PostgreSQL. What do you inspect?</summary><div class="answer">Service hostname, shared network, internal port, database readiness and credentials.</div></details><details class="qa"><summary>How do you diagnose OOMKilled?</summary><div class="answer">Inspect the container limit, JVM heap settings, native memory, direct buffers and thread count.</div></details><details class="qa"><summary>How do you investigate a large image?</summary><div class="answer">Use docker history and inspect which files entered each stage.</div></details><details class="qa"><summary>Why did database data disappear?</summary><div class="answer">It was probably stored in the disposable container layer instead of a named volume.</div></details></section>
+</div></section>
+<footer class="footer">
+<div class="duo-row"><span class="duo">🐳</span><span class="duo">🦋</span></div>
+
+<span class="brand">© Dynamic Duo Learners</span>
+</footer>
+</main>
+<script>
+document.querySelectorAll('.copy').forEach(button=>{
+  button.addEventListener('click',async()=>{
+    const text=button.parentElement.querySelector('code').innerText;
+    try{
+      await navigator.clipboard.writeText(text);
+      button.textContent='Copied ✓';
+      setTimeout(()=>button.textContent='Copy',1200);
+    }catch(e){
+      button.textContent='Select & copy';
+    }
+  });
+});
+</script>
+</body>
+</html>
