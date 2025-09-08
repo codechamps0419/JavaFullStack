@@ -1,0 +1,32 @@
+Spring Tool Suite -
+https://cdn.spring.io/spring-tools/release/STS4/4.31.0.RELEASE/dist/e4.36/spring-tools-for-eclipse-4.31.0.RELEASE-e4.36.0-win32.win32.x86_64.zip
+
+Gradle 9 -
+https://gradle.org/next-steps/?version=9.0.0&format=bin
+	or
+https://services.gradle.org/distributions/gradle-9.0.0-bin.zip
+
+Java 17 -
+https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
+
+Postman -
+https://dl.pstmn.io/download/latest/win64
+
+GitHub Project SRC SSH/HTTP URL-
+https://github.com/codechamps0419/ProductManagementRSApp.git
+
+Docker & Kubernetes Setup Guide -
+https://www.youtube.com/watch?v=o7nTRD0CWAA
+
+Docker -
+https://docs.docker.com/desktop/setup/install/windows-install/
+
+Kubernetes -
+https://kubernetes.io/releases/download/
+https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/
+
+Swagger Editor (online testing)-
+https://editor.swagger.io/
+
+
+
