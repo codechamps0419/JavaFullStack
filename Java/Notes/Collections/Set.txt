@@ -1,0 +1,390 @@
+/* @Author: Dynamic Duo Learners */
+Refer. Set.png
+
+Set
+====
+Set is an interface in Java Collection Framework used to store unique elements.
+
+Main Features:
+- Does NOT allow duplicate elements
+- No index-based access (FYI - get(index) will not be supported)
+- Mainly used for uniqueness
+- Allows at most one null depending on implementation
+
+Example:
+Set<String> set = new HashSet<>();
+set.add("Java");
+set.add("Java"); // duplicate ignored
+set.add("SQL");
+
+set.
+
+~ Set Hierarchy
+----------------
+
+Collection
+   |
+   +-- Set
+         |
+         +-- HashSet
+         +-- LinkedHashSet
+         +-- SortedSet
+               |
+               +-- NavigableSet
+                     |
+                     +-- TreeSet
+
+
+~ Common Set Methods
+--------------------
+
+add(element):
+Adds unique element.
+
+remove(element):
+Removes element.
+
+contains(element):
+Checks if element exists.
+
+size():
+Returns total elements.
+
+isEmpty():
+Checks empty set.
+
+clear():
+Removes all elements.
+
+iterator():
+Used to iterate Set.
+
+
+
+* HashSet
+----------
+HashSet is the most commonly used Set implementation.
+HashSet is used for fast unique element storage and internally
+uses HashMap for high-performance operations.
+
+Important Features:
+- Stores unique elements
+- Does NOT maintain insertion order
+- Allows one null value
+- Not thread-safe
+- Internally uses HashMap
+
+Example:
+Set<String> set = new HashSet<>();
+set.add("Java");
+set.add("Spring");
+
+
+Internal Working:
+HashSet internally uses HashMap.
+
+When you add:
+set.add("Java");
+
+Internally:
+map.put("Java", PRESENT);
+
+PRESENT is a dummy object.
+
+Advantages
+------------
+- Fast insertion
+- Fast search
+- Fast remove operations
+
+Performance
+------------
+add()       -> O(1) average
+contains()  -> O(1) average
+remove()    -> O(1) average
+
+Disadvantages
+----------------
+- No insertion order
+- Not thread-safe
+
+Where Used?
+----------------
+- Remove duplicates
+- Unique emails
+- Unique product IDs
+- Membership checking
+
+How HashSet Removes Duplicates?
+----------------------------------
+HashSet uses:
+- hashCode()
+- equals()
+
+Flow:
+1. hashCode() decides bucket
+2. equals() checks equality
+
+If both match:
+Duplicate ignored.
+
+For custom objects, we always need to override below methods:
+- equals()
+- hashCode()
+
+Example:
+
+class Employee {
+    private int id;
+    private String name;
+
+    // override equals and hashCode
+}
+
+
+* LinkedHashSet
+-----------------
+LinkedHashSet maintains insertion order.
+It's preferred when uniqueness and insertion
+order both are required.
+
+Important Features:
+- Unique elements
+- Maintains insertion order
+- Allows one null
+- Slightly slower than HashSet
+- Internally uses LinkedHashMap
+
+Example:
+Set<String> set = new LinkedHashSet<>();
+set.add("Java");
+set.add("Spring");
+
+Advantages
+------------
+- Preserves insertion order
+- Removes duplicates
+
+Disadvantages
+-------------
+- Slightly slower than HashSet
+
+Where Used?
+-------------
+- Ordered unique values
+- Tags/categories
+- Preserve input order
+
+
+* TreeSet
+---------------
+TreeSet stores unique elements in sorted order using
+Red-Black Tree internally.
+
+Important Features:
+- Unique elements
+- Sorted order
+- Does NOT allow null in modern Java
+- Internally uses TreeMap
+- Based on Red-Black Tree
+
+Example:
+Set<Integer> set = new TreeSet<>();
+set.add(30);
+set.add(10);
+set.add(20);
+
+Output:
+10, 20, 30
+
+Performance
+-------------
+add()       -> O(log n)
+contains()  -> O(log n)
+remove()    -> O(log n)
+
+Advantages
+-------------
+- Automatic sorting
+- Sorted unique data
+
+Disadvantages
+-------------
+- Slower than HashSet
+- No null support
+
+
+Where Used?
+-------------
+- Ranking systems
+- Sorted reports
+- Range-based operations
+
+
+~ Comparable vs Comparator in TreeSet
+--------------------------------------
+
+> Comparable:
+Natural sorting.
+
+Example:
+class Employee implements Comparable<Employee>
+
+> Comparator:
+Custom sorting.
+
+Example:
+Set<Employee> set =
+new TreeSet<>(Comparator.comparing(Employee::getName));
+
+
+~ Important Point
+-------------------
+Custom objects in TreeSet require:
+- Comparable
+OR
+- Comparator
+
+
+_____________________________________________________________________________________________________________
+
+* HashSet vs LinkedHashSet vs TreeSet
+=====================================
+
+HashSet
+----------------
+- No order
+- Fastest
+- Uses HashMap
+- O(1) average
+
+LinkedHashSet
+----------------
+- Maintains insertion order
+- Uses LinkedHashMap
+- O(1) average
+
+TreeSet
+----------------
+- Sorted order
+- Uses TreeMap
+- O(log n)
+
+Use HashSet for fastest uniqueness,
+LinkedHashSet for insertion order,
+TreeSet for sorted unique elements.
+
+
+_____________________________________________________________________________________________________________
+
+
+~ Thread-Safe Set Options
+---------------------------
+
+> Collections.synchronizedSet():
+Creates synchronized wrapper
+
+Example:
+Set<String> set =
+Collections.synchronizedSet(new HashSet<>());
+
+> ConcurrentHashMap.newKeySet():
+Modern concurrent Set
+
+Example:
+Set<String> set =
+ConcurrentHashMap.newKeySet();
+
+
+
+~ Fail-Fast Behavior
+-----------------------
+HashSet iterator is fail-fast.
+
+Wrong:
+for(String s : set) {
+    set.remove(s);
+}
+
+May throw:
+ConcurrentModificationException
+
+Correct:
+Iterator<String> itr = set.iterator();
+
+while(itr.hasNext()) {
+    itr.next();
+    itr.remove();
+}
+
+_____________________________________________________________________________________________________________
+
+* Real Backend Use Cases
+=============================
+
+HashSet:
+- Duplicate removal
+- Unique IDs
+- Fast lookup
+- Membership checking
+
+LinkedHashSet:
+- Ordered unique values
+- Preserve API input order
+
+TreeSet:
+- Leaderboards
+- Sorted rankings
+- Sorted unique reports
+
+_____________________________________________________________________________________________________________
+
+
+* Important Interview Questions
+===================================
+
+Q1. Does Set allow duplicates?
+Answer:
+No.
+
+Q2. How HashSet works internally?
+Answer:
+HashSet internally uses HashMap.
+
+Q3. How HashSet removes duplicates?
+Answer:
+Using hashCode() and equals().
+
+Q4. Difference between HashSet and TreeSet?
+Answer:
+HashSet is unordered and faster.
+TreeSet is sorted and slower.
+
+Q5. Does HashSet allow null?
+Answer:
+Yes, one null.
+
+Q6. Does TreeSet allow null?
+Answer:
+No.
+
+Q7. Why override hashCode() and equals()?
+Answer:
+To properly detect duplicates for custom objects.
+
+_____________________________________________________________________________________________________________
+
+
+* Must Know Quick Points
+================================
+- Set stores unique elements.
+- HashSet internally uses HashMap.
+- LinkedHashSet maintains insertion order.
+- TreeSet maintains sorted order.
+- TreeSet uses Red-Black Tree internally.
+- TreeSet requires Comparable/Comparator for custom objects.
+- HashSet uses hashCode() and equals().
+- HashSet is fastest for uniqueness checks.
+- ConcurrentHashMap.newKeySet() preferred for concurrent Set.
+
+_____________________________________________________________________________________________________________

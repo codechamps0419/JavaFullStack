@@ -1,0 +1,106 @@
+/* 
+@Author: Dynamic Duo Learners
+Topic: Java program to demonstrates the structure and sections of a Java class.
+It includes package declaration, imports, class definition, fields, constructors, SIB, NSIB, methods and the main method.
+*/
+
+
+// 1. Package declaration (optional, but must be first if present)
+package demo;
+
+// 2. Import statements (optional, used to include other classes/libraries)
+import java.util.Scanner;
+
+/**
+ * 3. Class declaration
+ * This is the main class of the program.
+ */
+public class SampleJavaStructure {
+
+    // 4. Fields (variables that belong to the class)
+    private String name;
+    private int age;
+    static int classNo;
+
+    // 5. Non Static Initializer Block (generally used to initialize non static members of class)
+    {
+	name = "ABC";
+	age = 0;
+	//SampleJavaStructure.class = 10; //allowed
+    }
+
+    // 6. Static Initializer Block (generally used to initialize static members of class)
+    static
+    {
+	SampleJavaStructure.classNo = 10;
+	//To initialize non-static data members of class - we need to create object first 
+	//and using that object will need to assign the values
+    }
+
+
+    // 7. Constructor (used to initialize objects)
+    public SampleJavaStructure(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    // 8. Method (performs an action)
+    public void displayInfo() {
+        System.out.println("Name: " + name);
+        System.out.println("Age: " + age);
+    }
+
+    // 9. Main method (entry point of the program)
+    public static void main(String[] args) {
+        // Create Scanner object for input
+        Scanner scanner = new Scanner(System.in);
+
+        // Input from user
+        System.out.print("Enter your name: ");
+        String userName = scanner.nextLine();
+
+        System.out.print("Enter your age: ");
+        int userAge;
+        try {
+            userAge = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid age entered. Setting age to 0.");
+            userAge = 0;
+        }
+
+        // Create object of SampleJavaStructure
+        SampleJavaStructure person = new SampleJavaStructure(userName, userAge);
+
+        // Call method to display info
+        person.displayInfo();
+
+        // Close scanner
+        scanner.close();
+
+	int i;//local variable (must be initialized first - before use)
+
+  	for(i =0; i < 10; i++)
+  	{
+   		if(i % 2 == 0)
+    			System.out.println("Hello Java");
+   		else
+    			System.err.println("Hello Student");
+  	}
+
+    }
+}
+
+
+/*
+Sections:
+
+Package Declaration – Groups related classes together.
+Import Statements – Bring in external classes/libraries.
+Class Declaration – Blueprint for objects.
+Fields – Variables that store object data.
+SIB and NSIB - Initializes static and non-static data members of class
+Constructor – Initializes object state.
+Methods – Define actions/behaviors.
+Main Method – Program execution starts here.
+
+*/

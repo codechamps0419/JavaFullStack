@@ -1,0 +1,84 @@
+/* @Author: Dynamic Duo Learners */
+
+File Handling:
+---------------
+File handling is the process of creating, reading, updating, and 
+deleting files on a storage drive using a programming language.
+
+Java splits its file-handling mechanisms into two distinct types 
+based on how data is handled:
+
+1. Byte-Oriented Systems (8-bit): Process data byte-by-byte. 
+They are universally used for binary files like images, audio, video, or compressed files.
+
+2. Character-Oriented Systems (16-bit): Process data character-by-character. 
+They automatically handle character encoding (like UTF-8 or UTF-16), making them 
+the ideal choice for text files, logs, and notes.
+
+
+Java I/O Classes:
+-------------------
+Java provides a rich set of classes to perform input and output operations. 
+These classes help programs read data from different sources and write data to various destinations.
+
+~ InputStream and OutputStream:
+These are abstract base classes used for byte-oriented input and output operations. 
+InputStream is used to read byte data from a source, and 
+OutputStream is used to write byte data to a destination. 
+Many other byte stream classes are derived from these classes.
+
+~ Reader and Writer:
+The Reader and Writer classes are abstract classes designed for character-based input 
+and output operations. They are mainly used for handling text data. 
+Reader reads character data from a source, while Writer writes character data to a destination.
+
+~ FileInputStream and FileOutputStream:
+These classes are used to read and write byte data from and to files. 
+FileInputStream reads raw bytes from a file, and FileOutputStream writes raw bytes to a file. 
+They are suitable for binary files such as images and videos.
+
+~ FileReader and FileWriter:
+These classes are used to read and write character data from and to files. 
+They are best suited for reading and writing text files.
+
+~ BufferedInputStream and BufferedOutputStream:
+These classes improve performance by using a buffer to store data temporarily. 
+This reduces the number of read and write operations and improves efficiency.
+
+~ BufferedReader and BufferedWriter:
+These classes provide buffered input and output for character streams. 
+They make character-based I/O faster and provide useful methods like readLine().
+
+
+Modern Java Development:
+=========================
+
+In modern enterprise Java development, the legacy java.io stream classes are largely avoided 
+for primary file operations due to several major flaws:
+
+1. Blocking I/O: They freeze the executing thread until the operating system
+completes the disk read/write operation.
+
+2. Scalability Issues: They do not scale efficiently when handling thousands of 
+concurrent file transfers or massive log files.
+
+What is used instead? (Modern Alternatives)
+--------------------------------------------
+
+* Option A - Java NIO
+
+Java NIO was originally introduced in Java 1.4 to solve networking scalability with channels and selectors.
+Java NIO provides full support for establishing both client-side and server-side network connections.
+Instead of using traditional blocking sockets (java.net.Socket), Java NIO introduces Channels 
+that can operate in non-blocking mode, allowing you to initiate, accept, and manage network connections
+
+However, the modern file-handling utilities we use today—like Path and Files 
+were added later in Java 7 as part of the NIO.2 specification.
+
+
+* Option B: Popular Third-Party Libraries like Apache Commons IO, Google Guava, ..., etc.
+
+
+Reference:(If you get time then check other file classes)
+=========================================================
+https://www.tpointtech.com/java-io

@@ -1,0 +1,294 @@
+/* @Author: Dynamic Duo Learners */
+Refer. Collection.png
+
+
+* Collection Framework
+========================
+Java Collection Framework is a set of interfaces and classes used to store,
+manage, search, sort, and process groups of objects.
+
+It provides ready-made data structures like:
+- List
+- Set
+- Queue
+- Map
+
+Before collections, developers used arrays.
+
+Problems with arrays:
+- Fixed size
+- Difficult insert/delete
+- No ready-made searching/sorting methods
+- No advanced data structures
+
+Collection Framework solves this by providing:
+- Dynamic size
+- Ready-made methods
+- Type safety using generics
+- Different data structures for different needs
+
+
+Main Interfaces
+---------------
+
+Iterable
+   |
+Collection
+   |---------------- List
+   |---------------- Set
+   |---------------- Queue
+
+Map is part of Collection Framework but does NOT extend Collection.
+
+Hierarchy:
+
+Iterable (Interface)
+  |
+  +-- Collection (Interface)
+        |
+        +-- List (Interface)
+        |     +-- ArrayList     --
+        |     +-- LinkedList     | (Class)
+        |     +-- Vector         |
+        |     +-- Stack         --
+        |
+        +-- Set (Interface)
+        |     +-- HashSet        --
+        |     +-- LinkedHashSet   | (Class)
+        |     +-- TreeSet        --
+        |
+        +-- Queue (Interface)
+              +-- PriorityQueue  --
+              +-- ArrayDeque      | (Class)
+              +-- LinkedList     --
+
+Map (Interface)
+  |
+  +-- HashMap (Class)
+  +-- LinkedHashMap (Class)
+  +-- TreeMap (Class)
+  +-- Hashtable (Class)
+  +-- ConcurrentHashMap (Class)
+
+
+
+~ Collection vs Collections
+------------------------------
+Collection:
+- Interface
+- Root interface for List, Set, Queue
+
+Collections:
+- Utility class
+- Provides static methods like:
+  sort(), reverse(), shuffle()
+
+Example:
+Collections.sort(list);
+
+
+~ List vs Set vs Queue vs Map
+-------------------------------
+
+List
+----------------------
+- Ordered collection
+- Allows duplicates
+- Index-based access
+
+Use when:
+- Order matters
+- Duplicate values allowed
+
+Examples:
+- ArrayList
+- LinkedList
+
+
+Set
+------------------------
+- Does not allow duplicates
+- Mainly used for uniqueness
+
+Use when:
+- Unique values required
+
+Examples:
+- HashSet
+- TreeSet
+
+
+Queue
+--------------------------
+- Used for processing elements in order
+- FIFO or priority-based
+
+Use when:
+- Task processing
+- Scheduling
+- Producer-consumer
+
+Examples:
+- PriorityQueue
+- ArrayDeque
+
+
+Map
+--------------------------
+- Stores key-value pairs
+- Keys are unique
+- Values can duplicate
+
+Use when:
+- Fast lookup by key
+
+Examples:
+- HashMap
+- TreeMap
+- ConcurrentHashMap
+
+
+~ Important Methods from Collection Interface
+---------------------------------------------
+
+add():
+Adds element.
+
+remove():
+Removes element.
+
+contains():
+Checks if element exists.
+
+size():
+Returns number of elements.
+
+isEmpty():
+Checks empty collection.
+
+clear():
+Removes all elements.
+
+iterator():
+Used to iterate collection.
+
+
+
+~ Generics in Collection
+----------------------------
+Generics in Collection provide type safety by allowing collections to store 
+only a specific type of objects, helping avoid runtime casting errors 
+and improving code readability.
+
+Without generics:
+List list = new ArrayList();
+list.add("Java");
+list.add(10);
+
+With generics:
+List<String> list = new ArrayList<>();
+list.add("Java");
+
+Advantages:
+- Type safety
+- No manual casting
+- Compile-time error detection
+
+
+~ Comparable vs Comparator
+----------------------------
+
+Comparable:
+- Natural sorting
+- compareTo() method
+- Class itself defines sorting
+- Need to change the original class
+
+Comparator:
+- Custom sorting
+- compare() method
+- Separate sorting logic
+- Don't need to change the original class
+
+Example:
+Comparator.comparing(Employee::getSalary)
+
+Refer. Comparable.png, Comparator.png
+
+
+~ Fail-Fast vs Fail-Safe Iterators
+----------------------------------
+
+Fail-Fast:
+- Throws ConcurrentModificationException if collection is modified while iterating.
+- Example: ArrayList, HashMap
+
+Fail-Safe:
+- Does not throw exception because it works on copy/snapshot.
+- Example: CopyOnWriteArrayList, ConcurrentHashMap
+
+
+
+~ Thread-Safety in Collections
+----------------------------
+
+Not Thread-Safe:
+- ArrayList
+- HashMap
+- HashSet
+
+Thread-Safe / Concurrent:
+- Vector
+- Hashtable
+- ConcurrentHashMap
+- CopyOnWriteArrayList
+- BlockingQueue
+
+Modern preference:
+Use concurrent collections instead of old synchronized collections.
+Refer. Concurrent Collections.png
+
+
+~ Big-O Quick Table
+----------------------------
+
+ArrayList:
+- get(index): O(1)
+- add(end): O(1) average
+- add/remove middle: O(n)
+
+LinkedList:
+- add/remove at ends: O(1)
+- get(index): O(n)
+
+HashSet:
+- add/search/remove: O(1) average
+
+TreeSet:
+- add/search/remove: O(log n)
+
+HashMap:
+- put/get/remove: O(1) average
+
+TreeMap:
+- put/get/remove: O(log n)
+
+_________________________________________________________________________________________
+
+* Must Know Interview Points
+========================================================
+
+- Collection is interface, Collections is utility class.
+- List allows duplicates and maintains order.
+- Set does not allow duplicates.
+- Map stores key-value pairs and unique keys.
+- Queue is used for processing/scheduling.
+- HashMap allows one null key and multiple null values.
+- HashSet internally uses HashMap.
+- TreeSet and TreeMap maintain sorted order.
+- ConcurrentHashMap is preferred for concurrent map operations.
+- ArrayList is best for frequent read operations.
+- LinkedList is rarely preferred in modern backend unless specific queue/deque use case.
+- Use Iterator remove() while iterating to avoid ConcurrentModificationException.
+
+_________________________________________________________________________________________

@@ -1,0 +1,454 @@
+/* @Author: Dynamic Duo Learners */
+Refer. List.png
+
+List
+======
+
+List is an interface in Java Collection Framework.
+It  is used to store ordered collections of elements where duplicates are allowed 
+and insertion order of them is maintained.
+
+Main Features:
+- Maintains insertion order
+- Allows duplicate elements
+- Allows null values
+- Supports index-based access
+
+Example:
+List<String> list = new ArrayList<>();
+list.add("Java");
+list.add("Spring");
+
+list.get(0);
+
+
+~ List Hierarchy
+--------------
+
+Collection
+   |
+   +-- List
+         |
+         +-- ArrayList
+         +-- LinkedList
+         +-- Vector
+               |
+               +-- Stack
+
+
+~ Common List Methods
+-------------------
+
+add(element):
+Adds element at end.
+
+add(index, element):
+Adds element at specific position.
+
+get(index):
+Returns element from index.
+
+set(index, element):
+Updates element.
+
+remove(index):
+Removes element by index.
+
+remove(object):
+Removes by value.
+
+contains(element):
+Checks if element exists.
+
+indexOf(element):
+Returns first matching index.
+
+size():
+Returns number of elements.
+
+clear():
+Removes all elements.
+
+
+
+* ArrayList
+------------
+
+ArrayList is the most commonly used List implementation.
+It is best for frequent read/index-based operations
+because it provides fast random access using dynamic arrays.
+
+Important Features:
+- Dynamic array implementation
+- Fast random access
+- Maintains insertion order
+- Allows duplicates
+- Allows null values
+- Not thread-safe
+
+Internal Working:
+- Internally uses dynamic array 
+- Capacity increases automatically when full (Increase by 50%)
+
+Simple Formula: newCapacity = oldCapacity * 1.5
+
+Example:
+List<String> list = new ArrayList<>();
+list.add("Java");
+
+
+Advantages
+------------
+- Fast get(index)
+- Better for read-heavy operations
+- Less memory overhead than LinkedList
+
+Disadvantages
+-------------
+- Slow insertion/removal in middle
+- Shifting required
+
+Performance
+-------------
+get(index)              -> O(1)
+add(end)                -> O(1) average
+add/remove middle       -> O(n)
+
+Where Used?
+------------
+- API responses
+- DTO lists
+- Database result processing
+- Backend service logic
+
+
+* LinkedList
+---------------
+LinkedList is a doubly linked list implementation.
+LinkedList is preferred for frequent insertion/deletion
+operations, especially at beginning or end.
+
+Important Features:
+- Maintains insertion order
+- Allows duplicates
+- Allows null values
+- Implements List and Deque
+- Better insertion/removal at ends
+
+Internal Working:
+Each node contains:
+- previous reference
+- data
+- next reference
+
+Structure: 
+[prev] <- [data] -> [next]
+
+Example:
+LinkedList<String> list = new LinkedList<>();
+list.add("Java");
+list.addFirst("Spring");
+
+
+Advantages
+-----------
+- Fast insertion/removal at beginning/end
+- Good for queue/deque operations
+
+Disadvantages
+--------------
+- Slow get(index)
+- More memory overhead due to node references
+
+Performance
+-------------
+get(index)              -> O(n)
+add/remove first/last   -> O(1)
+
+Where Used?
+--------------
+- Queue operations
+- Deque operations
+- Producer-consumer style operations
+
+
+~ ArrayList vs LinkedList
+---------------------------
+Use ArrayList for read-heavy applications.
+Use LinkedList for queue/deque (insert/update/delete) style operations.
+
+ArrayList:
+- Dynamic array
+- Fast random access
+- Slow insertion/removal in middle
+- Less memory usage
+
+LinkedList:
+- Doubly linked list
+- Slow random access
+- Fast insertion/removal at ends
+- More memory usage (as it stores reference of prev and next element)
+
+
+
+* Vector
+---------
+Vector is a synchronized version of ArrayList.
+
+Important Features:
+- Thread-safe
+- Synchronized methods
+- Legacy class
+- Slower than ArrayList
+
+Example:
+Vector<String> vector = new Vector<>();
+vector.add("Java");
+
+Advantages
+-----------
+It is synchronized and thread-safe making it safer for multi-threaded environments.
+
+Disadvantages
+--------------
+- Performance overhead due to synchronization
+
+Modern Recommendation
+-----------------------
+Avoid Vector in modern applications as Java provides Concurrent Collections which has 
+better performance than Vector.
+Prefer:
+- CopyOnWriteArrayList
+- Concurrent collections
+
+
+* Stack
+----------
+Stack is a LIFO (Last In First Out) data structure where
+the last inserted element is removed first.
+
+Extends:
+Vector
+
+Common Methods:
+push()
+pop()
+peek()
+
+Example:
+Stack<String> stack = new Stack<>();
+stack.push("Java");
+stack.pop();
+
+Important Points
+------------------
+- Legacy class
+- Synchronized
+- Slower
+
+Modern Recommendation
+-----------------------
+Use ArrayDeque instead of Stack as it works as Queue & Stack feature.
+
+Example:
+Deque<String> stack = new ArrayDeque<>();
+stack.push("Java");
+stack.pop();
+
+
+~ Fail-Fast Behavior
+---------------------
+A Fail-Fast Iterator is an iterator that checks whether the collection was 
+modified while it is being traversed (iterated).
+
+ArrayList, LinkedList, Vector, Stack iterators are fail-fast.
+
+Wrong:
+for(String s : list) {  //element access here
+    list.remove(s);     //element modification (update/delete)
+}
+
+This may throw:
+ConcurrentModificationException
+
+Correct:
+Iterator<String> itr = list.iterator();
+
+while(itr.hasNext()) {
+    itr.next();
+    itr.remove();
+}
+
+
+
+~ Sorting List
+----------------
+
+Using Collections class (java.util.Collections):
+Collections.sort(list); //natural ascending order
+Collections.sort(list, Collections.naturalOrder()); //natural ascending order
+Collections.sort(list, Collections.reverseOrder()); //natural descending order
+
+
+Custom Sorting:
+list.sort(Comparator.comparing(Employee::getName));
+
+Reverse Sorting using sort method:
+list.sort(Comparator.reverseOrder());
+list.sort(Comparator.naturalOrder());
+
+
+~ Thread-Safe List Options
+---------------------------
+
+> Collections.synchronizedList():
+It is used to create synchronized wrapper.
+
+Example:
+List<String> list =
+Collections.synchronizedList(new ArrayList<>());
+
+
+> CopyOnWriteArrayList:
+CopyOnWriteArrayList is a thread-safe List implementation where every write operation 
+creates a new copy of the underlying array. 
+
+It is best suited for read-heavy concurrent applications 
+because reads are fast and iteration is safe without ConcurrentModificationException.
+Thread-safe concurrent list.
+
+Best For:
+- More reads
+- Very few writes
+
+Example:
+CopyOnWriteArrayList<String> list =
+new CopyOnWriteArrayList<>();
+
+list.add("AS");
+...
+list.add("HP");
+
+for(String s : list) {
+    System.out.println(s);
+}
+
+_____________________________________________________________________________________________________________
+
+* Real Backend Use Cases
+===============================
+
+ArrayList:
+- API response list
+- Database result list
+- DTO processing
+- Stream operations
+
+LinkedList:
+- Queue/deque processing
+- Rare in modern backend applications
+
+Vector:
+- Legacy projects only
+
+Stack:
+- Avoid & start using ArrayDeque
+
+_____________________________________________________________________________________________________________
+
+* Important Interview Questions
+=================================
+
+Q1. Difference between ArrayList and LinkedList?
+Answer:
+ArrayList uses dynamic array and provides fast random access.
+LinkedList uses doubly linked list and provides fast insertion/removal at ends.
+
+Q2. Is ArrayList & LinkedList thread-safe?
+Answer:
+No.
+
+Q3. Why ArrayList get(index) fast?
+Answer:
+Because it uses array indexing.
+
+Q4. Why insertion in middle slow in ArrayList?
+Answer:
+Because elements need shifting.
+
+Q5. Why Stack is legacy?
+Answer:
+Stack is considered a legacy class because it extends Vector, which uses synchronized methods causing 
+unnecessary performance overhead. Modern Java prefers ArrayDeque for stack operations 
+because it is faster and more efficient.
+
+Q6. Difference between Vector and ArrayList?
+Answer:
+Vector is synchronized and slower;
+ArrayList is non-synchronized and faster.
+
+Q7. Which Java Collections have you used in your project and why?
+Answer:
+In my LASERGUI project, we mainly used ArrayList because the application had more data 
+retrieval/read operations compared to updates or modifications. 
+
+ArrayList provides fast random access, which helped improve performance while handling UI and backend data.
+
+We also used ArrayList to build and manage hierarchical tree-view structures containing multiple 
+sub-level nodes and child structures, where maintaining insertion order and sequential traversal was important.
+
+Additionally, we used HashMap to map tree-view structure on UI with corresponding pages/components for fast lookup and navigation. 
+HashMap provides average O(1) lookup performance which helped improve response time and efficient page mapping.
+Answer:
+
+
+Q7. Explain - ensureCapacity, trimToSize, spliterator, retainAll and removeAll method.
+Answer:
+
+1) ensureCapacity() increases the internal capacity of ArrayList in advance to avoid 
+multiple resizing operations and improve performance.
+It is used when large data insertion expected.
+
+e.g. list.ensureCapacity(100); //Prepare internal array for 100 elements
+
+2) trimToSize() reduces ArrayList internal capacity to match current number of elements and saves memory.
+
+e.g. list.trimToSize(); //Remove extra unused internal array space
+
+3) spliterator() returns a Spliterator object used for parallel traversal and stream processing.
+It is used for parallel stream processing. Used internally by Java Streams.
+
+e.g.  Spliterator<String> sp = list.spliterator();
+      sp.forEachRemaining(System.out::println);
+
+4) retainAll() keeps only matching elements from another collection and removes remaining elements. 
+It requires Collection parameter.
+
+e.g. list.retainAll(Arrays.asList("Java", "Spring")); //Keep only Java and Spring
+
+5) removeAll() removes all matching elements present in another collection. It requires Collection parameter.
+
+e.g. list.removeAll(Arrays.asList("Java", "Kafka")); //Remove Java and Kafka
+
+In Short:
+ensureCapacity() → increases internal capacity beforehand for performance optimization.
+trimToSize() → removes unused internal memory space.
+spliterator() → supports parallel traversal and stream processing.
+retainAll() → keeps only common elements.
+removeAll() → removes matching elements from collection.
+
+_____________________________________________________________________________________________________________
+
+* Must Know Quick Points
+===========================
+- List maintains insertion order.
+- List allows duplicates.
+- ArrayList is most commonly used.
+- ArrayList best for read-heavy operations.
+- LinkedList best for insertion/removal at ends.
+- Vector and Stack are legacy classes.
+- ArrayDeque preferred over Stack.
+- ArrayList is not thread-safe.
+- CopyOnWriteArrayList useful for concurrent read-heavy scenarios.
+
+_____________________________________________________________________________________________________________

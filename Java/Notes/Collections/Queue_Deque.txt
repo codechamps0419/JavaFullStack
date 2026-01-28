@@ -1,0 +1,400 @@
+/* @Author: Dynamic Duo Learners */
+Refer. Map.png
+Queue.png, Deque.png
+
+
+Queue
+-------
+Queue is an interface in Java Collection Framework used for processing elements
+in a specific order.
+
+Usually follows:
+FIFO -> First In First Out
+
+Example:
+Queue<String> queue = new LinkedList<>();
+queue.offer("Task1");
+queue.offer("Task2");
+
+Main Features
+- Ordered processing
+- FIFO based
+- Used in task scheduling and async processing
+- Allows duplicate elements
+- Some implementations allow null
+
+
+Queue Hierarchy
+---------------
+
+Collection
+   |
+   +-- Queue
+         |
+         +-- PriorityQueue
+         +-- Deque
+               |
+               +-- ArrayDeque
+               +-- LinkedList
+
+BlockingQueue
+   |
+   +-- ArrayBlockingQueue
+   +-- LinkedBlockingQueue
+   +-- PriorityBlockingQueue
+
+
+Common Queue Methods
+---------------------
+
+offer(element):
+Adds element safely.
+
+poll():
+Removes and returns head.
+Returns null if queue empty.
+
+peek():
+Returns head without removing.
+Returns null if queue empty.
+
+add(element):
+Adds element but may throw exception.
+
+remove():
+Removes head but throws exception if empty.
+
+element():
+Returns head but throws exception if empty.
+
+
+offer/poll/peek vs add/remove/element
+---------------------------------------
+
+offer():
+Safe add operation.
+
+poll():
+Safe remove operation.
+
+peek():
+Safe read operation.
+
+add(), remove(), element():
+Throw exceptions if operation fails.
+
+
+* PriorityQueue
+--------------
+PriorityQueue processes elements based on priority using Heap
+internally instead of insertion order.
+
+Important Features:
+- Does NOT follow FIFO
+- Stores elements by priority
+- Does NOT allow null
+- Not thread-safe
+
+Example:
+Queue<Integer> pq = new PriorityQueue<>();
+pq.offer(30);
+pq.offer(10);
+pq.offer(20);
+
+poll() returns:
+10 first
+
+Internal Working
+-----------------
+Uses Heap Data Structure internally.
+
+	[ MIN-HEAP ]                           [ MAX-HEAP ]
+   
+           ( 5 )   <-- Root (Smallest)            (30)   <-- Root (Largest)
+          /     \                                /    \
+       (10)     (20)                          (20)    (10)
+       /                                      /
+     (30)                                   (5)
+
+Default:
+Min Heap
+
+For Max Heap:
+PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder()); //for primitive data types
+//for custom type
+Comparator<Student> comparatorObj = Comparator
+            .comparing((Student s) -> s.name)
+            .thenComparing(Comparator.comparingInt((Student s) -> s.id).reversed())
+            .thenComparing(Comparator.comparingDouble((Student s) -> s.gpa).reversed());
+
+PriorityQueue<Patient> emergencyRoom = new PriorityQueue<>(comparatorObj);
+
+
+Performance
+-----------
+offer()      -> O(log n)
+poll()       -> O(log n)
+peek()       -> O(1)
+
+Advantages
+-----------
+- Automatic priority ordering
+- Efficient scheduling
+
+Disadvantages
+-------------
+- No insertion order
+- Slower than normal queue for insertion
+
+Where Used?
+-----------
+- Task schedulers
+- Ranking systems
+- CPU scheduling
+- Priority processing
+
+
+_____________________________________________________________________________________________________________
+
+
+Deque
+------
+Deque means ~ Double Ended Queue which can insert/remove elements from both ends.
+
+Example:
+Deque<String> deque = new ArrayDeque<>();
+deque.offerFirst("Java");
+deque.offerLast("Spring");
+
+Main Features
+- Works as Queue and Stack
+- Supports both FIFO and LIFO
+- Fast insertion/removal at both ends
+
+
+* ArrayDeque
+---------------
+ArrayDeque is a resizable array implementation of Deque.
+
+Important Features:
+- Faster than Stack
+- Faster than LinkedList for queue/deque operations
+- Does NOT allow null
+- Not thread-safe
+
+Example as Queue:
+Deque<String> queue = new ArrayDeque<>();
+queue.offer("Java");
+queue.poll();
+
+Example as Stack:
+Deque<String> stack = new ArrayDeque<>();
+stack.push("Java");
+stack.pop();
+
+
+Advantages
+-------------
+- Very fast
+- Less memory overhead
+- Modern replacement for Stack
+
+Disadvantages
+---------------
+- Not thread-safe
+- No random access
+
+Where Used?
+-------------
+- Stack replacement
+- Queue operations
+- Undo/redo operations
+
+ArrayDeque is preferred over Stack and LinkedList for queue/deque
+operations because it provides better performance.
+
+
+LinkedList as Queue
+--------------------
+LinkedList implements:
+- List
+- Deque
+
+Can be used as Queue.
+
+Example:
+Queue<String> queue = new LinkedList<>();
+
+Modern recommendation:
+Prefer ArrayDeque over LinkedList for queue/deque operations because:
+- Faster
+- Less memory overhead
+
+
+* BlockingQueue
+----------------
+BlockingQueue is a thread-safe queue used in producer-consumer problems.
+
+Important Features:
+- Thread-safe
+- Blocking operations
+- Producer waits if queue full
+- Consumer waits if queue empty
+
+Example:
+BlockingQueue<String> queue =
+new ArrayBlockingQueue<>(10);
+
+queue.put("Task");
+queue.take();
+
+
+Uses locks/conditions internally for thread synchronization.
+
+
+BlockingQueue Implementations
+------------------------------
+
+ArrayBlockingQueue
+- Fixed-size queue
+- Uses array internally
+- Good when capacity fixed
+
+LinkedBlockingQueue
+- Uses linked nodes
+- Optionally bounded
+- Common in thread pools
+
+PriorityBlockingQueue
+- Thread-safe PriorityQueue
+- Elements processed by priority
+
+
+Producer-Consumer Flow
+-----------------------
+
+Producer
+   |
+   | put()
+   v
+BlockingQueue
+   |
+   | take()
+   v
+Consumer
+
+If queue full:
+Producer waits.
+
+If queue empty:
+Consumer waits.
+
+
+Queue vs Deque
+---------------
+
+Queue:
+- FIFO processing
+- Insert at rear
+- Remove from front
+
+Deque:
+- Insert/remove from both ends
+- Can behave as Queue and Stack
+
+
+Queue vs Stack
+---------------
+
+Queue: FIFO -> First In First Out
+
+Stack: LIFO -> Last In First Out
+
+
+Thread-Safe Queue Options
+--------------------------
+
+BlockingQueue: It's a Thread-safe queue.
+
+ConcurrentLinkedQueue: 
+It's a Non-blocking thread-safe queue.
+Example:
+Queue<String> queue =
+new ConcurrentLinkedQueue<>();
+
+_____________________________________________________________________________________________________________
+
+
+* Real Backend Use Cases
+======================
+Queue:
+- Task processing
+- Notification systems
+- Request buffering
+
+PriorityQueue:
+- Priority jobs
+- Scheduler systems
+- Ranking systems
+
+ArrayDeque:
+- Stack replacement
+- Undo/redo
+- Browser history
+
+BlockingQueue:
+- Producer-consumer
+- Worker threads
+- Async logging
+- Thread pools
+
+_____________________________________________________________________________________________________________
+
+
+* Important Interview Questions
+==============================
+Q1. What is Queue?
+Answer:
+Queue processes elements usually in FIFO order.
+
+Q2. Difference between Queue and Deque?
+Answer:
+Deque supports operations from both ends.
+
+Q3. Why ArrayDeque preferred over Stack?
+Answer:
+Better performance and not legacy.
+
+Q4. What is BlockingQueue?
+Answer:
+Thread-safe queue where producer/consumer can wait.
+
+Q5. PriorityQueue follows FIFO?
+Answer:
+No, it processes based on priority.
+
+Q6. Difference between poll() and remove()?
+Answer:
+poll() returns null if empty;
+remove() throws exception.
+
+Q7. Why BlockingQueue important?
+Answer:
+Used heavily in multithreading and producer-consumer problems.
+
+_____________________________________________________________________________________________________________
+
+
+* Must Know Quick Points
+==========================
+- Queue mainly follows FIFO.
+- PriorityQueue processes by priority.
+- ArrayDeque is preferred over Stack.
+- BlockingQueue is important for producer-consumer.
+- offer(), poll(), peek() are safer methods.
+- ArrayDeque does NOT allow null.
+- PriorityQueue uses Heap internally.
+- BlockingQueue is thread-safe.
+- LinkedBlockingQueue commonly used in thread pools.
+
+_____________________________________________________________________________________________________________

@@ -1,0 +1,274 @@
+
+/* @Author: Dynamic Duo Learners */
+
+
+* CopyOnWriteArrayList
+=========================
+
+CopyOnWriteArrayList (present in java.util.concurrent) is a thread-safe ArrayList implementation 
+that creates a new copy of array during write operations and provides fail-safe iteration.
+
+Refer. CopyOnWriteArrayList.png
+
+Used in:
+- multithreading
+- read-heavy applications
+- fail-safe iteration
+
+
+Internal Working
+------------------
+Whenever data is modified:
+- new array copy is created
+- modification happens on copied array
+- old array remains unchanged
+
+This is called: Copy-On-Write
+
+
+Why Name CopyOnWrite?
+------------------------
+Because every write operation creates:
+NEW ARRAY COPY
+
+Operations:
+- add()
+- remove()
+- set()
+
+It create new internal array copy.
+
+
+Thread Safety
+----------------
+CopyOnWriteArrayList is:
+THREAD-SAFE
+
+Multiple threads can:
+- read safely
+- iterate safely
+- modify safely
+
+
+Fail-Safe Iterator
+---------------------
+Iterator does NOT throw:
+ConcurrentModificationException
+
+because iterator works on:
+SNAPSHOT COPY
+
+
+Fail-Safe vs Fail-Fast
+-------------------------
+
+ArrayList:
+- Fail-Fast
+- throws ConcurrentModificationException
+
+CopyOnWriteArrayList:
+- Fail-Safe
+- no exception
+
+
+Performance
+--------------
+READ operations:
+VERY FAST
+
+WRITE operations:
+SLOW (because every modification creates new array copy)
+
+
+~ Note - 
+Use when:
+- reads are more frequent
+- writes are less frequent
+- multithreaded environment
+- caching
+- subscribers list
+
+Avoid when:
+- frequent updates
+- heavy insert/delete
+- huge datasets
+
+
+Important Methods
+---------------------
+
+add()
+addIfAbsent()
+remove()
+set()
+contains()
+iterator()
+forEach()
+retainAll()
+removeAll()
+replaceAll()
+sort()
+spliterator()
+stream()
+
+
+Internal Structure
+------------------
+
+Internally uses: ARRAY
+
+
+Interview Question
+----------------------
+
+Q) Why CopyOnWriteArrayList is thread-safe?
+
+Answer:
+Because every modification operation creates a new copied array and iterator works on immutable snapshot copy.
+
+
+
+* ConcurrentHashMap
+=====================
+
+ConcurrentHashMap (present in java.util.concurrent) is a high-performance thread-safe Map implementation that allows 
+concurrent read/write operations using fine-grained locking.
+
+Refer. ConcurrentHashMap.png
+
+Used in:
+- multithreading
+- concurrent systems
+- high-performance applications
+
+Why ConcurrentHashMap?
+-------------------------
+HashMap:
+NOT thread-safe
+
+Hashtable:
+thread-safe but slow
+
+ConcurrentHashMap:
+thread-safe + high performance
+
+
+Internal Working
+-------------------
+Java 7:
+used Segment locking
+
+Java 8+:
+uses:
+- CAS (Compare And Swap)
+- synchronized blocks
+- bucket-level locking
+
+
+Thread Safety
+----------------
+Multiple threads can:
+- read simultaneously
+- write simultaneously
+
+Locking Mechanism
+--------------------
+Locks ONLY required bucket/node.
+
+Not entire map.
+
+
+Null Keys/Values
+-------------------
+ConcurrentHashMap does NOT allow:
+- null key
+- null value
+
+
+Performance
+--------------
+Faster than Hashtable because:
+- fine-grained locking
+- multiple threads work parallelly
+
+
+Important Methods
+--------------------
+
+put()
+putIfAbsent()
+compute()
+computeIfAbsent()
+computeIfPresent()
+merge()
+replace()
+replaceAll()
+remove()
+forEach()
+search()
+reduce()
+
+
+Iterator
+-----------
+Iterator is: WEAKLY CONSISTENT
+
+Meaning:
+- no ConcurrentModificationException
+- may/may not reflect latest updates
+
+
+Difference from Hashtable
+-----------------------------
+
+Hashtable:
+- full synchronization
+- slower
+
+ConcurrentHashMap:
+- bucket-level locking
+- faster
+
+
+Use Cases
+-------------
+Used in:
+- caching
+- banking
+- real-time systems
+- counters
+- shared data
+- microservices
+
+
+Java 8 Improvements
+-----------------------
+Java 8 introduced:
+- CAS
+- synchronized bucket locking
+- tree bins (Red-Black Tree)
+
+
+Interview Question
+----------------------
+
+Q) Why ConcurrentHashMap is faster than Hashtable?
+
+Answer:
+Because ConcurrentHashMap uses bucket-level locking and allows multiple threads simultaneously instead of locking whole map.
+
+
+* Quick Comparison
+=====================
+
+CopyOnWriteArrayList:
+- List
+- thread-safe
+- fail-safe iterator
+- best for read-heavy systems
+
+ConcurrentHashMap:
+- Map
+- thread-safe
+- weakly consistent iterator
+- best for concurrent key-value operations

@@ -1,0 +1,160 @@
+/* @Author: Dynamic Duo Learners */
+Refer. BlockingQueue.png
+
+BlockingQueue
+===============
+BlockingQueue is a thread-safe queue (present in java.util.concurrent) that automatically blocks 
+producer or consumer threads when queue is full or empty.
+
+Used in:
+- Producer Consumer Problem
+- Multithreading
+- Task Scheduling
+- Message Processing
+- Thread Pools
+
+
+Why BlockingQueue?
+---------------------
+Normal Queue:
+- not thread-safe
+- manual synchronization needed
+
+BlockingQueue:
+- thread-safe
+- handles waiting automatically
+
+Main feature of BlockingQueue:
+------------------------------
+
+If queue is:
+- FULL -> producer waits
+- EMPTY -> consumer waits
+
+This behavior is called:BLOCKING
+
+Internal Working
+-------------------
+BlockingQueue internally uses:
+- locks
+- conditions
+- synchronization
+to safely manage multiple threads.
+
+Important Implementations
+----------------------------
+
+ArrayBlockingQueue
+- fixed size
+- bounded queue
+
+LinkedBlockingQueue
+- optionally bounded
+- linked nodes internally
+
+PriorityBlockingQueue
+- priority-based ordering
+
+DelayQueue
+- delayed processing
+
+SynchronousQueue
+- direct handoff between threads
+
+
+Important Methods
+--------------------
+
+add()
+offer()
+put()
+take()
+poll()
+peek()
+remove()
+element()
+contains()
+remainingCapacity()
+drainTo()
+
+
+Difference Between Methods
+-----------------------------
+
+add()
+- throws exception if full
+
+offer()
+- returns false if full
+
+put()
+- waits until space available
+
+take()
+- waits until element available
+
+poll()
+- returns null if empty
+
+Thread Safety
+----------------
+BlockingQueue is:
+THREAD-SAFE
+
+Multiple threads can:
+- add
+- remove
+- consume
+safely.
+
+
+Producer Consumer Example
+----------------------------
+Producer:
+adds data
+
+Consumer:
+takes data
+
+BlockingQueue automatically handles synchronization.
+
+
+Best Use Cases
+------------------
+Used in:
+- task queues
+- Kafka-like systems
+- message processing
+- thread pool executor
+- background jobs
+- async systems
+
+
+Interview Question
+----------------------
+
+Q) Difference between offer() and put()?
+Answer:
+offer() returns false immediately if queue is full, whereas put() waits until space becomes available.
+
+
+Q) Difference between ArrayBlockingQueue and LinkedBlockingQueue.
+Answer:
+ArrayBlockingQueue:
+- fixed size
+- uses array internally
+- bounded
+
+LinkedBlockingQueue:
+- linked nodes internally
+- optionally bounded
+- better scalability
+
+
+Fail-Safe Behavior
+--------------------
+BlockingQueue iterator is: WEAKLY CONSISTENT
+
+Meaning:
+- no ConcurrentModificationException
+- may reflect partial updates

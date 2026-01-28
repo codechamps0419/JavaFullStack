@@ -1,0 +1,315 @@
+
+/* @Author: Dynamic Duo Learners */
+
+* String
+===============
+- String is a sequence of characters.
+- String class is present in java.lang package.
+- String objects are immutable.
+- Very frequently used in Java applications.
+
+Refer. String.png
+
+Example:
+String name = "Java";
+
+~ Why String is Special?
+------------------------
+- Most used class in Java
+- Supports SCP optimization
+- Immutable for security and thread safety
+- Used in URLs, DB queries, logs, APIs, etc.
+
+~ Memory Creation
+------------------
+String s1 = "Java";
+
+- Object stored in String Constant Pool (SCP)
+
+String s2 = new String("Java");
+
+Creates:
+1 object in SCP
+1 object in Heap
+
+
+~ Why String is Immutable?
+---------------------------
+Immutable means object value cannot change after creation. 
+String is immutable to provide security, thread safety and
+memory optimization using SCP.
+
+Example:
+String s = "Java";
+s.concat(" Backend");
+
+Original string remains same.
+
+
+~ Advantages of Immutability
+-----------------------------
+1. Security
+   - URLs, DB usernames/passwords cannot change
+
+2. Thread Safety
+   - Multiple threads can use same object safely
+
+3. String Constant Pool Optimization
+   - Reuse same object
+
+4. HashMap Reliability
+   - Hashcode remains constant
+
+
+~ String Constant Pool (SCP)
+---------------------------
+SCP stores string literals to avoid duplicate object creation
+and improve memory optimization.
+
+Important Points for SCP:
+- Special memory area inside Heap.
+- Stores string literals.
+- Avoids duplicate object creation.
+
+Refer. String Constant Pool.png
+
+Example:
+String a = "Java";
+String b = "Java";
+
+Both point to same SCP object.
+
+~ Advantages
+-----------
+- Saves memory
+- Improves performance
+- Object reuse
+
+
+~ Difference Between == and equals()
+-----------------------------------
+==
+- Compares references/address
+
+equals()
+- Compares values/content
+
+Example:
+
+String s1 = "Java";
+String s2 = new String("Java");
+
+s1 == s2          -> false
+s1.equals(s2)     -> true
+
+
+Refer. String Methods.png
+__________________________________________________________________________
+
+
+* StringBuilder
+================
+
+StringBuilder class is mutable and non-synchronized,
+making it faster and preferred for normal string manipulation.
+
+It is 
+- Mutable string class.
+- NOT thread-safe.
+- Faster than StringBuffer.
+- Introduced in Java 5.
+
+Example:
+StringBuilder sb = new StringBuilder("Java");
+sb.append(" Backend");
+
+
+Advantages
+-----------
+- Better performance
+- Less memory overhead
+- Preferred in backend development
+
+Where Used?
+------------
+- Dynamic SQL creation
+- String concatenation in loops
+- Log building
+- Response generation
+
+
+Refer. StringBuilder.png
+__________________________________________________________________________
+
+
+* StringBuffer
+================
+
+StringBuffer class is mutable and synchronized,
+which makes it thread-safe but slower.
+
+It is 
+- Mutable string class.
+- Thread-safe.
+- Synchronized methods.
+- Slower than StringBuilder.
+
+Example:
+StringBuffer sb = new StringBuffer("Java");
+sb.append(" Spring");
+
+
+Where Used?
+------------
+- Multi-threaded environments
+- Shared mutable string operations
+
+
+StringBuilder vs StringBuffer
+------------------------------
+StringBuilder
+- Faster
+- Non-synchronized
+- Single-thread preferred
+
+StringBuffer
+- Slower
+- Synchronized
+- Multi-thread preferred
+
+Refer. StringBuffer.png
+__________________________________________________________________________
+
+
+* StringTokenizer
+===================
+
+StringTokenizer class is a legacy class
+- used to split string into tokens.
+- Present in java.util package.
+
+
+Example:
+
+StringTokenizer st =
+new StringTokenizer("Java Spring Kafka");
+
+while(st.hasMoreTokens()) {
+    System.out.println(st.nextToken());
+}
+
+Important Points
+-----------------
+- Default delimiter is space
+- Mostly replaced by split() --> Modern Java Development (Refer. String Split().png)
+- Legacy class
+
+Methods
+--------
+hasMoreTokens()
+nextToken()
+countTokens()
+
+Refer. StringTokenizer.png
+__________________________________________________________________________
+
+
+* String Interning
+---------------------
+String Interning is the process of storing and 
+reusing String objects in the String Constant Pool 
+to avoid duplicate objects and improve memory optimization.
+
+Example:
+
+String s1 = new String("Java");
+String s2 = s1.intern();
+
+Why Used?
+----------
+- Reduce duplicate objects
+- Improve memory optimization
+
+Refer. String Interning.png
+__________________________________________________________________________
+
+
+* String Concatenation
+-----------------------
+
+It uses + operator.
+
+String s = "Java" + " Spring";
+
+Compiler internally uses: StringBuilder
+
+Important Point
+-----------------
+Avoid using + inside loops heavily.
+Use StringBuilder instead.
+
+why?
+Every time you use +, Java creates a new String object.
+For every concatenation:
+- new object created
+- old object discarded
+- more heap memory used
+- more GC overhead
+
+__________________________________________________________________________
+
+
+* Important Interview Questions
+===============================
+Q1. Why String immutable?
+- Security
+- SCP optimization
+- Thread safety
+- Stable hashcode
+
+Q2. Difference between StringBuilder and StringBuffer?
+- Synchronization and performance
+
+Q3. Difference between == and equals()?
+- Reference vs value comparison
+
+Q4. What is SCP?
+- Special heap area storing string literals e.g. "Java", "AS", "HP"
+
+Q5. Why StringBuilder faster?
+- No synchronization overhead
+
+Q6. Why split() preferred over StringTokenizer?
+- More flexible and modern. It supports regular expressions (regex).
+
+Q7. How many objects are created?
+Refer. How Many Objs Created.png
+
+__________________________________________________________________________
+
+
+* Must Know Interview Points
+=============================
+- String is immutable.
+- String literals stored in SCP.
+- equals() compares values.
+- == compares references.
+- StringBuilder faster than StringBuffer.
+- StringBuffer is thread-safe.
+- split() mostly replaced StringTokenizer.
+- StringBuilder heavily used in backend projects.
+- SCP improves memory optimization.
+- intern() moves string into SCP.
+
+__________________________________________________________________________
+
+* Quick Revision
+==================
+String          -> Immutable
+SCP             -> Memory optimization
+StringBuilder   -> Mutable + Faster
+StringBuffer    -> Mutable + Thread-safe
+StringTokenizer -> Old tokenization class
+intern()        -> Move string to SCP
+
+__________________________________________________________________________

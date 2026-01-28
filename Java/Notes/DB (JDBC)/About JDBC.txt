@@ -1,0 +1,95 @@
+/* @Author: Dynamic Duo Learners */
+
+JDBC is Java's database connectivity
+mechanism for communication between
+Java application and any database.
+
+javax.sql and java.sql packages
+host the Java's JDBC API.
+
+To interact with a database :
+1) Connection must be established
+    * Register the Driver
+    * Create the Connection
+2) Using Statement/PreparedStatement
+   object execute any SQL.
+
+Steps for executing SQL
+-----------------------
+For a java programmer SQL statements 
+are categorized as
+1) Statements that do not return data. 
+(create, alter, insert, update, ...) 
+
+2) Statements that return data.
+(select)
+
+To execute any SQL a java 
+program requires a Statement
+or a PreparedStatement object.
+
+Using the Statement or the
+PreparedStatement object 
+* if the sql is a non-query (insert, update, delete, ..., etc) then
+  obj.executeUpdate(sql);
+* if the sql is a query (select) then
+  obj.executeQuery(sql);
+
+Execution of a select SQL statement
+using "executeQuery()" causes
+* Data Fetch at the database tier
+* Return of a "ResultSet" at java tier.
+
+ResultSet
+-----------
+A ResultSet is a matrix like 
+data-structure obtained by 
+execution of a select SQL 
+statement.
+
+It has 2 virtual rows generally 
+known as "Before First" and 
+"After Last".
+Plus in between it has "data rows" 
+as per fetch by select.
+
+ResultSet maintains a "row pointer" 
+for row traversals.
+It can be moved using methods like
+"next()" , "previous()" , "first()" , 
+"last()", "absolute()" , "relative()", 
+"beforeFirst()" and "afterLast()".
+
+But a ResultSet is read only
+and forward only by default 
+and hence doesnt support 
+updation and scrolling.
+
+It can be set as sensitive/insensitive 
+and updatable/readonly by using 
+ ResultSet.TYPE_FORWARD_ONLY
+ ResultSet.TYPE_SCROLL_INSENSITIVE
+ ResultSet.TYPE_SCROLL_SENSITIVE
+ ResultSet.CONCUR_READ_ONLY
+ ResultSet.CONCUR_UPDATABLE
+while creating the Statement/PreparedStatement.
+
+Columns of a ResultSet are 
+either known by their name 
+or by 1 based index.
+
+To know about ResultSet schema 
+there is a ResultSetMetaData object.
+It can be obtained by use of
+"rs.getMetaData()"
+
+For data fetch use a correct combination
+of row pointer movement and column index.
+To fetch a "cell value" use the getX(colIndex);
+
+
+FYI
+=====
+JDK doesnt come with a driver
+to connect to a database of choice.
+It has to be downloaded separately.

@@ -1,0 +1,436 @@
+/* @Author: Dynamic Duo Learners */
+Refer. Map.png
+
+Map
+------
+Map is used to store key-value pairs.
+
+Main Features:
+- Keys are unique
+- Values can be duplicate
+- Fast lookup using keys
+- Does NOT extend Collection interface
+
+Example:
+Map<Integer, String> map = new HashMap<>();
+map.put(1, "Java");
+map.put(2, "Spring");
+
+
+~ Map Hierarchy
+--------------------
+
+Map
+ |
+ +-- HashMap
+ |
+ +-- LinkedHashMap
+ |
+ +-- SortedMap
+ |      |
+ |      +-- NavigableMap
+ |              |
+ |              +-- TreeMap
+ |
+ +-- Hashtable
+ |
+ +-- ConcurrentHashMap
+
+
+Common Map Methods
+-------------------
+
+put(key, value):
+Adds or updates key-value pair.
+
+get(key):
+Returns value for key.
+
+remove(key):
+Removes entry.
+
+containsKey(key):
+Checks key exists.
+
+containsValue(value):
+Checks value exists.
+
+keySet():
+Returns all keys.
+
+values():
+Returns all values.
+
+entrySet():
+Returns key-value entries.
+
+putIfAbsent():
+Adds only if key absent.
+
+getOrDefault():
+Returns default value if key absent.
+
+size():
+Returns total entries.
+
+
+* HashMap
+-----------
+HashMap is the most commonly used Map implementation.
+It provides fast key-based lookup using hashing and
+is the most commonly used Map implementation.
+
+Refer. Hashing.png
+
+Important Features:
+- Stores key-value pairs
+- Fast lookup
+- Allows one null key
+- Allows multiple null values
+- Does NOT maintain insertion order
+- Not thread-safe
+
+Example:
+Map<String, Integer> map = new HashMap<>();
+map.put("Java", 90);
+map.put("Spring", 95);
+
+Performance
+------------
+put()       -> O(1) average
+get()       -> O(1) average
+remove()    -> O(1) average
+
+Advantages
+------------
+- Very fast operations
+- Best for lookup-based operations
+- Most commonly used Map
+
+Disadvantages
+-------------
+- No insertion order
+- Not thread-safe
+
+Where Used?
+--------------
+- Caching
+- DTO mapping
+- User sessions
+- Frequency counting
+- Grouping data
+
+
+HashMap Internal Working
+-------------------------
+HashMap internally uses:
+- Array of buckets
+- hashCode()
+- equals()
+- Linked list / Tree nodes
+
+Refer. Hashmap Internal Working.png
+
+Flow:
+1. hashCode() calculates bucket index
+2. Key stored in bucket
+3. equals() checks duplicate keys
+
+In Short -
+hashCode() decides bucket.
+equals() checks key equality.
+
+
+Java 8 Improvement:
+
+If bucket size increases heavily:
+LinkedList converts to Red-Black Tree.
+This improves:
+Worst case O(n) -> O(log n)
+
+
+Hash Collision:
+Collision happens when different keys generate same bucket index.
+Collision does NOT mean duplicate key.
+
+HashMap handles collision using:
+- LinkedList
+- Red-Black Tree (Java 8+)
+
+Example:
+key1.hashCode() == key2.hashCode()
+
+*** Refer. HashMap Internal Working.png
+
+
+* LinkedHashMap
+-----------------
+LinkedHashMap maintains insertion order while still
+providing hashing-based lookup.
+
+Important Features:
+- Maintains insertion order
+- Allows one null key
+- Allows multiple null values
+- Slightly slower than HashMap
+
+Example:
+Map<Integer, String> map = new LinkedHashMap<>();
+map.put(1, "Java");
+map.put(2, "Spring");
+
+Iterating Map:
+Using entrySet() - Preferred:
+for(Map.Entry<String, Integer> entry : map.entrySet()) {
+    System.out.println(entry.getKey());
+    System.out.println(entry.getValue());
+}
+
+Using keySet():
+for(String key : map.keySet()) {
+    System.out.println(key + map.get(key));
+}
+
+entrySet() is more efficient when both key and value needed.
+
+
+Advantages
+-----------
+- Predictable iteration order
+- Useful for ordered APIs
+
+Where Used?
+-----------
+- Ordered responses
+- LRU cache
+- Maintain insertion order
+
+
+* TreeMap
+-------------------------------------------------------------------------------
+TreeMap stores keys in sorted order.
+
+Important Features:
+- Sorted keys
+- Internally Uses Red-Black Tree
+- Does NOT allow null key
+- Allows null values
+- Slower than HashMap
+
+Example:
+Map<Integer, String> map = new TreeMap<>();
+map.put(30, "C");
+map.put(10, "A");
+map.put(20, "B");
+
+Output:
+10, 20, 30
+
+Performance:
+put/get/remove -> O(log n)
+
+Advantages
+--------------
+- Automatic sorting
+- Range-based operations
+
+Disadvantages
+--------------
+- Slower than HashMap
+
+Where Used?
+------------
+- Ranking systems
+- Sorted reports
+- Range queries
+
+
+
+* Hashtable
+------------
+Hashtable is a legacy synchronized Map.
+
+Important Features:
+- Thread-safe
+- Synchronized methods
+- Does NOT allow null key/value
+- Slower performance
+
+Example:
+Hashtable<Integer, String> table = new Hashtable<>();
+
+Modern Recommendation:
+Avoid Hashtable in modern applications.
+Use ConcurrentHashMap instead.
+
+* ConcurrentHashMap
+---------------------
+ConcurrentHashMap is a thread-safe high-performance Map which provides concurrent access of elements.
+
+Important Features:
+- Thread-safe
+- Better concurrency
+- High performance
+- Does NOT allow null key/value
+- Preferred in concurrent applications
+
+Example:
+ConcurrentHashMap<String, Integer> map =
+new ConcurrentHashMap<>();
+
+Advantages
+-----------
+- Multiple threads can access safely
+- Better performance than Hashtable
+
+Why null not allowed?
+---------------------
+To avoid ambiguity:
+- Key absent?
+OR
+- Value null?
+
+e.g. map.get(10); --> returned null 
+Now confusion occurs that whether Key is absent or value.
+
+Where Used?
+------------
+- Concurrent cache
+- Shared runtime data
+- Multi-threaded backend systems
+
+
+ConcurrentHashMap provides thread-safe concurrent access
+with better performance than Hashtable.
+
+_____________________________________________________________________________________________________________
+
+
+* HashMap vs LinkedHashMap vs TreeMap
+
+HashMap
+--------
+- No order
+- Fastest
+- Allows null key
+- O(1) average
+
+LinkedHashMap
+--------------
+- Maintains insertion order
+- Slightly slower
+- O(1) average
+
+TreeMap
+----------
+- Sorted order
+- Uses Red-Black Tree
+- O(log n)
+
+Use HashMap for fast lookup,
+LinkedHashMap for insertion order,
+TreeMap for sorted keys.
+
+_____________________________________________________________________________________________________________
+
+
+* HashMap vs Hashtable vs ConcurrentHashMap
+
+HashMap
+-------------------------------------------------------------------------------
+- Not thread-safe
+- Allows null
+- Fastest in single-threaded use
+
+Hashtable
+-------------------------------------------------------------------------------
+- Thread-safe
+- Synchronized
+- Legacy
+- Slower
+
+ConcurrentHashMap
+-------------------------------------------------------------------------------
+- Thread-safe
+- Better concurrency
+- High performance
+- Preferred modern concurrent Map
+
+
+_____________________________________________________________________________________________________________
+
+
+* Real Backend Use Cases
+=========================
+HashMap:
+- Caching
+- DTO mapping
+- Frequency counting
+- API processing
+
+LinkedHashMap:
+- Ordered API responses
+- LRU cache
+
+TreeMap:
+- Ranking
+- Sorted reporting
+- Leaderboards
+
+ConcurrentHashMap:
+- Multi-threaded cache
+- Shared runtime data
+- Concurrent counters
+
+_____________________________________________________________________________________________________________
+
+
+* Important Interview Questions
+================================
+
+Q1. How HashMap works internally?
+Answer:
+Uses bucket array, hashCode(), equals(), linked list/tree nodes.
+
+Q2. Difference between HashMap and ConcurrentHashMap?
+Answer:
+HashMap is not thread-safe.
+ConcurrentHashMap is thread-safe and high-performance.
+
+Q3. Why ConcurrentHashMap does not allow null?
+Answer:
+To avoid ambiguity during concurrent operations.
+
+Q4. Difference between HashMap and TreeMap?
+Answer:
+HashMap is unordered and faster.
+TreeMap is sorted and slower.
+
+Q5. Difference between HashMap and LinkedHashMap?
+Answer:
+LinkedHashMap maintains insertion order.
+
+Q6. Why override equals() and hashCode()?
+Answer:
+For correct duplicate key handling in custom objects.
+
+_____________________________________________________________________________________________________________
+
+
+* Must Know Quick Points
+==========================
+
+- Map stores key-value pairs.
+- Keys are unique.
+- HashMap allows one null key.
+- HashMap internally uses hashing.
+- HashMap is not thread-safe.
+- LinkedHashMap maintains insertion order.
+- TreeMap sorts keys.
+- ConcurrentHashMap preferred for concurrent operations.
+- Hashtable is legacy.
+- hashCode() decides bucket.
+- equals() checks equality.
+- Java 8 improved collision handling using Red-Black Tree.
+
+_____________________________________________________________________________________________________________

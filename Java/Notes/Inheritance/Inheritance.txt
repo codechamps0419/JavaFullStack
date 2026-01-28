@@ -1,0 +1,211 @@
+/* @Author: Dynamic Duo Learners */
+
+Inheritance
+---------------
+Inheritance is an OOP concept that allows 
+definition of derived entities from existing 
+ones.
+
+The derived entity gets:
+* Code
+* Data
+* Compatibility
+from the existing one.
+
+The derived entity is host for extended code and data.
+
+Java Terminology
+------------------
+The existing entity that is the inherited one, 
+is termed as the super class.
+
+The derived entitiy that is the inheriting one, 
+is termed as the sub class.
+
+"extends" keyword is used to implement inheritance 
+in Java.
+
+FYI:
+ One class can inherit one super class only.
+ One interface can inherit multiple super interfaces.
+ 
+Inheritance of CODE
+---------------------
+Java allows inheritance, by which the sub class 
+can access all non private code (methods) of the 
+super class, through its own object.
+
+The sub class may :
+1) Use the inherited methods.
+2) Override the inherited methods and then use them.
+3) Define extended methods and use them.
+
+Method Overriding
+------------------
+Method Overriding is redefining a non static 
+method in the sub class, keeping the methods 
+signature same.
+
+The method can have a compatible return type.
+
+
+Type Compatibility
+-------------------
+Inheritance creates Type Compatibility between 
+the super and the sub class.
+Type Compatibility allows a super class reference 
+to refer to an object of the sub class.
+(Reverse is not true).
+
+A super class reference that refers to an object 
+of the sub class can access the inherited and 
+overridden methods only.
+The extended methods of the sub class are not 
+accessible using the super class reference.
+
+Binding
+---------
+Binding is connecting a method call with a definition.
+It is the role of the compiler to perform binding.
+For binding the compiler uses a signature matching technique.
+
+Calls to constructors, methods, static methods, 
+overloaded methods and constructors are mapped by 
+the compiler at compile time. 
+Hence cases of early binding.
+
+
+Runtime Binding
+-----------------
+When compiler encounters calls to overridden
+methods using a super class reference then it
+doesnt bind.
+
+The reasons being :
+1) Ability of super class reference to refer to object of self type and sub class as well.
+2) Multiple definition of method available due to overriding.
+
+Hence:
+At execution time, system encounters an unbound call.
+So system activates Runtime Type Identification mechanism to detect 
+the type of object being refered by the super class reference.
+
+Next according to the type object the version of the overridden 
+method is selected and bound.
+
+This process of connecting a method call with the methods 
+definition is termed as Runtime Binding or Late Binding or 
+Dynamic Method Dispatch.
+
+
+Coupling 
+-----------
+Is the degree upto which a class knows about another class.
+
+Two classes may be 
+1) Tightly Coupled
+In this case a class directly uses reference to 
+another class and accesses many-all members 
+of the target class.
+
+Tight Coupling limits the class reference to refer 
+to one class only and hence the current class becomes 
+limited for the definitions of the methods.
+
+2) Loosely Coupled
+In this case a class uses interface/super class 
+reference to refer to another class and accesses 
+limited members of the target class.
+
+Loose Coupling allows the interface/super class
+reference to refer to any class in the hierarchy
+defined by the interface or the super class.
+
+Hence the current class can get different definitions 
+for the same method.
+
+Abstract
+----------
+Java allows declaration of methods and classes as "abstract".
+
+Abstract methods
+-----------------
+An abstract method is a method:
+ * With signature (declaration) only and not body (definition).
+ * That must be overridden.
+ * That makes the class abstract.
+
+Abstract class
+---------------
+An abstract class is a class that:
+ * Cannot be instantiated.
+ * Must be inherited for use.
+ * Contains ZERO to MANY abstract methods.
+
+Inheritance of Abstract Class
+----------------------------
+Known that by inheritance a sub class gets :
+ CODE 
+ DATA
+ COMPATIBILITY
+from the super class.
+
+As an abstract class is inherited the sub class along 
+with normal methods also inherits the abstract methods.
+
+Due to presence of abstract methods the sub class 
+also turns abstract.
+
+If the sub class overrides all the abstract methods 
+then it can become a normal class again.
+
+Q) Known that an abstract class  cannot be instantiated, 
+    can it have data members and constructors?
+A) YES.
+    Its data members would be the data members of the sub class.
+    Its constructors would be invoked as object of the sub class is created.
+    In short, all that an abstract class defines is for its sub classes.
+
+
+Inheritance of Data
+--------------------
+By inheritance a sub class gets data
+(non static data members) from the 
+super class.
+
+System implements inheritance of data
+as the object of the sub class is created.
+
+Known that object creation is 3 step process:
+1) Memory Allocation
+2) Execution of Non Static Initializer Block
+3) Execution of Constructor.
+
+So as the object of the sub class is created:
+1) A composite block, having data members of
+the super and the sub class, is allocated.
+2) Non static initializer block and the constructor
+of the super class executes.
+3) Non static initializer block and the constructor
+of the sub class executes.
+
+Constructors for sub class objects
+-------------------------------
+Known that on creation of object of
+the sub class the constructors, of the
+super and the sub class, execute.
+
+The order being super class constructor
+first and the sub class constructor next.
+
+The sub class constructor to execute
+is decided by the parameters passed
+while object creation.
+
+But the default constructor of the
+super class executes (always).
+
+To call the parameter matching constructor
+of the super class, the sub class constrcutor
+must pass appropriate parameters to it
+using "super" as the first statement.

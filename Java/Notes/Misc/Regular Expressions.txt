@@ -1,0 +1,194 @@
+/* @Author: Dynamic Duo Learners */
+Refer. Regular Expressions.png
+
+
+Regular Expression
+===================
+A Regular Expression (Regex) is a powerful tool for defining text patterns, 
+used for searching, editing, manipulating, and validating strings. 
+Java provides native support for regular expressions through the 'java.util.regex' 
+package.
+
+The core core process involves:
+  - Defining a pattern string.
+  - Compiling it into a Pattern object.
+  - Creating a Matcher object to compare against the target text string.
+
+
+2. THE CORE API CLASSES (java.util.regex)
+------------------------------------------
+The package contains three principal classes/interfaces:
+
+a) Pattern Class:
+   - A compiled representation of a regular expression.
+   - It has no public constructors. You create an instance by invoking the 
+     static compile() method.
+   - Example: Pattern p = Pattern.compile("a*b");
+
+b) Matcher Class:
+   - An engine that interprets the Pattern and performs match operations 
+     against an input string.
+   - Like Pattern, it has no public constructors. You obtain a Matcher object 
+     by invoking the matcher() method on a Pattern instance.
+   - Example: Matcher m = p.matcher("aaaaab");
+
+c) PatternSyntaxException:
+   - An un-checked exception that indicates a syntax error in a regular 
+     expression pattern.
+
+
+3. REGEX SYNTAX CHEAT SHEET
+-----------------------------
+[Characters]
+  x          The character x
+  \\         The backslash character (escaped as \\ in Java String literals)
+  \t         The tab character
+  \n         The newline character
+  \r         The carriage-return character
+
+[Character Classes]
+  [abc]      a, b, or c (simple class)
+  [^abc]     Any character except a, b, or c (negation)
+  [a-zA-Z]   a through z or A through Z, inclusive (range)
+  [a-d[m-p]] a through d, or m through p: [a-dm-p] (union)
+  [a-z&&[def]] d, e, or f (intersection)
+
+[Predefined Character Classes]
+  .          Any character (may or may not match line terminators)
+  \d         A digit: [0-9] (Written as "\\d" in Java Strings)
+  \D         A non-digit: [^0-9]
+  \s         A whitespace character: [ \t\n\x0B\f\r]
+  \S         A non-whitespace character: [^\s]
+  \w         A word character: [a-zA-Z_0-9]
+  \W         A non-word character: [^\w]
+
+[Boundary Matchers]
+  ^          The beginning of a line
+  $          The end of a line
+  \b         A word boundary
+  \B         A non-word boundary
+  \A         The beginning of the input
+  \Z         The end of the input except for the final terminator
+  \z         The end of the input
+
+[Quantifiers] (X represents a pattern expression)
+  Greedy     Reluctant   Possessive   Meaning
+  ------     ---------   ----------   -------
+  X?         X??         X?+          X, once or not at all
+  X* X*?         X*+          X, zero or more times
+  X+         X+?         X++          X, one or more times
+  X{n}       X{n}?       X{n}+        X, exactly n times
+  X{n,}      X{n,}?      X{n,}+       X, at least n times
+  X{n,m}     X{n,m}?     X{n,m}+      X, at least n but not more than m times
+
+[Logical Operators & Grouping]
+  XY         X followed by Y
+  X|Y        Either X or Y
+  (X)        X, as a capturing group
+
+
+QUANTIFIER BEHAVIORS EXPLAINED
+-------------------------------
+- Greedy (Default): Evaluates the entire input string first, matching as much 
+  as possible. If a match fails, it backs off (backtracks) one character at a 
+  time until a match is found.
+- Reluctant (Lazy): Starts at the beginning of the string and matches as few 
+  characters as possible. It moves forward one character at a time.
+- Possessive: Matches the entire string or maximum characters immediately 
+  without ever backtracking, even if backtracking would make the overall match 
+  succeed.
+
+
+COMMON METHODS IN MATCHER
+--------------------------
+- boolean matches(): Attempts to match the *entire* region against the pattern.
+- boolean find(): Attempts to find the *next* subsequence of the input sequence 
+  that matches the pattern. Can be run in a loop to find multiple occurrences.
+- int start(): Returns the start index of the previous match.
+- int end(): Returns the offset after the last character matched.
+- String group(): Returns the input subsequence matched by the previous match.
+- String replaceAll(String replacement): Replaces every subsequence of the input 
+  sequence that matches the pattern with the given replacement string.
+
+
+JAVA CODE EXAMPLE
+-------------------
+Save the following code as RegexDemo.java to execute and see how pattern matching 
+works natively in Java:
+
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+public class RegexDemo {
+    public static void main(String[] args) {
+        // Target sample text
+        String text = "Contact us at support@example.com or sales@company.org";
+        
+        // Regex pattern to extract emails
+        // Note: Backslashes must be escaped with an extra backslash in Java strings
+        String regex = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}";
+        
+        System.out.println("Input Text: " + text);
+        System.out.println("Regex Pattern: " + regex);
+        System.out.println("\\n--- Finding matches using Matcher.find() ---");
+        
+        // Step 1: Compile the pattern
+        Pattern pattern = Pattern.compile(regex);
+        
+        // Step 2: Allocate the matcher engine for the given text
+        Matcher matcher = pattern.matcher(text);
+        
+        // Step 3: Loop through and locate occurrences
+        int matchCount = 0;
+        while (matcher.find()) {
+            matchCount++;
+            System.out.println("Match #" + matchCount + ": " + matcher.group());
+            System.out.println("  - Starting Index: " + matcher.start());
+            System.out.println("  - Ending Index  : " + matcher.end());
+        }
+        
+        // Validation example using String.matches() wrapper
+        System.out.println("\\n--- Validation Example ---");
+        String originalZip = "90210";
+        String invalidZip = "90210-123";
+        String zipRegex = "\\d{5}"; // exactly 5 digits
+        
+        System.out.println("Is '" + originalZip + "' a valid 5-digit ZIP? " + originalZip.matches(zipRegex));
+        System.out.println("Is '" + invalidZip + "' a valid 5-digit ZIP? " + invalidZip.matches(zipRegex));
+    }
+}
+
+
+/*
+Output:
+
+Input Text: Contact us at support@example.com or sales@company.org
+Regex Pattern: [a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}
+
+--- Finding matches using Matcher.find() ---
+Match #1: support@example.com
+  - Starting Index: 14
+  - Ending Index  : 33
+Match #2: sales@company.org
+  - Starting Index: 37
+  - Ending Index  : 54
+
+--- Validation Example ---
+Is '90210' a valid 5-digit ZIP? true
+Is '90210-123' a valid 5-digit ZIP? false
+
+*/
+
+
+PRACTICAL TIPS & COMMON PITFALLS
+---------------------------------
+- Double Backslash: Java Strings interpret a single backslash as an internal 
+  string escape sequence (like \n). To pass a literal regex escape character 
+  like \d or \w to the compilation engine, you MUST write them as "\\d" or "\\w".
+- Pattern Reuse: Performance-wise, compiling a Pattern via 'Pattern.compile()' 
+  is an expensive operation. If you are validating elements in a massive loop or 
+  high-throughput stream, compile your Pattern once into a 'private static final' 
+  constant and reuse the Matcher instances.
+- String wrappers: 'String.matches("regex")' looks clean but secretly recompiles 
+  the pattern under the hood on every single execution. Use it sparingly.
+
