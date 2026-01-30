@@ -1,0 +1,45 @@
+/* @Author: Dynamic Duo Learners */
+
+Java NIO:
+---------------
+Java NIO(New Input/Output) is high-performance networking and file handling API and 
+structure which works as an alternative IO API for Java. It is introduced from JDK 4.
+
+Useful Classes:
+
+Files: A massive utility class packed with static methods 
+to operate directly on Path instances.
+
+Paths class - A simple factory utility class used exclusively to 
+generate Path instances from strings or URIs.
+Usage: Path path = Paths.get("H:\\Java Notes");
+
+
+Problems with traditional blocking IO (java.io.*):
+--------------------------------------------------
+
+~ Blocking IO :
+When a thread calls read() or write(), it is frozen (blocked) until 
+data is completely transferred from the disk or network.
+
+~ Data Manipulation :
+Traditional I/O processes data sequentially as a stream of bytes or characters. 
+You cannot move back and forth in a stream without restarting or caching it manually.
+
+Advantages of Java NIO:
+-----------------------
+
+~ Non-Blocking IO :
+In non-blocking IO, a thread does not wait continuously for one request to complete. 
+If no data is available yet, it allows the thread to move on and execute other application tasks 
+and came back when data is ready. It is only notified when data is ready for processing.
+Single thread can monitor multiple connections simultaneously and process only those that are ready.
+
+~ Buffer-Oriented Processing :
+NIO is Buffer-oriented. Data is fetched block-by-block and loaded into a temporary memory block (Buffer). 
+This gives you built-in pointers to manipulate the data smoothly:
+
+You can read a block, look ahead at incoming bytes, move a pointer backward to re-parse a section, 
+or skip bytes forward without complex overhead.
+
+Refer - JavaNioFileManager.java

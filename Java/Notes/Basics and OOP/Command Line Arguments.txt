@@ -1,0 +1,100 @@
+/* @Author: Dynamic Duo Learners */
+
+Refer - CmdLineArgs.png
+
+Command Line Arguments:
+=======================
+
+Command line arguments are parameters
+passed from DOS/Linux shell or through command prompt to the Java 
+application at runtime.
+
+System fetches the passed command line
+arguments and forms a String array of the
+same.
+
+Reference to the String array (args) is passed as a
+parameter to main method of the Java application.
+
+The main method's signature is preset to receive the String array reference.
+
+main method signatures -
+public static void main(String[] args)
+public static void main(String cla[])
+public static void main(String ...args)  
+public static void main(String... args)
+//...args <- Variable Arguments (Varargs) or Variable Arity Parameters
+
+Code in main can utilize the array content
+through the reference.
+
+NOTE:
+If the user doesn't pass any command line arguments then the system create the String
+array of size zero and passes its reference to the main method.
+
+
+Why Use Command Line Arguments?
+--------------------------------
+~ It is used because it allows us to provide input at runtime without modifying the whole program.
+~ It helps to run programs automatically by giving them the needed information from outside.
+ 
+
+Key & MISC Points:
+--------------------------------
+
+* args is an array of String containing all command-line arguments. 
+We can use any valid variable name instead of args.
+We must manually parse or convert string values to respective type.
+
+* Arguments are space-separated
+Some Samples to demonstrate how java will take these arguments as input -
+> java JavaDemo Hello World  <-- args = [ "Hello", "World" ]
+> java JavaDemo "Hello World" <-- args = [ ""Hello", "World""]
+> java JavaDemo 10 true 3.14 file.txt <-- args = [ "10", "true", "3.14", "file.txt" ]
+
+* Always validate and handle exceptions (e.g., NumberFormatException when parsing numbers, 
+ArrayIndexOutOfBoundsException while accessing arguments)
+
+* args.length gives the number of arguments
+
+* JVM arguments and Command Line Arguments are different. 
+Java supports library to access JVM Arguments. Many developers don’t know this exists.
+
+> java -Xmx512m JavaDemo Passionate Buddies  <-- args = [ "Passionate", "Buddies" ]
+
+Sample Program -
+import java.lang.management.ManagementFactory;
+
+List<String> jvmArgs = ManagementFactory.getRuntimeMXBean().getInputArguments();
+System.out.println("JVM Args -" + jvmArgs);
+
+//Output : JVM Args - [ -Xmx512m ]
+
+
+* Special characters can break things. So, test your application properly on different systems.
+
+> java JavaDemo $HOME <-- args = [ "/home" ]
+(Shell/CMDLine expands $HOME path before Java sees it. Once path is expanded, Java reads the arguments. 
+Java never sees $HOME directly unless you prevent shell expansion. The shell always processes it first.
+
+> java JavaDemo $Home <-- args = []
+
+> java JavaDemo '$HOME' <-- args = [ "$HOME" ]
+
+D:\SampleFolder> java JavaDemo *.txt  <-- args = [all txt file names in SampleFolder will be stored]. 
+Shell or CMD expands *.txt into matching files.
+
+> java JavaDemo $(date) <-- args = [ "Sun", "Jan", "01", "10:00:00", "IST", "2026" ]. 
+Shell or CMD will expand $(date) to "Sun Jan 01 10:00:00 IST 2026"
+
+> java JavaDemo $PATH <-- args = [ "/usr/bin:/bin:/usr/local/bin:..." ]
+
+> java JavaDemo \$PATH <-- args = [ "$PATH" ]. Shell or CMD will escape special character.
+
+> java JavaDemo $(whoami) $PATH <-- args = [ "root", "/usr/bin:/bin:/usr/local/bin:..." ]. 
+Shell will expand $(whoami) to get current user and expand $PATH.
+
+> java JavaDemo --port=8080 --host=localhost --timeout=30 <-- args = [ "--port=8080", "--host=localhost", "--timeout=30" ]
+In such cases, we need to write logic to split the values to get port number (8080), host name (localhost), timeout span (30).
+That’s why developers should use libraries like Picocli or Apache Commons CLI, which automatically handle all of this for us.
+

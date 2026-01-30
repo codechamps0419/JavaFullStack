@@ -1,0 +1,36 @@
+/* @Author: Dynamic Duo Learners */
+
+final
+-------
+Java allows declaration of :
+* classes
+* methods
+* variables, arrays, ... 
+as "final".
+
+final class
+-----------
+A final class is a class that cannot be inherited.
+
+final method
+------------
+A final method is a method that cannot be overridden.
+
+final variables or arrays
+------------------------
+Local and member variables, array, etc
+can be declared as final.
+
+When a local variable or array is declared
+as final then it must be assigned once, anywhere
+after declaration. Later it can be used as
+read only, cannot be modified/reassigned.
+
+When a member variable or array is declared
+as final then it must be assigned once, in the
+non static initializer block or in the constructor
+(not in both and not in any method).
+Later it can be used as read only, cannot be 
+modified/reassigned.
+
+
