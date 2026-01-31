@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Boot Annotations - Quick Reference</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Pacifico&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #FFE4E1 0%, #E6E6FA 100%);
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(255, 105, 180, 0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);
+            border-radius: 15px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 42px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header .subtitle {
+            font-size: 18px;
+            font-weight: 300;
+            margin-bottom: 15px;
+			font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+        
+        .creator {
+            font-size: 16px;
+            font-weight: 600;
+            color: #FFE4E1;
+            margin-top: 10px;
+			font-family: cursive;
+        }
+        
+        .intro {
+            text-align: center;
+            font-style: italic;
+            color: #FF69B4;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #FFF0F5;
+            border-radius: 10px;
+            border: 2px dashed #FFB6C1;
+        }
+        
+        .category {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+        
+        .category-header {
+            font-size: 22px;
+            font-weight: 700;
+            color: #FF1493;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #FFE4E1 0%, #FFB6C1 100%);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 5px solid #FF69B4;
+        }
+        
+        .annotation-item {
+            display: flex;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: #FFFAF0;
+            border-radius: 8px;
+            border-left: 4px solid #FFB6C1;
+            transition: transform 0.2s;
+        }
+        
+        .annotation-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(255, 105, 180, 0.2);
+        }
+        
+        .annotation-item:nth-child(even) {
+            background: #FFF0F5;
+        }
+        
+        .annotation-name {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            color: #9370DB;
+            min-width: 250px;
+            font-size: 14px;
+        }
+        
+        .annotation-desc {
+            color: #4B0082;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #E6E6FA 0%, #FFB6C1 100%);
+            border-radius: 15px;
+            color: #FF1493;
+        }
+        
+        .footer h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .footer p {
+            font-style: italic;
+            margin: 5px 0;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ Spring Boot Annotations ✨</h1>
+            <div class="subtitle">Quick Reference Guide</div>
+            <div class="creator"> Created By ~ Dynamic Duo Learners </div>
+        </div>
+        
+        <div class="intro">
+            <p>👋 Ready to ace those Spring Boot interviews?<br>
+            This comprehensive guide has all the annotations you need with detailed explanations! ✅<br>
+            Let's Master Spring Boot Annotations Together! 🚀</p>
+        </div>
+        
+        <!-- Core Spring Boot Annotations -->
+        <div class="category">
+            <div class="category-header">🌟 Core Spring Boot Annotations</div>
+            <div class="annotation-item">
+                <div class="annotation-name">@SpringBootApplication</div>
+                <div class="annotation-desc"><strong>Meta-annotation combining three powerful annotations:</strong> @Configuration (bean definitions), @EnableAutoConfiguration (smart defaults), and @ComponentScan (finds components). @SpringBootApplication is a key annotation that is used to mark the main class of a Spring Boot application and it eliminates boilerplate configuration. 🚀</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@EnableAutoConfiguration</div>
+                <div class="annotation-desc"><strong>Enables Spring Boot's auto-configuration magic.</strong> Analyzes classpath and automatically configures beans. Uses @Conditional annotations internally. Can exclude specific configs with exclude attribute. 💡</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Configuration</div>
+                <div class="annotation-desc"><strong>Marks class as configuration source.</strong> Contains @Bean methods. Spring creates CGLIB proxy for singleton behavior. Replaces XML configuration. Use for Java-based configuration. ⚙️</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@ComponentScan</div>
+                <div class="annotation-desc"><strong>Scans packages for Spring components.</strong> Finds @Component, @Service, @Repository, @Controller. Default: scans current package and sub-packages. Can specify basePackages or basePackageClasses. 🔍</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Bean</div>
+                <div class="annotation-desc"><strong>Method-level annotation in @Configuration classes.</strong> Manually creates and configures beans. Use for third-party classes or complex initialization. Method name becomes bean name (can override). Returns object managed by Spring.</div>
+            </div>
+        </div>
+        
+        <!-- Stereotype Annotations -->
+        <div class="category">
+            <div class="category-header">🎯 Stereotype Annotations ~ Tell Spring exactly what role that class plays</div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Service</div>
+                <div class="annotation-desc"><strong>Business logic layer annotation.</strong> Specialization of @Component. Indicates service layer class. No additional behavior, purely semantic. Best practice for service classes containing business logic. 💼</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Repository</div>
+                <div class="annotation-desc"><strong>Data access layer annotation.</strong> Specialization of @Component. Provides automatic exception translation - converts database exceptions to Spring's DataAccessException. Use for DAO/Repository classes. 🗄️</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Controller</div>
+                <div class="annotation-desc"><strong>Web MVC controller annotation.</strong> Handles HTTP requests and returns view names (HTML pages). Used with @RequestMapping. Returns ModelAndView or view name String. For traditional web applications. 🎨</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@RestController</div>
+                <div class="annotation-desc"><strong>RESTful web service controller.</strong> Combines @Controller + @ResponseBody. All methods return data (JSON/XML) instead of views. No need for @ResponseBody on each method. Perfect for REST APIs.</div>
+            </div>
+			<div class="annotation-item">
+			    <div class="annotation-name">@Component</div>
+			    <div class="annotation-desc"><strong>Generic stereotype annotation.</strong> Marks class as Spring-managed component. Auto-detected by component scanning. Base annotation for @Service, @Repository, @Controller. Use when class doesn't fit above stereotypes. 🧩 </div>
+			</div>
+ 
+        </div>
+        
+        <!-- Dependency Injection -->
+        <div class="category">
+            <div class="category-header">💉 Dependency Injection</div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Autowired</div>
+                <div class="annotation-desc"><strong>Automatic dependency injection.</strong> Can be used on constructor, setter, or field. Constructor injection is recommended. Spring resolves dependencies by type. Optional with required=false. ✨</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Qualifier</div>
+                <div class="annotation-desc"><strong>Specifies which bean to inject when multiple bin candidates exist.</strong> Works with @Autowired. Uses bean name to resolve ambiguity. Example: @Qualifier("userService"). Prevents NoUniqueBeanDefinitionException. 🎯</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Primary</div>
+                <div class="annotation-desc"><strong>Marks preferred bean when multiple beans of same type exist.</strong> Spring injects this bean by default. Alternative to @Qualifier. Only one @Primary per type. Useful for default implementations. ⭐</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Value</div>
+                <div class="annotation-desc"><strong>Injects values from properties files or environment.</strong>  Supports SpEL expressions. <br> Syntax: @Value("${property.name}") <br> Can provide default: @Value("${name:defaultValue}"). <br>Used for Simple property injection. 📝 </div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@ConfigurationProperties</div>
+                <div class="annotation-desc"><strong>Type-safe configuration properties binding.</strong> Binds external properties to POJO. Prefix-based: @ConfigurationProperties(prefix="app"). <br>Supports validation with @Validated. Better than multiple @Value for grouped properties. 📦</div>
+            </div>
+        </div>
+        
+        <!-- Web & REST Annotations -->
+        <div class="category">
+            <div class="category-header">🌐 Web & REST Annotations</div>
+            <div class="annotation-item">
+                <div class="annotation-name">@RequestMapping</div>
+                <div class="annotation-desc"><strong>Maps HTTP requests to handler methods.</strong> Can specify path, method, params, headers. Works at class and method level. Base for all mapping annotations. Example: @RequestMapping(value="/users", method=RequestMethod.GET). 🗺️</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@GetMapping</div>
+                <div class="annotation-desc"><strong>Shortcut for @RequestMapping(method=GET).</strong> Retrieves resources. Idempotent and safe. Used for read operations. Example: @GetMapping("/users/{id}"). More readable than @RequestMapping. 📥</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@PostMapping</div>
+                <div class="annotation-desc"><strong>Shortcut for @RequestMapping(method=POST).</strong> Creates new resources. Non-idempotent. Typically used with @RequestBody. Returns 201 Created on success. Example: @PostMapping("/users"). ➕</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@PutMapping</div>
+                <div class="annotation-desc"><strong>Shortcut for @RequestMapping(method=PUT).</strong> Updates entire resource. Idempotent. Replaces existing resource completely. Example: @PutMapping("/users/{id}"). Use PATCH for partial updates. 🔄</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@DeleteMapping</div>
+                <div class="annotation-desc"><strong>Shortcut for @RequestMapping(method=DELETE).</strong> Deletes resources. Idempotent. Returns 204 No Content typically. Example: @DeleteMapping("/users/{id}"). Handle 404 if resource doesn't exist. 🗑️</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@PatchMapping</div>
+                <div class="annotation-desc"><strong>Shortcut for @RequestMapping(method=PATCH).</strong> Partial resource updates. Non-idempotent. Updates only specified fields. Example: @PatchMapping("/users/{id}"). More efficient than PUT for partial changes. ✏️</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@RequestBody</div>
+                <div class="annotation-desc"><strong>Binds HTTP request body to method parameter.</strong> Uses HttpMessageConverter (Jackson for JSON). Automatic deserialization. Add @Valid for validation. Example: @RequestBody User user. Required by default. 📨</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@ResponseBody</div>
+                <div class="annotation-desc"><strong>Writes return value directly to HTTP response body.</strong> Bypasses view resolution. Uses HttpMessageConverter for serialization. Automatic with @RestController. Returns JSON/XML based on Accept header. 📤</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@PathVariable</div>
+                <div class="annotation-desc"><strong>Extracts values from URI template.</strong> Example: /users/{id} with @PathVariable Long id. Required by default. Can specify name: @PathVariable("userId"). Use for resource identification. 🛣️</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@RequestParam</div>
+                <div class="annotation-desc"><strong>Extracts query parameters from URL.</strong> Example: /users?name=John with @RequestParam String name. Optional with required=false. Can set default: @RequestParam(defaultValue="10"). Use for filtering/pagination. ❓</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@RequestHeader</div>
+                <div class="annotation-desc"><strong>Extracts HTTP header values.</strong> Example: @RequestHeader("Authorization") String token. Access custom headers. Can be optional. Useful for authentication, content negotiation, API versioning. 📋</div>
+            </div>
+        </div>
+        
+        <!-- Security & Validation -->
+        <div class="category">
+            <div class="category-header">🔐 Security & Validation</div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Valid</div>
+                <div class="annotation-desc"><strong>Triggers JSR-303 validation on request body.</strong> Works with validation annotations like @NotNull, @Size. Throws MethodArgumentNotValidException on failure. Use with @RequestBody for input validation. Ensures data integrity. ✅</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Validated</div>
+                <div class="annotation-desc"><strong>Spring's validation annotation.</strong> Supports validation groups. Can be used at class level for method validation. More flexible than @Valid. Enables @Validated on service layer for business validation. 🛡️</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@NotNull</div>
+                <div class="annotation-desc"><strong>Validates field is not null.</strong> Part of Bean Validation API. Allows empty strings. Use for mandatory fields. Example: @NotNull(message="Name is required"). Works with @Valid or @Validated. 🚫</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@NotEmpty</div>
+                <div class="annotation-desc"><strong>Validates collection or string is not null and not empty.</strong> Size must be greater than 0. Use for collections, arrays, strings. More strict than @NotNull. Example: @NotEmpty List<String> items. 📝</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@NotBlank</div>
+                <div class="annotation-desc"><strong>Validates string is not null, not empty, and contains non-whitespace characters.</strong> Trims whitespace before validation. Most strict for strings. Use for text inputs. Example: @NotBlank String username. 💬</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Size</div>
+                <div class="annotation-desc"><strong>Validates size of string, collection, array, or map.</strong> Specify min and max: @Size(min=2, max=50). Works on length for strings, element count for collections. Example: @Size(min=8) String password. 📏</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Min / @Max</div>
+                <div class="annotation-desc"><strong>Validates numeric values have minimum or maximum value.</strong> @Min(18) for age validation. @Max(100) for percentage. Works with Integer, Long, BigDecimal. Example: @Min(value=0, message="Price must be positive"). 🔢</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Email</div>
+                <div class="annotation-desc"><strong>Validates string is valid email format.</strong> Uses regex pattern internally. Checks for @ symbol and domain. Example: @Email String email. Can customize with regexp attribute for stricter validation. 📧</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Pattern</div>
+                <div class="annotation-desc"><strong>Validates string matches specified regex pattern.</strong> Example: @Pattern(regexp="^[0-9]{10}$") for phone numbers. Flexible for custom validation rules. Use for format validation like SSN, postal codes. 🎭</div>
+            </div>
+        </div>
+        
+        <!-- Data & JPA Annotations -->
+        <div class="category">
+            <div class="category-header">💾 Data & JPA Annotations</div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Entity</div>
+                <div class="annotation-desc"><strong>Marks class as JPA entity mapped to database table.</strong> Each instance represents a table row. Must have @Id field. Table name defaults to class name. Use @Table to customize. Managed by EntityManager. 🗃️</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Table</div>
+                <div class="annotation-desc"><strong>Specifies table name and schema for entity.</strong> Example: @Table(name="users", schema="public"). Optional - defaults to entity class name. Can specify indexes and unique constraints. Use for custom table mapping. 📊</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Id</div>
+                <div class="annotation-desc"><strong>Marks field as primary key.</strong> Required for every @Entity. Can be simple (single field) or composite. Use with @GeneratedValue for auto-generation. Example: @Id private Long id. 🔑</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@GeneratedValue</div>
+                <div class="annotation-desc"><strong>Specifies primary key generation strategy.</strong> AUTO (default), IDENTITY (auto-increment), SEQUENCE (database sequence), TABLE (separate table). Example: @GeneratedValue(strategy=GenerationType.IDENTITY). Database handles ID generation. 🎲</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Column</div>
+                <div class="annotation-desc"><strong>Customizes column mapping.</strong> Specify name, length, nullable, unique. Example: @Column(name="email_address", unique=true, nullable=false). Optional - defaults to field name. Use for fine-grained control. 📋</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Transactional</div>
+                <div class="annotation-desc"><strong>Manages database transactions declaratively.</strong> Automatic commit on success, rollback on exception. Can specify propagation, isolation, timeout, readOnly. Works at class or method level. Ensures data consistency. 🔄</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Query</div>
+                <div class="annotation-desc"><strong>Defines custom JPQL or native SQL query.</strong> Example: @Query("SELECT u FROM User u WHERE u.email = ?1"). Use nativeQuery=true for SQL. More flexible than method name queries. Supports named parameters. 📝</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Modifying</div>
+                <div class="annotation-desc"><strong>Indicates query modifies data (UPDATE/DELETE).</strong> Must be used with @Query. Requires @Transactional. Clears persistence context after execution. Example: @Modifying @Query("DELETE FROM User u WHERE u.active = false"). ✏️</div>
+            </div>
+        </div>
+        
+        <!-- Async & Scheduling -->
+        <div class="category">
+            <div class="category-header">⚡ Async & Scheduling</div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Async</div>
+                <div class="annotation-desc"><strong>Executes method asynchronously in separate thread.</strong> Returns void, Future, or CompletableFuture. Requires @EnableAsync on configuration class. Non-blocking execution. Use for long-running tasks. Configure thread pool for better control. ⚡</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@EnableAsync</div>
+                <div class="annotation-desc"><strong>Enables asynchronous method execution support.</strong> Place on @Configuration class. Activates @Async annotation processing. Can customize executor with AsyncConfigurer. Enables parallel processing capabilities. 🔛</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Scheduled</div>
+                <div class="annotation-desc"><strong>Schedules method execution at fixed intervals or cron expression.</strong> Example: @Scheduled(fixedRate=5000) or @Scheduled(cron="0 0 * * * *"). Requires @EnableScheduling. Use for periodic tasks like cleanup, reports. ⏰</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@EnableScheduling</div>
+                <div class="annotation-desc"><strong>Enables scheduled task execution support.</strong> Place on @Configuration class. Activates @Scheduled annotation processing. Creates background task scheduler. Essential for time-based automation. 📅</div>
+            </div>
+        </div>
+        
+        <!-- Exception Handling -->
+        <div class="category">
+            <div class="category-header">🎪 Exception Handling</div>
+            <div class="annotation-item">
+                <div class="annotation-name">@ControllerAdvice</div>
+                <div class="annotation-desc"><strong>Global exception handler for all controllers.</strong> Centralizes exception handling logic. Use with @ExceptionHandler methods. Can specify basePackages to limit scope. Returns view names for traditional MVC. 🎯</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@RestControllerAdvice</div>
+                <div class="annotation-desc"><strong>Global exception handler for REST APIs.</strong> Combines @ControllerAdvice + @ResponseBody. Returns JSON/XML error responses. Use for RESTful error handling. Example: return ErrorResponse object with status, message, timestamp. 🚨</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@ExceptionHandler</div>
+                <div class="annotation-desc"><strong>Handles specific exception types.</strong> Place in @ControllerAdvice or controller. Example: @ExceptionHandler(ResourceNotFoundException.class). Can handle multiple exceptions. Returns custom error response with appropriate HTTP status. 🛠️</div>
+            </div>
+        </div>
+        
+        <!-- Testing Annotations -->
+        <div class="category">
+            <div class="category-header">🧪 Testing Annotations</div>
+            <div class="annotation-item">
+                <div class="annotation-name">@SpringBootTest</div>
+                <div class="annotation-desc"><strong>Loads complete application context for integration testing.</strong> Starts embedded server if webEnvironment specified. Use for end-to-end tests. Can mock beans with @MockBean. Slower than slice tests but tests full integration. 🧪</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@WebMvcTest</div>
+                <div class="annotation-desc"><strong>Tests only web layer (controllers).</strong> Loads only MVC components, not services or repositories. Faster than @SpringBootTest. Use with @MockBean for dependencies. Example: @WebMvcTest(UserController.class). 🌐</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@DataJpaTest</div>
+                <div class="annotation-desc"><strong>Tests JPA repositories with in-memory database.</strong> Auto-configures H2, configures Hibernate, scans @Entity classes. Transactional by default (rollback after each test). Use for repository layer testing. 💾</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@MockBean</div>
+                <div class="annotation-desc"><strong>Creates and injects Mockito mock into application context.</strong> Replaces existing bean or adds new one. Use in tests to mock dependencies. Example: @MockBean UserService userService. Automatically reset after each test. 🎭</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Test</div>
+                <div class="annotation-desc"><strong>Marks method as JUnit test case.</strong> Method must be public void with no parameters. Test runner executes these methods. Can use assertions to verify behavior. Part of JUnit 5 (Jupiter). ✅</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@BeforeEach</div>
+                <div class="annotation-desc"><strong>Executes before each test method.</strong> Use for test setup and initialization. Creates fresh state for each test. Example: initialize test data, create mocks. Ensures test isolation. 🔧</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@AfterEach</div>
+                <div class="annotation-desc"><strong>Executes after each test method.</strong> Use for cleanup and resource release. Runs even if test fails. Example: close connections, delete test files. Maintains clean test environment. 🧹</div>
+            </div>
+        </div>
+        
+        <!-- Conditional Annotations -->
+        <div class="category">
+            <div class="category-header">🎨 Conditional Annotations</div>
+            <div class="annotation-item">
+                <div class="annotation-name">@ConditionalOnProperty</div>
+                <div class="annotation-desc"><strong>Creates bean only if specified property exists or matches value.</strong> Example: @ConditionalOnProperty(name="feature.enabled", havingValue="true"). Use for feature toggles. Can check multiple properties. Enables conditional configuration. 📝</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@ConditionalOnClass</div>
+                <div class="annotation-desc"><strong>Creates bean only if specified class is on classpath.</strong> Example: @ConditionalOnClass(DataSource.class). Used in auto-configuration. Enables library-specific beans. Checks class availability at runtime. 📚</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@ConditionalOnMissingBean</div>
+                <div class="annotation-desc"><strong>Creates bean only if no bean of specified type exists.</strong> Provides default implementation. Allows user override. Example: @ConditionalOnMissingBean(DataSource.class). Common in auto-configuration for fallback beans. 🔄</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@ConditionalOnBean</div>
+                <div class="annotation-desc"><strong>Creates bean only if specified bean exists in context.</strong> Establishes bean dependencies. Example: @ConditionalOnBean(DataSource.class). Use when bean requires another bean to function. Ensures proper initialization order. 🔗</div>
+            </div>
+        </div>
+        
+        <!-- Lifecycle & Events -->
+        <div class="category">
+            <div class="category-header">🌈 Lifecycle & Events</div>
+            <div class="annotation-item">
+                <div class="annotation-name">@PostConstruct</div>
+                <div class="annotation-desc"><strong>Executes after dependency injection is complete.</strong> Initialization logic after bean construction. Called only once. Use for setup that requires injected dependencies. Example: load cache, validate configuration. Part of JSR-250. 🎬</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@PreDestroy</div>
+                <div class="annotation-desc"><strong>Executes before bean is removed from container.</strong> Cleanup logic before destruction. Called during shutdown. Use for releasing resources, closing connections. Example: flush buffers, save state. Part of JSR-250. 🧹</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@EventListener</div>
+                <div class="annotation-desc"><strong>Listens to application events.</strong> Method parameter type determines event type. Example: @EventListener(ApplicationReadyEvent.class). Enables event-driven architecture. Can be async with @Async. Decouples components. 📡</div>
+            </div>
+        </div>
+        
+        <!-- Actuator & Monitoring -->
+        <div class="category">
+            <div class="category-header">🔧 Actuator & Monitoring</div>
+            <div class="annotation-item">
+                <div class="annotation-name">@Endpoint</div>
+                <div class="annotation-desc"><strong>Creates custom Spring Boot Actuator endpoint.</strong> Exposes operational information. Example: @Endpoint(id="custom"). Use with @ReadOperation, @WriteOperation. Access via /actuator/custom. Enables custom monitoring and management. 📊</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@ReadOperation</div>
+                <div class="annotation-desc"><strong>Defines GET operation for actuator endpoint.</strong> Returns endpoint data. Example: @ReadOperation public Map<String, Object> getData(). Read-only access. Used for retrieving metrics, health info, configuration. 👀</div>
+            </div>
+            <div class="annotation-item">
+                <div class="annotation-name">@WriteOperation</div>
+                <div class="annotation-desc"><strong>Defines POST operation for actuator endpoint.</strong> Modifies endpoint state. Example: @WriteOperation public void updateConfig(). Use for administrative actions. Requires proper security. Enables runtime configuration changes. ✍️</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <h3>✨ You're doing Amazing! 🧡 Keep coding and stay motivated! ✨</h3>
+            <p>Remember: Every expert was once a beginner! 💪🚀</p>
+            <p><strong>Happy Learning! 🌟</strong></p>
+            <p>~ Dynamic Duo Learners 💫</p>
+        </div>
+    </div>
+</body>
+</html>
