@@ -2,7 +2,7 @@ SPRING BOOT — SCENARIO-BASED INTERVIEW QUESTIONS & ANSWERS
 Java Backend Developer | 5–6+ Years | Spring Boot 3.x / Spring Framework 6.x | Java 17+
 Prepared for interview practice | Dynamic Duo Learners
 
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 1. You have two PaymentService implementations and Spring throws NoUniqueBeanDefinitionException. How would you fix it? When would you use @Qualifier vs @Primary?
 
@@ -359,4 +359,3 @@ Next, I would capture JVM thread dumps using jcmd or jstack to look for blocked 
 I would also inspect network calls, database lock waits and HTTP client timeout configurations because threads can remain blocked even when CPU usage is low.
 Once I identify the blocking operation, I would resolve the root cause and configure appropriate connection, read and transaction timeouts, along with concurrency limits where necessary.
 Finally, I would reproduce the scenario and verify that requests either complete successfully or fail within a controlled timeout instead of hanging indefinitely.
-
