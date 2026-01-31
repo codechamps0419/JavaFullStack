@@ -1,0 +1,362 @@
+SPRING BOOT — SCENARIO-BASED INTERVIEW QUESTIONS & ANSWERS
+Java Backend Developer | 5–6+ Years | Spring Boot 3.x / Spring Framework 6.x | Java 17+
+Prepared for interview practice | Dynamic Duo Learners
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+1. You have two PaymentService implementations and Spring throws NoUniqueBeanDefinitionException. How would you fix it? When would you use @Qualifier vs @Primary?
+
+Ans: The error happens because Spring finds more than one bean assignable to PaymentService and cannot decide which one to inject. 
+First, I would inspect the injection point and the candidate beans. If one implementation should be the default across the application, 
+I would annotate that implementation with @Primary. 
+For example, if Razorpay is our primary payment provider, I can mark its bean with @Primary. Spring will then prefer it for ordinary single-bean injection when multiple candidates match.
+If different consumers need different implementations—for example, UPI versus card payments - I would specify @Qualifier at the constructor parameter. 
+For example, if one payment flow must use Razorpay and another must use Stripe, I would use qualifiers to keep those dependencies explicit.
+I prefer constructor injection because dependencies are explicit and easy to test. I would not remove an implementation or use field injection just to suppress the error.
+So, my decision is based on the requirement: @Qualifier for explicit selection, @Primary for a default implementation.
+
+
+2. An @Transactional method works when called from another service but fails when called from a method inside the same class. Why and how would you fix it?
+
+Ans: In the usual Spring proxy-based transaction model, the transaction starts when a call passes through the Spring-managed proxy. 
+If a method calls another method on this, that call bypasses the proxy and its transaction interceptor. So the annotation on the inner method is not applied to that internal call. 
+My preferred fix is to move the transactional operation into another Spring service and call it through dependency injection. 
+Alternatively, I can define the transaction at the outer public service boundary if that matches the business operation. 
+I avoid self-injection and AopContext tricks unless there is a strong reason.
+
+
+3. A singleton Spring bean contains a mutable HashMap used to store request-specific information. Under concurrent traffic, users see each other's data. What is wrong with the design?
+
+Ans: By default, Spring services are singleton-scoped, so the same service instance handles requests concurrently. 
+If I store mutable per-request state in an instance field, requests race over the same data. HashMap is also not thread-safe, which adds data-race and structural risks. 
+The correction is to keep services stateless and place request values in method-local variables or immutable request objects. 
+When state must persist, I would use an explicit appropriately scoped or external data store, depending on its lifetime. Simply switching to ConcurrentHashMap can prevent some concurrency defects but does not stop one user's data from being visible to another.
+
+
+4. A bean depends on another bean, which indirectly depends on the first. Your application fails to start. How would you investigate and redesign the circular dependency?
+
+Ans: A circular dependency means Spring cannot cleanly construct the object graph: for example, OrderService needs PaymentService while PaymentService needs OrderService. I would read the startup error's dependency path rather than blindly enabling circular references. Usually it shows that responsibilities are too tightly coupled. I would separate shared orchestration into a third service, introduce a smaller interface or  publish a domain event where asynchronous communication makes sense. Constructor injection is useful because it exposes design cycles early. @Lazy may break initialization in a limited case, but it usually hides the underlying coupling.
+
+
+5. After adding spring-boot-starter-data-jpa, your application suddenly fails to start due to missing database configuration. Explain why and how to resolve it.
+
+Ans: A starter is not just a library import; it adds classes that activate Spring Boot auto-configuration. With Spring Data JPA and JDBC-related classes on the classpath, Boot tries to configure a DataSource, JPA EntityManagerFactory and transaction management when the relevant conditions match. If no JDBC URL or suitable embedded database is available, creation fails. I would inspect the actual exception, confirm the active profile and datasource properties and either configure the intended database or remove JPA if this service does not need persistence. I would not hide the error by excluding all datasource auto-configuration without understanding the purpose.
+
+
+6. You created a custom DataSource bean, but Spring Boot's default DataSource is no longer being created. How does auto-configuration decide to back off?
+
+Ans: Boot auto-configuration is conditional. DataSourceAutoConfiguration generally creates infrastructure only when required classes are present and no user-provided DataSource already satisfies the relevant condition. When I register my own DataSource bean, Boot backs off because it assumes I intentionally own that configuration. This is useful for customization, but it means I must also handle appropriate properties, pooling and potentially transaction-manager wiring. I would examine the condition evaluation report before assuming Boot is broken.
+
+
+7. An application works with the dev profile but fails with prod. How would you trace property-source precedence and determine the effective configuration?
+
+Ans: I would first confirm which profiles are actually active at runtime, not just what the developer expected. Next I would compare the effective properties coming from application.yml, profile-specific files, environment variables, command-line arguments and deployment secrets. Spring's Environment resolves properties from several sources with defined precedence. My goal is to find which source supplied the final value for the failing property—such as the JDBC URL or JWT issuer—without printing sensitive credentials. I'd make configuration strongly typed using @ConfigurationProperties and validate required values at startup.
+
+
+8. Boot startup increased from 10 seconds to 90 seconds. What would you do? (How would you find which auto-configuration, bean initialization or external dependency causes the delay?)
+
+Ans: I would measure startup phases before guessing. I would enable application startup tracing with a supported ApplicationStartup implementation, compare logs with the previous release and inspect slow bean initialization, schema migration, network initialization and dependency discovery. Typical causes are DB connection timeouts, Flyway migrations, remote configuration, heavyweight @PostConstruct work, excessive classpath scanning or  eager loading of large reference data. I would move nonessential work out of startup only if readiness guarantees remain correct. The objective is not merely a fast process start; it is a service that becomes ready safely.
+
+
+9. Retried POST /orders creates duplicate orders. How would you make it idempotent?
+
+Ans: A retry can happen because the client didn't receive a response, even though the server committed successfully. The server must distinguish a retry from a new business request. For payment-like operations I would require an Idempotency-Key, scope it to the authenticated user and operation and persist its state with a unique database constraint. The first accepted request performs the operation; a repeated request with the same key and same payload returns the original result. If the same key is reused with different parameters, I reject it. I would also enforce domain uniqueness where possible—idempotency keys complement, not replace, business constraints.
+
+
+10. Your API returns 50,000 records and consumes excessive memory. How would you redesign pagination and response handling?
+
+Ans: I would avoid materializing an unbounded result set into a List and serializing it in one response. Standard REST listing endpoints should accept bounded page size, sort order and filters, returning DTO projections rather than entire entity graphs. For modest tables, offset pagination may be fine; for very large or frequently changing datasets, I would consider keyset/cursor pagination because deep OFFSET queries become expensive and can produce unstable traversal. For export use cases, I would provide a separate streaming or asynchronous export workflow.
+
+
+11. Endpoint accepts JSON locally but returns HTTP 415 in production. What would you inspect? How would you trace content negotiation and HttpMessageConverter selection?
+
+Ans: HTTP 415 means the request's media type is unsupported by the selected handler/converter, not that the JSON data itself necessarily violates a business rule. I would capture the Content-Type sent by the client or gateway, verify controller consumes settings, confirm the JSON HttpMessageConverter is on the classpath and check that the request body is not accidentally being sent as form-data or text/plain. I would also compare deployment dependency versions and gateway transformations between environments. If the content type is correct but JSON is invalid, I would expect a different error, usually 400.
+
+
+12. A downstream API sometimes takes 30 seconds. How do you protect your Spring Boot service?
+
+Ans: I would set explicit connect and response timeouts on RestClient, WebClient or Feign rather than allowing requests to wait indefinitely. Then I'd check the downstream service's latency distribution, concurrency and SLA. For idempotent or safely repeatable calls, I might use small, bounded retries with exponential backoff and jitter, but only for transient failures. I would use a circuit breaker or bulkhead to contain an ongoing outage and map downstream failures into clear client responses. I would also monitor connection pools and avoid blocking event-loop threads if I use WebClient in a reactive context.
+
+
+13. Invalid request body returns 500 instead of 400. How do you investigate?
+
+Ans: I would separate three failure types: malformed JSON, field validation failures and unexpected server errors. For JSON syntax or type mismatch, Spring MVC normally raises HttpMessageNotReadableException. For DTO constraints triggered by @Valid, I expect a validation exception. Both should be translated to HTTP 400, not a generic 500. I'd examine whether @Valid is present, whether a validation implementation is installed and whether a broad catch(Exception) or incorrect @ExceptionHandler is converting client errors into 500. The goal is accurate status codes and sanitized details.
+
+
+14. Controllers return inconsistent error JSON. How would you standardize it?
+
+Ans: I would agree on one API error contract and handle exceptions centrally with @RestControllerAdvice, rather than letting every controller produce its own JSON. On Spring Framework 6, ProblemDetail is a useful RFC-style foundation. I would include status, stable application error code, readable detail, request correlation ID and field errors only when relevant. Business exceptions such as OrderNotFound should map consistently to 404; invalid input to 400; authorization errors to 401/403 through the correct security handlers. I would log internal diagnostics server-side but never return SQL messages or stack traces to clients.
+
+
+15. You add @Valid to a service method, but it does not execute. Why?
+
+Ans: @Valid on a nested property tells a validator to cascade validation, but method-level validation needs the method-validation infrastructure to intercept the call. In a typical Spring application I would annotate the service with @Validated, ensure the Bean Validation provider is present and call the service through its Spring-managed proxy. I would verify that the constraint is actually on the method argument or object fields and not just on an unrelated type. A self-invocation may bypass proxy-based method validation just like it can bypass @Transactional.
+
+
+16. An API leaks SQL errors/table names. How do you fix it without losing diagnostics?
+
+
+Ans: I would stop exposing raw exceptions in the HTTP response and introduce a consistent exception mapping. Database constraint errors should become a meaningful domain message, for example 'email already exists', when the constraint and context are known. Unexpected database errors should be generic server errors. In logs, I would retain the exception, trace ID, endpoint and relevant safe metadata, while filtering tokens, passwords, PII and SQL parameter values. Access to logs and Actuator diagnostic endpoints must be restricted.
+
+
+17. Loading 100 orders generates 300 extra SQL queries. How would you fix N+1?
+
+
+Ans: First I would confirm the issue instead of assuming it. I would enable query counting or Hibernate statistics in a non-production environment and observe one query loading the orders followed by many queries fetching customer or items for each order. This is an N+1 access pattern. I'd design the endpoint's data shape explicitly: for a read-only list, use a DTO projection with the columns needed; for a bounded entity graph, consider @EntityGraph or a fetch join. I would avoid making every association EAGER because that often moves the problem elsewhere. The right strategy depends on whether the endpoint is a summary list or detailed view.
+
+
+18. Two requests change product stock and one update is lost. What would you implement?
+
+Ans: This is a concurrency-control problem: both transactions may read the same stock, calculate a new value and overwrite each other. For ordinary business updates I'd consider optimistic locking with @Version. Hibernate includes the version in UPDATE criteria; if another transaction changed the row, the second writer gets an optimistic-lock exception and we can retry or return a conflict based on the business case. For high-contention inventory decrement, I might prefer a single conditional SQL update like UPDATE products SET stock=stock-:qty WHERE id=:id AND stock>=:qty, then check the affected-row count.
+
+
+19. LazyInitializationException occurs when the controller returns an entity. Why and how to fix?
+
+Ans: LazyInitializationException usually means code tried to load a lazy association after the Hibernate persistence context was closed or otherwise unavailable. A common pattern is: the service loads an Order entity, returns it and JSON serialization later touches order.items outside the intended transaction. I would not solve this by changing every mapping to EAGER or by enabling Open Session in View as a permanent shortcut. Instead I'd build the required response DTO inside a clearly defined read transaction and fetch only the associations required by the API.
+
+
+20. An orders table has 10 million rows and APIs are now slow. How do you investigate?
+
+Ans: I would begin with evidence: endpoint p95/p99 latency, database slow-query logs, execution plans, lock wait time, connection-pool saturation and actual request patterns. Then I'd identify the expensive SQL and inspect EXPLAIN ANALYZE, including whether filters and sorting use appropriate indexes. For listings I'd avoid SELECT *, use projections and bounded pagination, often keyset pagination for deep traversal. I would also review query count, join cardinality, N+1 loading, count queries and whether the application is exhausting Hikari connections. Indexing every column is not the answer; indexes have write and storage costs.
+
+
+21. A checked exception occurs after saving an order but the row commits. Why?
+
+Ans: In Spring's standard declarative transaction configuration, unchecked exceptions and Errors trigger rollback by default, while checked exceptions do not. So if a transactional method persists an order and throws a checked business exception, it can still commit unless rollback rules say otherwise. I would first confirm that the call entered through the transaction proxy and the exception actually propagated to that boundary. If failure must undo the whole operation, I would use @Transactional(rollbackFor = MyCheckedException.class) or  redesign the exception hierarchy when appropriate. I would avoid a broad rollbackFor=Exception.class unless the business semantics support it.
+
+
+22. What happens when a REQUIRES_NEW method is called inside an existing transaction?
+
+Ans: REQUIRES_NEW starts an independent physical transaction if the call passes through the appropriate Spring proxy. The outer transaction is suspended while the inner one runs. The inner transaction can commit even if the outer transaction later rolls back, which makes it useful for carefully chosen audit or independent work. However, it should not be used casually: the outer transaction may still hold a database connection while the inner transaction needs another one, so concurrency can exhaust the pool. Exceptions still need deliberate handling and the exact propagation semantics must match the business requirement.
+
+
+23. Payment API succeeds but database commit fails. How do you ensure consistency?
+
+Ans: A local @Transactional annotation cannot atomically commit my PostgreSQL transaction and a remote payment provider. So I would not place a network call in a long-running database transaction and assume everything rolls back together. I would model payment as a stateful workflow: create a pending order, request payment with an idempotency key, persist the provider reference and final status and support reconciliation or compensation when communication fails. For messaging between the database and broker, the transactional outbox pattern helps ensure the event is not lost after a database commit.
+
+
+24. Frequent database deadlocks appear when services update rows. How would you reduce them?
+
+Ans: First, I would confirm the database actually reports a deadlock rather than merely a lock timeout. I would capture the database deadlock graph or relevant logs to identify competing transactions, row order and statements. Deadlocks often occur when two transactions acquire locks in opposite order. I'd make update order consistent across code paths, keep transactions short, ensure predicates have appropriate indexes and avoid external API calls while holding locks. Where safe, I would retry a bounded number of transactions after a deadlock with backoff, because a deadlock victim must restart its entire transaction.
+
+
+25. A valid JWT still causes HTTP 403 on an admin endpoint. How would you debug it?
+
+Ans: A valid JWT only proves the token passed authentication checks; authorization is separate. HTTP 403 typically means an authenticated principal lacks permission for the requested operation. I would inspect the endpoint rule and @PreAuthorize expression, then see which GrantedAuthority values Spring actually constructed. A common mismatch is hasRole('ADMIN') expecting ROLE_ADMIN while the JWT converter produces SCOPE_admin or ADMIN. I would also check issuer, audience and signature errors because those are authentication failures, commonly returning 401 rather than 403. Finally, I would check ownership and method-level restrictions beyond role checks.
+
+
+26. An access token is stolen and remains valid for 30 more minutes. What can you do?
+
+An: With self-contained JWTs, the resource server generally trusts signature and expiry without checking a central session on every request. That means deleting a refresh token does not automatically invalidate an already-issued access token. My response would include immediate refresh-token revocation, session/credential containment, monitoring and, if instant invalidation is required, a denylist keyed by jti or a centralized introspection/session check. For normal risk reduction I'd issue short-lived access tokens, keep refresh tokens secure and rotated and consider proof-of-possession approaches where appropriate. The final design balances revocation speed, latency and availability.
+
+
+27. JWT works locally but production says invalid issuer or signature. How do you diagnose?
+
+Ans: I would first identify which validation step failed: signature, issuer, audience, expiry or key selection. I would decode only non-sensitive token metadata for diagnosis and compare the exact iss claim with the configured issuer URI, including scheme, hostname, path and trailing slash behavior. Then I'd confirm the correct authorization server and realm, JWKS discovery URL, current kid and trusted signing algorithms. A token signed by a dev Keycloak instance will not verify against production keys. I would also check reverse-proxy URLs, TLS configuration and clock synchronization rather than weakening validation to get it working.
+
+
+28. USER can view another USER's order by changing /orders/{id}. How do you prevent it?
+
+Ans: This is broken object-level authorization. Authentication can be valid and role USER can be legitimate, but the user still must be authorized to access that specific order. I would load orders scoped to the authenticated user or tenant, for example findByIdAndOwnerId(orderId, authenticatedUserId), rather than load by ID and return blindly. For complex cases I'd enforce ownership at the service layer with method authorization and central policy logic. Client-provided user IDs must not be trusted as the identity source. I would enforce tenant boundaries in every data-access path and test unauthorized access explicitly.
+
+
+29. Mockito unit tests pass, but PostgreSQL rejects inserts. How would you improve tests?
+
+Ans: A mock repository can verify business interaction but cannot catch real database constraints, transaction behavior, generated SQL or Hibernate mappings. So I would retain fast unit tests for isolated service logic and add a smaller set of integration tests against real PostgreSQL using Testcontainers. Those tests would apply the same Flyway migrations as production, persist real entities and verify unique constraints, foreign keys, locking and query behavior. I would avoid relying solely on H2 because SQL dialect and concurrency behavior may differ from PostgreSQL.
+
+
+30. @WebMvcTest fails because a security dependency is missing. How would you configure the slice correctly?
+
+Ans: @WebMvcTest loads a focused MVC slice, not the entire application. Controllers, MVC advice and relevant security configuration may be present, but arbitrary services usually are not. I would inspect the missing bean and inject a Mockito replacement for the controller's service dependencies using @MockitoBean in a compatible Spring Boot 3.x test setup. For security, I would use spring-security-test helpers such as @WithMockUser or MockMvc JWT support, depending on what I want to verify. I wouldn't disable security globally just to make controller tests green.
+
+
+31. A test passes alone but fails when the full test suite runs. What would you inspect?
+
+Ans: This usually suggests shared mutable state, test-order dependence or environment leakage. I'd reproduce with shuffled test order and inspect static fields, singleton caches, reused database records, background tasks, fixed ports, the Spring context cache and mocked bean state. Transaction rollback helps for ordinary test data, but it does not automatically clean Redis, Kafka, external stub state or asynchronous work. I'd design isolated fixtures, unique identifiers, deterministic clocks and explicit cleanup where necessary rather than relying on test ordering.
+
+
+32. How would you test a flow that saves to PostgreSQL, publishes Kafka and calls Payment API?
+
+Ans: I would divide the problem into layers. Unit tests would exercise decision logic with mocks. Integration tests would use PostgreSQL and Kafka Testcontainers or a suitable test broker to validate actual persistence, serialization, consumption and transactional boundaries. I would stub Payment API using WireMock and simulate success, timeout, 500, repeated callback and delayed response. Because the database and Kafka are separate systems, I'd test the outbox/retry behavior explicitly, including process crashes between database commit and event publication. The main assertion is correct business state and eventual processing, not simply that a mock publish() method was called.
+
+
+33. @Async executes on the request thread. Why might that happen?
+
+Ans: I would first check whether asynchronous method execution is enabled, normally with @EnableAsync and whether the method is being invoked through a Spring-managed proxy. A direct this.sendEmail() call inside the same bean bypasses @Async advice. I'd also confirm the bean is managed by Spring and the invocation is eligible for interception. Next I'd inspect which executor is configured; I prefer a named, bounded ThreadPoolTaskExecutor with meaningful thread names, queue capacity and rejection behavior. @Async should move independent work to another thread, but it doesn't make a slow dependency disappear or guarantee a durable task if the process crashes.
+
+
+34. @Scheduled job runs five times on five Kubernetes pods. How do you guarantee only one execution?
+
+Ans: @Scheduled triggers independently inside every application instance. If we run five replicas, we should expect five executions; it is not a cluster scheduler. If the business operation must run once per schedule, I would choose a coordination mechanism such as a Kubernetes CronJob, Quartz with persistent JDBC job store or  a distributed lock library such as ShedLock. The choice depends on whether the job belongs inside the application, its duration and recovery behavior. Even with a distributed lock, I'd make the work idempotent because crashes, lock expiry and retries can still produce duplicate attempts.
+
+
+35. @Cacheable returns stale product prices after updates. How would you fix it?
+
+Ans: Caching introduces a second copy of data, so the problem is defining consistency between the database and cache. I'd identify which read path populates the cache and which writes must invalidate or update it. For product prices, a typical approach is cache-aside: @Cacheable on reads and @CacheEvict or @CachePut when the authoritative database update succeeds. I would ensure invalidation happens after successful commit, not before a transaction that might roll back. TTL provides a safety net, not a guarantee of immediate consistency. If multiple service instances cache locally, invalidation must reach all instances or use a shared cache.
+
+
+36. Many requests miss cache simultaneously and overwhelm PostgreSQL. How do you prevent a cache stampede?
+
+Ans: A cache stampede happens when many requests rebuild the same expired hot key at once. I would first verify high miss rates and synchronized expiry. For a single instance, Spring @Cacheable(sync=true) can reduce duplicate in-process loads when the cache implementation supports it, but it does not by itself coordinate multiple nodes. At cluster scale, I'd use per-key distributed locking or single-flight coordination, jittered TTLs, prewarming popular entries and potentially stale-while-revalidate if the business tolerates slightly stale data. I would keep a bounded DB concurrency budget rather than allowing every miss through simultaneously.
+
+
+37. Order saved, but Kafka is unavailable when publishing OrderCreated. How do you avoid losing the event?
+
+Ans: I would not treat saving to PostgreSQL and publishing to Kafka as one atomic transaction just because both happen inside a Spring service method. A DB commit can succeed while Kafka publication fails. My preferred reliability pattern is transactional outbox: save the Order and an outbox event in the same database transaction, then publish the outbox record asynchronously to Kafka. A publisher retries failures and marks events delivered only after broker acknowledgement. Consumers must be idempotent, because a publisher crash can cause the same event to be sent more than once.
+
+
+38. Payment Service has intermittent timeouts. How do you configure retries and resilience?
+
+Ans: I would start by setting a realistic timeout based on our request latency budget. Then I'd classify failures: transient 503/network glitches may be retried, while validation errors and most business declines should not. Retries must be bounded, with backoff and jitter and only safe when operations are idempotent or protected by a payment idempotency key. A circuit breaker prevents repeated calls to a failing dependency; a bulkhead limits how much of our thread/connection capacity it can consume. I would monitor breaker state, retry count and the downstream success rate so these controls do not hide a long outage.
+
+
+39. A request goes Gateway -> Order -> Inventory and fails. How would you trace it?
+
+Ans: I would assign or propagate distributed trace context at ingress and use Micrometer Observation/Tracing with an OpenTelemetry-compatible exporter to correlate spans across Gateway, Order and Inventory. In logs I would include trace ID and span ID through MDC and in traces inspect which span has the large duration or error. That allows me to distinguish Gateway routing, Order business logic, database latency and Inventory timeout. I would also check timeouts and retry behavior, because a single client request can create multiple downstream attempts. The goal is evidence-based root-cause analysis, not searching each service's logs by timestamp alone.
+
+
+40. How would you break a large Spring Boot monolith into microservices?
+
+Ans: I would not split the application simply by technical layers such as Controller Service and Repository. First I'd identify business capabilities and bounded contexts—for example, Catalog, Ordering, Payments and Fulfillment—then examine their data ownership and coupling. I would choose a small, low-risk vertical slice for extraction, establish an API or event contract and use the strangler pattern to migrate traffic gradually. The hardest part is usually data consistency and operational overhead, not creating multiple Spring Boot projects. Each service should own its data and expose a clear contract rather than allowing other services to query its tables directly.
+
+
+41. p95 API latency rises from 200ms to 5s while CPU stays low. How would you investigate?
+
+Ans: Low CPU doesn't mean the service is healthy; it may be waiting on database locks, connection pool acquisition, remote I/O or thread contention. I would compare latency percentiles by endpoint, throughput, error rates and request concurrency over the incident window. Then I'd follow traces to separate time in controller logic, SQL, external calls and queueing. I'd inspect Hikari active/pending connections, Tomcat request-thread saturation, database lock waits and downstream timeout rates. I would correlate the start time with deployments and traffic changes before deciding whether to scale or rollback.
+
+
+42. Connection-pool timeout errors occur under peak traffic. What is the diagnosis process?
+
+Ans: A Hikari connection timeout usually means a request waited too long to obtain a database connection; it does not automatically mean the pool size is too small. I would inspect active, idle, maximum and pending connections, then examine how long transactions hold connections. Causes include slow queries, lock waits, long transactions, connection leaks and unexpected concurrency increases. I would use thread dumps and database activity to identify holders. Only after fixing those issues would I consider tuning maximumPoolSize, because increasing it beyond database capacity can worsen contention.
+
+
+43. Kubernetes restarts a Spring Boot Pod even though health checks briefly pass. What would you inspect?
+
+Ans: I would start from Kubernetes events and container termination reasons—OOMKilled, failed liveness probe, CrashLoopBackOff or eviction—rather than assuming the application's /health endpoint proves everything is fine. I'd compare liveness and readiness configuration, startup probes, initial delays, thresholds, memory limits and JVM logs. Readiness should indicate whether the Pod can accept traffic; liveness should detect unrecoverable process failure without creating restart loops during temporary downstream outages. I'd also check application startup time, database migrations and graceful shutdown on the previous instance.
+
+
+44. JVM memory grows until OutOfMemoryError. How would you investigate?
+
+Ans: I'd first distinguish Java heap exhaustion from native/direct memory exhaustion or a container memory kill, because the mitigation differs. I'd collect GC metrics, heap usage after GC, allocation rate, thread count and container memory over time. For heap growth I'd capture a heap dump securely and inspect dominator trees and object retention paths with tools such as Eclipse MAT. Common causes include unbounded caches, static collections, retained request data, large batch results and listeners that are never deregistered. I would not simply increase -Xmx until I understand what is growing.
+
+
+45. Spring Boot connects to PostgreSQL locally but fails in Docker/Kubernetes. How do you debug it?
+
+Ans: I would start from the exact connection exception: DNS failure, connection refused, timeout, authentication failure or TLS negotiation error point to different causes. Inside a container, localhost means the container itself, not my host machine or another Pod. I would verify the runtime datasource URL, DNS resolution, service name, port, network policy, credentials and whether PostgreSQL is actually accepting TCP connections. For Kubernetes I'd inspect Service endpoints, namespace DNS, Secrets and network policies. I would never hard-code laptop IP addresses into production configuration.
+
+
+46. A schema migration breaks older Pods during rolling deployment. How would you avoid this?
+
+Ans: During a rolling deployment, old and new application versions can run against the same database simultaneously. So database changes must be backward compatible across that overlap. I use an expand-migrate-contract approach: first add nullable columns/new tables or compatible structures, deploy code that can work with both representations, backfill data safely, switch readers/writers and only later remove old columns or constraints. Database migrations should be version-controlled with Flyway or Liquibase and validated in a staging environment that resembles production. I also prepare a rollback plan that doesn't assume a destructive schema change can be instantly undone.
+
+
+47. A Pod receives SIGTERM while processing requests. How do you prevent dropped work?
+
+Ans: When Kubernetes terminates a Pod, the application needs time to stop receiving new traffic and finish requests already in progress. I'd enable Spring Boot graceful shutdown, configure terminationGracePeriodSeconds long enough for normal in-flight work and ensure readiness/endpoint removal happens promptly. HTTP requests should have bounded deadlines so shutdown doesn't hang forever. For asynchronous or long-running jobs, I would checkpoint or persist work and make processing idempotent so another worker can resume after termination. Graceful shutdown reduces interruptions; it cannot guarantee no work is lost if the node disappears suddenly.
+
+
+48. Migrating Spring Boot 2.x to 3.x leads to javax/jakarta and Hibernate errors. How do you plan it?
+
+Ans: I'd treat this as a platform upgrade rather than a simple version change. Spring Boot 3 requires Java 17 or newer and moves Spring Framework 6 integrations to Jakarta EE namespaces. I'd first upgrade the existing Boot 2.x application to a recent supported 2.7 baseline where applicable, clean up deprecated APIs, inventory third-party dependencies and check compatibility with Spring Security 6 and Hibernate 6. Then I'd change javax.persistence, javax.validation and servlet imports to jakarta equivalents, update security configuration to the SecurityFilterChain lambda DSL and run application, persistence and integration tests. I'd stage the rollout with metrics and rollback readiness.
+
+
+49. Your Spring Boot microservice works perfectly throughout the day, but every night at exactly 2:00 AM, it becomes slow, 
+starts throwing errors or  goes down. After some time, it automatically starts working normally again
+
+Ans: If my Spring Boot service works fine throughout the day but fails every night at exactly 2 AM, my first suspicion would be a scheduled job or background activity.
+I would check @Scheduled methods, Spring Batch jobs, database backups, Kubernetes CronJobs and any maintenance activities running at that time.
+Next, I would analyze application logs, CPU and memory usage, HikariCP connection pool metrics, database locks and API response times to identify the bottleneck.
+For example, a scheduled batch job processing millions of records might exhaust database connections or cause heavy locking, resulting in API timeouts.
+Once I identify the root cause, I would optimize the job, introduce batching, limit concurrency or  isolate its resources and verify the fix through monitoring and testing.
+
+
+50. Your Spring Boot application works fine under normal traffic, but during peak hours, APIs become very slow and start throwing 
+SQLTransientConnectionException: Connection is not available, request timed out. How would you investigate and resolve this?
+
+Ans: First, I would suspect database connection pool exhaustion because HikariCP is unable to provide a connection within the configured timeout.
+I would check HikariCP metrics such as active, idle and pending connections using Spring Boot Actuator and Micrometer.
+Next, I would investigate slow SQL queries, long-running transactions, connection leaks and sudden traffic spikes to identify why connections are not being released quickly enough.
+Based on the root cause, I would optimize queries, reduce transaction duration, fix connection leaks or  tune the pool size according to database capacity.
+Finally, I would perform load testing and monitor connection usage, query latency and API response times to confirm that the issue is resolved.
+
+
+51. Your Spring Boot application works fine most of the time, but intermittently becomes slow, throws errors or  stops responding. There is no fixed time or specific API affected. How would you investigate and resolve it?
+
+Ans: First, I would check application logs, error patterns and monitoring dashboards to identify whether the failures correlate with traffic spikes, resource usage or  infrastructure events. Next, I would analyze CPU, heap memory, garbage collection pauses, thread pool utilization, HikariCP database connection pool metrics and network connectivity to identify resource exhaustion or bottlenecks. I would also inspect thread dumps, JVM metrics, Kubernetes pod restarts and load balancer health checks to determine whether the issue affects all application instances or only specific ones. Once I identify the root cause, I would apply the appropriate fix, such as resolving memory leaks, optimizing database queries, tuning connection pools or  correcting thread starvation. Finally, I would reproduce the issue through load or stress testing and verify the fix using application metrics, error rates.
+
+
+52. Your Spring Boot application works correctly with a single user, but when multiple users access it simultaneously, some requests produce incorrect data or inconsistent results. How would you investigate and resolve this concurrency issue?
+
+Ans: First, I would suspect a race condition or shared mutable state, where multiple threads access and modify the same data concurrently.
+I would investigate singleton Spring beans, shared collections, static variables and database operations to identify potential thread-safety issues.
+If the issue is in application memory, I would prefer stateless services or use appropriate synchronization mechanisms, such as synchronized, ReentrantLock or thread-safe collections.
+If it involves concurrent database updates, I would investigate lost updates and use optimistic locking with @Version, pessimistic locking or  atomic database operations depending on the requirement. Finally, I would reproduce the issue using concurrent load tests and verify that data remains consistent under high traffic.
+
+
+53. Two users simultaneously update the same database record in your Spring Boot application. Both requests succeed, but one user's changes are overwritten by the other. How would you investigate and resolve this issue?
+
+Ans: First, I would suspect a lost update problem, where two transactions read the same record and update it concurrently, causing the last committed update to overwrite the previous changes. I would investigate transaction boundaries, isolation levels and Hibernate-generated SQL to understand how concurrent updates are being handled.
+To prevent this, I would generally use optimistic locking with JPA's @Version annotation, which detects conflicting updates and throws an OptimisticLockException instead of silently overwriting data. For highly contested records or operations requiring stronger coordination, I would consider pessimistic locking using LockModeType.PESSIMISTIC_WRITE or atomic SQL updates. Finally, I would write concurrent integration tests to verify that updates remain consistent and conflicts are handled correctly.
+
+
+54. Your Spring Boot application starts normally, but after running for 2–3 days, memory usage keeps increasing until it throws OutOfMemoryError or the application crashes. Restarting temporarily fixes the issue. How would you investigate and resolve it?
+
+Ans: First, I would monitor JVM heap usage, garbage collection activity and memory consumption over time to determine whether memory is continuously increasing after GC.
+Next, I would capture and analyze a heap dump using Eclipse MAT or VisualVM to identify objects retaining excessive memory, such as static collections, unbounded caches or  unreleased references. I would also inspect thread dumps and JVM native memory if the heap appears normal but the process still consumes excessive memory.
+Once I identify the root cause, I would fix the object retention issue, introduce bounded caches or proper resource cleanup and avoid simply increasing heap size.
+Finally, I would perform soak testing and monitor heap usage and GC behavior to confirm that memory remains stable over extended periods.
+
+
+55. Your Spring Boot application works perfectly in development and passes functional testing, but when 1,000 concurrent users access it in production, requests start timing out and the application becomes unresponsive. How would you investigate and resolve this?
+
+Ans: First, I would reproduce the issue using load-testing tools such as JMeter or Gatling and identify the application's throughput, response times, error rates and saturation point.
+Next, I would analyze Tomcat request threads, HikariCP connection pool usage, CPU, JVM memory, database performance and downstream dependencies to identify the bottleneck.
+I would investigate blocking operations, slow SQL queries, thread starvation, connection pool contention and excessive object allocation under concurrent load.
+Based on the findings, I would optimize the bottleneck, configure appropriate timeouts and resource limits and consider horizontal scaling if the underlying dependencies can support it.
+Finally, I would repeat the load tests and compare p95/p99 latency, throughput and error rates to verify that the application meets its performance requirements.
+
+
+56. Your Spring Boot application becomes unresponsive after running for several hours. Restarting it immediately resolves the issue, but the problem occurs again later. How would you investigate?
+
+Ans: First, I would suspect a resource accumulation or exhaustion issue because restarting the application temporarily clears its runtime state.
+I would check JVM memory, thread counts, database connections, file descriptors and application metrics to identify resources that continuously increase over time.
+Next, I would capture thread dumps and heap dumps before restarting to investigate blocked threads, resource leaks or  objects being retained unnecessarily.
+I would also check whether background tasks, connection leaks or  unbounded queues are gradually exhausting application resources.
+Once the root cause is identified, I would fix the resource-management issue and perform long-duration soak testing to ensure the application remains stable without requiring restarts.
+
+
+57. Your Spring Boot application was working perfectly, but immediately after deploying a new release, response times increased significantly. How would you troubleshoot and resolve this?
+
+Ans: First, I would compare application metrics before and after the deployment to confirm whether the performance degradation is related to the new release.
+I would review recent code changes, dependency upgrades, database migrations, configuration changes and newly introduced external API calls.
+Next, I would analyze distributed traces, SQL query execution times, JVM metrics and thread pool utilization to identify the specific operation causing the regression.
+If the impact is critical, I would initiate a rollback or disable the problematic feature using a feature flag, provided the database and API changes are backward-compatible.
+After identifying the cause, I would fix it, reproduce the regression in a staging environment and introduce performance regression tests to prevent similar issues.
+
+
+58. Your Spring Boot REST API returns HTTP 200, but sometimes the expected database changes are not reflected. How would you investigate?
+
+Ans: First, I would trace the complete request flow using application logs and correlation IDs to confirm whether the database update operation actually executes.
+Next, I would investigate transaction boundaries, rollback behavior, exception handling and Hibernate flush operations to determine whether the changes are successfully committed.
+I would also check whether the application reads from a database replica with replication lag or  whether caching causes the API to return stale information.
+If asynchronous processing is involved, I would verify whether the API returns success before the background operation completes and whether failures are handled correctly.
+Finally, I would correct the transaction or consistency issue and add integration tests to ensure the API response accurately represents the operation's committed state.
+
+
+59. Your Spring Boot application works correctly when deployed with one Kubernetes Pod, but after scaling to three Pods, users experience inconsistent responses or authentication issues. What could be the cause?
+
+Ans: First, I would investigate whether the application depends on instance-local state, such as HTTP sessions, in-memory caches, static variables or  locally stored files.
+With multiple Pods, requests can reach different instances, so data stored in one Pod may not be available in another.
+I would check load balancer routing, session management, distributed cache consistency and whether all Pods use identical security configurations and signing keys.
+Depending on the requirement, I would make the application stateless or move shared session data to Redis using Spring Session and store persistent files in shared object storage.
+Finally, I would test requests across multiple Pods, including login, logout, failover and concurrent operations, to confirm consistent behavior.
+
+
+60. Your Spring Boot application is running, CPU and memory usage look normal, but some API requests hang indefinitely without exceptions or useful error messages. How would you investigate?
+
+Ans: First, I would check active HTTP request metrics, thread utilization and distributed traces to identify where requests stop making progress.
+Next, I would capture JVM thread dumps using jcmd or jstack to look for blocked threads, deadlocks, thread starvation or  requests waiting on database connections and external services.
+I would also inspect network calls, database lock waits and HTTP client timeout configurations because threads can remain blocked even when CPU usage is low.
+Once I identify the blocking operation, I would resolve the root cause and configure appropriate connection, read and transaction timeouts, along with concurrency limits where necessary.
+Finally, I would reproduce the scenario and verify that requests either complete successfully or fail within a controlled timeout instead of hanging indefinitely.
+
