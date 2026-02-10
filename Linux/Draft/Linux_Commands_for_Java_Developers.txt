@@ -1,0 +1,491 @@
+___________________________________________________________________________
+
+ESSENTIAL LINUX COMMANDS FOR JAVA DEVELOPERS
+~ © Dynamic Duo Learners 
+___________________________________________________________________________
+
+Pre-requisite: (Command Line Utilities)
+==========================================
+~ grep   (Globally search a Regular Expression and Print)
+         Used to search for and extract specific lines of text that match a 
+         targeted pattern or regular expression within files or streams of data.
+~ pgrep  (Process Grep)
+         Used to search the operating system's active process list and return 
+         the PIDs (Process IDs) of processes that match specified names or criteria.
+~ netstat(Network Statistics)
+         Used to display active network connections, routing tables, and network 
+         interface statistics.
+~ kill   (Kill Process)
+         Used to stop running processes by explicitly providing their unique 
+         Process ID (PID) number.
+~ pkill  (Process Kill)
+         Used to stop running processes based directly on their process name or 
+         other custom attributes.
+~ lsof   (List Open Files)
+         Used to discover and list all files currently held open by active running 
+         processes on the system.
+~ nohup  (No Hang-Up)
+         Used to run a command or script in the background that continues execution 
+         even after the user logs out or terminates the terminal session.
+~ find   (Find Files)
+         Used to search for files and directories deeply within a file system 
+         hierarchical tree based on criteria like name, size, type, or permissions.
+~ locate (Locate Files Instantly)
+         Used to instantly find files and directories by name by querying a 
+         pre-compiled background system database instead of scanning live disks.
+~ head   (Display Beginning Lines)
+         Used to display the first few lines (default is 10) of one or more text 
+         files or standard incoming streams of data.
+~ tail   (Display Ending Lines)
+         Used to display the last few lines (default is 10) of one or more text 
+         files or streams. Frequently used with `-f` to watch live logs.
+~ less   (Interactive Terminal Viewer)
+         An interactive viewer used to browse, search, and scroll through large 
+         text payloads one screenful at a time without loading the whole file into memory.
+~ cat    (Concatenate and Stream Files)
+         A basic utility used to read data from files and dump their complete text 
+         content sequentially to the screen or output pipeline.
+~ top    (Table of Processes)
+         An interactive system monitor that provides a real-time, dynamic dashboard 
+         of CPU usage, memory utilization, and running system tasks.
+~ htop   (Enhanced Table of Processes)
+         An advanced, color-coded, text-graphical system monitor that supports mouse 
+         clicks, scrolling, and easy process management. Named after author Hisham Muhammad.
+~ df     (Disk Free)
+         Displays a quick summary of the system's total, used, and available storage 
+         space allocations across all currently mounted file systems.
+~ curl   (Client URL Request Tool)
+         A versatile command-line tool used to transfer data over network protocols, 
+         commonly used to test REST APIs and send raw HTTP requests.
+~ wget   (Web Get File Downloader)
+         A dedicated utility used to download files, assets, or entire web pages 
+         directly from the internet using HTTP, HTTPS, and FTP protocols.
+~ sed    (Stream Editor)
+         A powerful stream editor used to search, find-and-replace, delete, or transform 
+         text line-by-line inside a file or stream without opening a visual window.
+~ echo   (Print Text Output)
+         Used to print strings, environment variables, or command outputs directly 
+         to the console or redirect them downstream into files.
+~ tar    (Tape Archive)
+         Used to bundle multiple files and directories into a single unified archive file 
+         (e.g., `.tar.gz`) or to extract files from an existing archive.
+~ zip    (Compress to Zip Format)
+         Used to compress files and directories directly into a standard cross-platform 
+         `.zip` archive format to save storage footprint.
+~ unzip  (Extract Zip Archive)
+         Used to unpack, extract, and restore the original files and directory paths 
+         contained inside a `.zip` archive file
+~ export (Set Global Environment Variable)
+         Used to set configuration variables, making them globally available to any 
+         child processes and sub-shells spawned from that active terminal window.
+~ env    (Set Transient Environment Variable)
+         Used to view active properties or temporarily pass an environment variable to 
+         a single standalone command without modifying the parent shell state.
+
+-----------------------------------------------------------------------------------------------------------
+
+
+Commands:
+==========
+
+1. PROCESS MANAGEMENT
+--------------------------
+
+# Find Java processes
+ps aux | grep java	     # Find any process running on the system that matches the keyword "java". (ps - Process Status)
+
+Explanation:
+The Process Snapshot (ps) command generates a comprehensive snapshot of all active processes.
+a: Shows processes for all users, not just your current terminal session.
+u: Displays detailed information including user ownership, CPU, and memory metrics.
+x: Includes background processes that aren't tied to a specific terminal control screen.
+
+jps                          # List Java processes with PIDs. It only lists Java processes, no scan like entire OS. (JPS - Java Virtual Machine Process Status Tool).
+
+# Kill running process
+kill -9 <PID>		     # Forcefully and instantly terminate (kill) a running process on your computer or server.
+kill -15 <PID>		     # Graceful Shutdown process of given running process PID
+pkill -f "spring-boot"       # Kill by name pattern. Instantly find and terminate (kill) any running background processes with given name
+pgrep -fa "spring-boot"	     # Prints the matches to your screen safely before destroying them. Always use before, pkill cmd.
+
+# Check port usage
+netstat -tulpn | grep 8080   # Find out which application is using (listening on) network port 8080
+lsof -i :8080                # Modern Linux command used to find out exactly which application is using network port 8080
+
+# Background/foreground jobs
+nohup java -jar app.jar &    # Run in background (nohup - No Hang-up). & - Shell operator that pushes execution of cmd into the background immediately.
+jobs                         # List all active background tasks/jobs that were started from your current terminal session.
+fg %1                        # Bring background job to foreground for active view (%1 - Job No. 1, %2 - Job No. 2, ...)
+
+
+2. FILE OPERATIONS
+--------------------------
+
+# Navigate and list
+ls			     # List the names of all files and folders inside your current directory.
+ls -lah                      # List with hidden files and folders inside your current directory in human-readable sizes (KB,MD,GB,..,etc instead of bytes)
+cd			     # Change Directory. Go to global user home directory.
+cd -                         # Go to previous/last folder you were standing in. Think of it like the "Back" button on your web browser.
+cd ..			     # Go to one level up into the parent directory of your current folder.
+pwd                          # Print working directory
+
+# Search files
+find . -name "*.jar"         # Find all JAR files in your current directory and all of its subfolders
+find . -type f -mtime -7     # Find Files modified in last 7 days. (-7 ~ Modified less than 7 days ago, +7 ~ Modified more than 7 days ago, 7 ~ Modified exactly 7 days ago)
+locate application.properties # Find the exact location of a file given anywhere on system
+
+# File content
+cat application.yml          # View entire file
+less logs/app.log            # Paginated view (q to quit)
+head -n 50 app.log           # View First 50 lines
+tail -f logs/app.log         # View line at very end of a file in real-time
+tail -n 100 app.log          # View Last 100 lines
+
+# Edit files using Editors
+vim application.properties   # Open with Vim (Vi Improved is a Text-based Editor, it's upgraded version of Vi)
+nano application.properties  # Open with Nano (Nano is a Terminal-based text editor)
+vi config.yml                # Open with Vi (Vi is a Text-based Editor)
+
+
+3. FILE EDITING (VIM/VI/NANO)
+------------------------------
+
+# VIM/VI BASICS
+vim filename.txt             # Open file in Vim
+
+# Vim Modes:
+# - Normal mode (default): Navigate and execute commands
+# - Insert mode: Edit text
+# - Command mode: Save, quit, search
+
+# Vim Commands:
+i                            # Enter insert mode (insert before cursor)
+a                            # Enter insert mode (insert after cursor)
+ESC                          # Return to normal mode
+:w                           # Save file
+:q                           # Quit
+:wq  or  :x                  # Save and quit
+:q!                          # Quit without saving
+:set number                  # Show line numbers
+/searchterm                  # Search forward
+?searchterm                  # Search backward
+n                            # Next search result
+dd                           # Delete current line
+yy                           # Copy current line
+p                            # Paste
+u                            # Undo
+Ctrl + r                     # Redo
+gg                           # Go to first line
+G                            # Go to last line
+:10                          # Go to line 10
+
+# NANO BASICS (Easier for beginners)
+nano filename.txt            # Open file in Nano
+
+# Nano Commands (shown at bottom of screen):
+Ctrl + O                     # Save file (WriteOut)
+Ctrl + X                     # Exit
+Ctrl + K                     # Cut line
+Ctrl + U                     # Paste
+Ctrl + W                     # Search
+Ctrl + \                     # Search and replace
+Ctrl + G                     # Help
+Alt + U                      # Undo
+Alt + E                      # Redo
+
+# Quick edits without opening editor
+echo "server.port=9090" >> application.properties  # Append line
+echo "spring.profiles.active=prod" > config.txt   # Overwrite file
+
+
+
+4. LOG ANALYSIS
+--------------------------
+
+# Search logs
+grep "ERROR" app.log         # Search through a given app.log file & print out every line that contains the word "ERROR".
+grep -i "exception" app.log  # Case-insensitive search
+grep -r "NullPointer" logs/  # Recursively scan every single log file inside the logs/ directory to pinpoint exactly where a NullPointerException has occurred. 
+			       (-r ~ Recursive Search. It scans every single subfolder, sub-subfolder, and nested file)
+grep -A 5 "ERROR" app.log    # Show 5 lines after match
+grep -B 5 "ERROR" app.log    # Show 5 lines before match
+
+# Count occurrences
+grep -c "ERROR" app.log      # Return total count of how many errors words occurred in log file
+grep "ERROR" app.log | wc -l # Returns exact same result as above cmd, but it does it by chaining two separate Linux utilities together using a pipe. (wc -word count, l - lines)
+
+# Filter and pipe
+grep "ERROR" app.log | grep "OrderService"  # Searches log file to find lines that contain both the word "ERROR" and "OrderService".
+tail -f app.log | grep --line-buffered "ERROR"  # Used to stream your application logs live while instantly filtering for errors as they happen
+
+
+
+5. SYSTEM MONITORING
+--------------------------
+
+# CPU and memory
+top                          # Used for Real-time system monitor (press 'q' to quit)
+htop                         # Better alternative to top. Returns more human readable output than top 
+free -h                      # Command used to check available memory. Checks how much memory (RAM) is currently available and being used on your system. (free - Free Memory)
+df -h                        # Check Disk space
+
+# Java-specific monitoring tools
+jstat -gc <PID> 1000         # GC stats every 1 second (jstat - Java Virtual Machine Statistics Monitoring Tool)
+jmap -heap <PID>             # Heap summary (jmap - Java Memory Map)
+jstack <PID>                 # Thread dump (jstack - Java Stack Trace)
+jcmd <PID> VM.uptime         # Check exactly how long a specific JVM has been running since its last startup (jcmd - Java Command)
+
+
+
+6. NETWORK & CONNECTIVITY
+--------------------------
+
+# Test connectivity 
+ping google.com              			# Test if your server can communicate with Google over the internet
+curl http://localhost:8080/actuator/health      # Check the immediate health status of a Spring Boot application running locally on your machine.
+curl -X POST http://localhost:8080/api/orders -H "Content-Type: application/json" -d '{"id":1}'	# Used to manually trigger an HTTP POST request
+
+# Download files
+wget https://example.com/file.jar             # To download files directly from the internet
+wget -c https://example.com/huge-file.jar     # Resume a Interrupted Download
+wget -b https://example.com/huge-file.jar     # Download in the Background 
+wget https://example.com/file.jar -O my-spring-app.jar  # Rename a file while downloading
+curl -O https://example.com/file.jar  	      # Saves the file exactly as it's named on the server.
+curl -o custom-application.jar https://example.com/file.jar  # Saves the file with given custom name
+
+# Check DNS
+nslookup example.com  # It's an older, basic tool that prints a simplified summary of a domain's IP address (nslookup - Name Server Lookup)
+dig example.com       # Modern utility that displays the exact, raw cryptographic response records directly from the DNS nameserver. (dig - Domain Information Groper)
+
+
+
+7. FILE PERMISSIONS
+--------------------------
+
+# Change permissions (chmod - Change Mode, chown - Change Owner)
+chmod +x script.sh           # Grant execute permission. + means add permission
+chmod -x script.sh           # Remove execute permission. - means remove permission
+chmod -rwx  script.sh        # Remove read, write and execution permission
+chmod -r-x  script.sh        # Remove read and execution permission. Format: rwx (read write execute). Keep - for skipping any one.
+chmod +rw  script.sh         # Grant read and write permission
+chmod 755 deploy.sh          # Grant rwx-xr-xr permission
+chmod 644 config.properties  # Grant rw-r--r-- permission
+chmod 000 deploy.sh          # Completely wipes out permissions for the Owner, the Group, and everyone else
+
+________________________________________________________________________________________________________________________________
+  
+  Pre-requisite:
+  Linux calculates permissions by adding up binary point scores for each individual file:
+  4 = Read (r), 2 = Write (w) and 1 = Execute (x)
+
+  So, 3-digit number passed to chmod represents three distinct entities in strict order: [ Owner ] [ Group ] [ Everyone Else ]
+
+  chmod 755 deploy.sh # This math breaks down into three groups:
+
+  > Owner (7): 4 (read) + 2 (write) + 1 (execute) = 7 (rwx)
+  The person who created the file can do absolutely everything 
+  > Group (5): 4 (read) + 0 (write) + 1 (execute) = 5 (r-x)
+  Team members in the same user group can read and run the script, 
+  but cannot edit or accidentally break the code (xr)
+  > Everyone Else (5): 4 (read) + 0 (write) + 1 (execute) = 5 (r-x)
+  Anyone else on the server can also read and execute it
+________________________________________________________________________________________________________________________________
+
+
+# Change ownership
+chown user:group app.jar     # To transfer the ownership of a file or directory to a specific user and system group
+chown -R user:group /opt/app # Transfers the ownership of the /opt/app directory along with every single file, configuration, 
+			       subfolder and asset hidden inside it to a new user and system group. (-R ~ Recursive Change Owner)
+chown user:group /opt/app    # Change the ownership of just the top-level /opt/app directory itself...without touching any 
+			       of the files or folders inside it.
+
+
+
+
+8. TEXT PROCESSING
+--------------------------
+
+# AWK - extract columns
+ps aux | awk '{print $2, $11}'  # Print PID and command
+cat app.log | awk '/ERROR/ {print $1, $2, $5}'  # View given file & pull out three specific pieces of information: the date, 
+						timestamp, and error message details, ignoring the rest of the text on the line.
+________________________________________________________________________________________________________________________________
+
+Explanation:
+
+ps aux | awk '{print $2, $11}'
+-------------------------------
+Part 1: ps aux ~ Covered in Process Management Section (Sec. No. 1) 
+
+Part 2: awk '{print $2, $11}'
+By default, ps aux prints 11 distinct columns of data. awk is a powerful text-processing utility that treats each column 
+as a variable designated by a dollar sign ($) and its position number.
+
+$2: Represents the 2nd column in the data stream, which is the PID (Process ID).
+$11: Represents the 11th column, which is the COMMAND (the actual program or binary executing).
+
+cat app.log | awk '/ERROR/ {print $1, $2, $5}'
+----------------------------------------------
+Part 1: cat app.log
+The cat utility reads the entire app.log file from top to bottom and 
+streams the text lines directly into the input of the next command.
+
+Part 2: awk '/ERROR/ {print $1, $2, $5}'
+This is an awk pattern-action block. It handles two tasks simultaneously on the incoming text stream:
+
+The Pattern Filter (/ERROR/): The forward slashes define a regular expression search. 
+awk looks at every single line streaming in and instantly drops it unless the line explicitly contains the word "ERROR".
+
+The Action Block ({print $1, $2, $5}): For every line that passes the pattern filter, 
+awk tokenizes the line by spaces and outputs only the 1st, 2nd, and 5th chunks of text.
+
+________________________________________________________________________________________________________________________________
+
+# SED - find and replace (sed - Stream Editor)
+
+sed 's/localhost/prod-server/g' config.yml     # It searches through the config.yml file, changes every text of localhost to
+						 prod-server & previews updated text on screen without modifying the original file.
+sed -i 's/8080/9090/g' application.properties  # In-place edit. It searches through the application.properties file, changes every 
+						 port number 8080 to 9090 & permanently saves modifications directly into the file.
+
+# Cut - extract fields
+echo "user:password:1001" | cut -d: -f1  # Extract username (-f1 ~ first field). It splits the text string using the colon (:) as 
+					 # a dividing marker and prints out only the first section, which is user
+
+
+
+9. COMPRESSION & ARCHIVES
+--------------------------
+
+# TAR archives
+tar -czf app-backup.tar.gz /opt/app     # Create compressed archive. Used to compress the entire /opt/app folder into a single, 
+					  compact archive file called app-backup.tar.gz. (tar - Tape Archive)
+tar -xzf app-backup.tar.gz              # Extract archive. Used to Decompress and extract (unpack) all the files out of your backup 
+					  archive back into your current directory
+tar -tzf app-backup.tar.gz              # List contents of archive. Used to preview the contents of a compressed archive without 
+					  actually extracting any files onto your disk
+
+c (Create): Tells the system to build a brand new archive file.
+z (gzip): Tells the system to compress the archive using gzip algorithm to make the final file size as small as possible.
+f (File): Specifies that the output should be saved as a specific file on your disk 
+	  (must always be placed immediately before the backup file name).
+x (eXtract): The key change here. Instead of packing files together, this tells the system to split the archive 
+	     open and extract the contents.
+t (List/Table of Contents): The key modifier here. It tells the system to read the file headers and print out 
+			     a text list of all the file and directory paths stored inside.
+
+
+# ZIP
+zip -r app.zip /opt/app                 # Compress the entire /opt/app directory and everything inside it into a standard .zip 
+					  archive named app.zip
+unzip app.zip				# Extract all the files and folders out of a .zip archive back onto your disk.
+unzip -l app.zip                        # List contents of zip archive. Used to preview the entire contents of a .zip archive 
+					  without extracting any files
+
+-r : Recursive Compress
+-l : List content
+
+Note: By default, tar just groups files together while zip groups file together and compresses them.
+-z flag is needed for tar compression.
+
+
+
+10. ENVIRONMENT & VARIABLES
+-----------------------------
+
+# Environment variables
+export JAVA_HOME=/usr/lib/jvm/java-17   # Set given environment variable
+export PATH=$PATH:$JAVA_HOME/bin        # It adds Java's executable tools directory to your system's command search highway, allowing you to run 
+					  Java programs from any folder on your server.
+echo $JAVA_HOME				# Prints the folder path where Java installed
+env | grep JAVA                         # List Java-related variables. It searches through your system's active environment variables and 
+					  filters the output to show only the lines that contain the word JAVA
+
+# Check Java and Maven version
+java -version				# Checks the version of Java Runtime Environment (JRE)
+javac -version				# Checks the version of Java Compiler (JDK) (javac -Java Compiler)
+mvn -version				# Checks the version of Maven
+
+
+11. MAVEN/GRADLE COMMANDS
+--------------------------
+
+# Maven
+mvn clean install			# Build a project from scratch using the Apache Maven build tool
+mvn spring-boot:run			# Compile and launch a Spring Boot Java application using Apache Maven
+mvn test				# Run all the unit tests and integration tests using Apache Maven
+mvn package -DskipTests			# Package Java source code into its final distributable format (like a .jar or .war file) 
+					  while completely skipping the time-consuming test execution phase
+mvn dependency:tree                     # View dependencies. Generate a visual, hierarchical map of every external library (dependency) in Project
+
+# Gradle
+./gradlew build				      # Compile, test, and package a project using Gradle
+./gradlew bootRun			      # Compile and launch a Spring Boot application instantly from source code using the Gradle Wrapper
+./gradlew test				      # Execute all the unit and integration tests in project using the Gradle Wrapper
+./gradlew clean build --refresh-dependencies  # Force Gradle to completely rebuild your project from absolute scratch while throwing away all 
+						cached external libraries and downloading them fresh from the remote repositories.
+
+
+12. DOCKER (Common for Java Developer)
+---------------------------------------
+
+# Container management
+docker ps                               # List all the Docker containers currently running on machine
+docker ps -a                            # List every single Docker container on machine regardless of its current state
+docker logs -f <container-id>           # Follow logs. Used to open a live, real-time stream of the log outputs from a specific Docker container
+docker exec -it <container-id> bash     # Enter container. Used to open a live, interactive command-line terminal inside a running Docker container
+
+# Images
+docker images				# List all the Docker images currently downloaded or built on machine
+docker pull rabbitmq:3-management	# Download the RabbitMQ message broker image from Docker Hub onto machine,
+docker build -t myapp:1.0 .		# Used to create a custom Docker image from a Docker file located in current directory
+
+# Docker Compose
+docker-compose up -d                    # Start and run an entire multi-container application stack in the background based on the 
+					  configurations defined in a single docker-compose.yml file.
+docker-compose down                     # Used to completely stop a multi-container application stack that was previously started using Docker Compose
+docker-compose logs -f                  # Open a live, aggregated stream of log outputs from every single container running inside Docker Compose stack
+docker-compose ps                       # List all the containers managed by current Docker Compose environment and show their real-time operational status
+
+
+13. USEFUL COMBINATIONS
+--------------------------
+
+# Find and kill Java process on port 8080
+lsof -ti:8080 | xargs kill -9
+
+# Monitor log for errors in real-time
+tail -f app.log | grep --color=always -i "error\|exception"
+
+# Find largest files
+du -ah /opt/app | sort -rh | head -20
+
+# Count lines of Java code
+find . -name "*.java" | xargs wc -l
+
+# Check if service is responding
+curl -s http://localhost:8080/actuator/health | grep UP
+
+# Archive logs older than 7 days
+find logs/ -name "*.log" -mtime +7 -exec gzip {} \;
+
+
+14. SHORTCUTS & TIPS
+--------------------------
+
+Ctrl + C        # Kill current process
+Ctrl + Z        # Suspend process
+Ctrl + R        # Search command history
+Ctrl + L        # Clear screen
+!!              # Repeat last command
+!$              # Last argument of previous command
+history         # Show command history
+alias ll='ls -lah'  # Create alias
+
+
+
+______________________________________________________________________________________
+
+All the best, CHAMP! Keep growing ⭐... Remember, we're really proud of you, always!! 
+We believe in you and know you are going to achieve even greater success ahead!
+______________________________________________________________________________________

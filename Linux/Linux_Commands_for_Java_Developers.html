@@ -1,0 +1,1631 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESSENTIAL LINUX COMMANDS FOR JAVA DEVELOPERS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --accent-blue: #38bdf8;
+            --accent-green: #4ade80;
+            --accent-purple: #c084fc;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --code-bg: #0b0f19;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        aside {
+            width: 320px;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .brand {
+            margin-bottom: 2rem;
+        }
+
+        .brand h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.025em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .brand p {
+            font-size: 0.85rem;
+            color: var(--accent-blue);
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.375rem;
+            display: block;
+            transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-main);
+            background-color: var(--bg-tertiary);
+        }
+        
+        .nav-links a.active {
+            border-left: 3px solid var(--accent-blue);
+            background-color: rgba(56, 189, 248, 0.1);
+        }
+
+        /* Main Content Layout */
+        main {
+            margin-left: 320px;
+            flex: 1;
+            padding: 3rem 4rem;
+            max-width: 1200px;
+        }
+
+        section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 2rem;
+        }
+
+        section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-blue);
+        }
+
+        .section-desc {
+            color: var(--accent-purple);
+            margin-top: -1rem;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* Utility Listing */
+        .utility-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .utility-item {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        .utility-name {
+            font-family: 'Fira Code', monospace;
+            color: var(--accent-purple);
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Command Card Component */
+        .cmd-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cmd-sub-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 1rem;
+            margin-bottom: 0.25rem;
+            border-left: 3px solid var(--accent-purple);
+            padding-left: 0.5rem;
+        }
+
+        .cmd-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+
+        .cmd-card:hover {
+            border-color: #475569;
+        }
+
+        .cmd-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--code-bg);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .cmd-string {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            color: var(--accent-green);
+            word-break: break-all;
+            padding-right: 2rem;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .copy-btn:hover {
+            color: var(--text-main);
+            background-color: var(--bg-tertiary);
+        }
+
+        .cmd-desc {
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        /* Informational/Note Blocks */
+        .deep-dive {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px dashed var(--accent-blue);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        .deep-dive h4 {
+            color: var(--accent-blue);
+            font-size: 1.05rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .deep-dive p {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            white-space: pre-line;
+        }
+
+        /* Motivation Footer Banner */
+        footer {
+            margin-top: 4rem;
+            background: linear-gradient(90deg, #1e1b4b 0%, #311042 100%);
+            border: 1px solid var(--accent-purple);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            text-align: center;
+        }
+
+        footer h3 {
+            color: #f472b6;
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        footer p {
+            color: var(--text-main);
+            font-size: 1.1rem;
+            font-weight: 500;
+            line-height: 1.8;
+        }
+
+        /* Responsive Modifications */
+        @media (max-width: 1024px) {
+            aside { width: 260px; padding: 1.5rem 1rem; }
+            main { margin-left: 260px; padding: 2rem; }
+        }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            aside { position: relative; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-color); }
+            main { margin-left: 0; padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="brand">
+            <h1>ESSENTIAL LINUX COMMANDS FOR JAVA DEVELOPERS</h1>
+            <p>~ © Dynamic Duo Learners</p>
+        </div>
+        <div class="search-box">
+            <input type="text" id="cheatsheetSearch" placeholder="Filter commands..." oninput="filterCommands()">
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#prereq" class="active">Pre-requisite</a></li>
+                <li><a href="#section1">1. PROCESS MANAGEMENT</a></li>
+                <li><a href="#section2">2. FILE OPERATIONS</a></li>
+                <li><a href="#section3">3. FILE EDITING</a></li>
+                <li><a href="#section4">4. LOG ANALYSIS</a></li>
+                <li><a href="#section5">5. SYSTEM MONITORING</a></li>
+                <li><a href="#section6">6. NETWORK & CONNECTIVITY</a></li>
+                <li><a href="#section7">7. FILE PERMISSIONS</a></li>
+                <li><a href="#section8">8. TEXT PROCESSING</a></li>
+                <li><a href="#section9">9. COMPRESSION & ARCHIVES</a></li>
+                <li><a href="#section10">10. ENVIRONMENT & VARIABLES</a></li>
+                <li><a href="#section11">11. MAVEN/GRADLE COMMANDS</a></li>
+                <li><a href="#section12">12. DOCKER</a></li>
+                <li><a href="#section13">13. USEFUL COMBINATIONS</a></li>
+                <li><a href="#section14">14. TERMINAL SHORTCUTS & TIPS</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main>
+        
+        <section id="prereq">
+            <h2>Pre-requisite: (Core Utilities/ Commands)</h2>
+            <div class="utility-list">
+                <div class="utility-item">
+                    <div class="utility-name">grep (Globally search for a Regular Expression and Print):</div>
+                    <div class="cmd-desc">Used to search for and extract specific lines of text that match a targeted pattern or regular expression within files or streams of data.</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">pgrep (Process Grep):</div>
+                    <div class="cmd-desc">Used to search the operating systems active process list and return the PIDs of processes that match a specified name or criteria.</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">netstat (Network Statistics):</div>
+                    <div class="cmd-desc">Used to display active network connections, routing tables, and interface statistics.</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">kill:</div>
+                    <div class="cmd-desc">Used to stop running processes. It requires a Process ID (PID) number.</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">pkill:</div>
+                    <div class="cmd-desc">Used to stop running processes based on their name or other attributes.</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">lsof (List Open Files):</div>
+                    <div class="cmd-desc">Used to list all files currently opened by running processes.</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">nohup (No Hang-Up):</div>
+                    <div class="cmd-desc">Used to run a process in the background that keeps running even after the user logs out or closes the terminal session.</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">find:</div>
+                    <div class="cmd-desc">Command used to search for files and directories within a file system based on user-defined criteria (such as name, size, file type, permissions, or modification date).</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">locate:</div>
+                    <div class="cmd-desc">Command used to instantly find files and directories by name.</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">head:</div>
+                    <div class="cmd-desc">Command used to display the first few lines of one or more text files or streams of data</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">tail:</div>
+                    <div class="cmd-desc">Command used to display the last few lines of one or more text files or streams of data</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">less:</div>
+                    <div class="cmd-desc">It is a terminal viewer used to browse, search, and scroll through large text files or command outputs one screenful at a time without loading the entire file into memory.</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">cat:</div>
+                    <div class="cmd-desc">Utility uses to read data from files and output their content sequentially to the screen.</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">top (Table of Processes):</div>
+                    <div class="cmd-desc">An interactive system monitor that provides a real-time, dynamic dashboard of overall CPU and memory utilization with a live list of running processes sorted by resource consumption.</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">htop:</div>
+                    <div class="cmd-desc">An advanced, interactive system monitor which works same as top but brings up a vibrant, color-coded, text-graphical interface that supports horizontal and vertical scrolling, full mouse-clicking, etc features. (htop - H is just a name of author "Hisham" who created the tool)</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">df (Disk Free):</div>
+                    <div class="cmd-desc">Display a summary of the system's total, used, and available disk space across all mounted file systems.</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">curl:</div>
+                    <div class="cmd-desc">The command-line tool used to send network requests.</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">wget:</div>
+                    <div class="cmd-desc">Used to download files, assets, or entire web pages directly from the internet using network protocols like HTTP, HTTPS, and FTP</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">sed:</div>
+                    <div class="cmd-desc">It's a stream editor that automatically updates, deletes or transforms text line-by-line inside a file or pipeline without opening a visual editor</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">echo:</div>
+                    <div class="cmd-desc">Command used to print text, environment variables, or command outputs directly to the screen or redirect them into files</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">tar:</div>
+                    <div class="cmd-desc">Command used to bundle multiple files and directories into a single archive file .tar.gz (same command is used to decompress same file as well)</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">zip:</div>
+                    <div class="cmd-desc">Command used to compress files and folders directly into a standard .zip archive format to reduce file sizes</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">unzip:</div>
+                    <div class="cmd-desc">Command used to extract and restore the files and directory structures contained within a .zip archive</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">export:</div>
+                    <div class="cmd-desc">Command used to set environment variables, making them available to any child processes and sub-shells launched from that terminal session</div>
+                </div>
+                <div class="utility-item">
+                    <div class="utility-name">env:</div>
+                    <div class="cmd-desc">Command used to set environment variables temporarily to a single command only. It will not be available to any child processes and sub-shells launched from that terminal session</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section1">
+            <h2>1. PROCESS MANAGEMENT</h2>
+            <div class="cmd-group">
+                <div class="cmd-sub-title">Find Java processes</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">ps aux | grep java</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Find any process running on the system that matches the keyword "java". (ps - Process Status)</div>
+                </div>
+
+                <div class="deep-dive">
+                    <h4>Explanation:</h4>
+                    <p>The Process Snapshot (ps) command generates a comprehensive snapshot of all active processes.
+                    a: Shows processes for all users, not just your current terminal session.
+                    u: Displays detailed information including user ownership, CPU, and memory metrics.
+                    x: Includes background processes that aren't tied to a specific terminal control screen.</p>
+                </div>
+
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">jps</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">List Java processes with PIDs. It only lists Java processes, no scan like entire OS. (JPS - Java Virtual Machine Process Status Tool).</div>
+                </div>
+
+                <div class="cmd-sub-title">Kill running process</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">kill -9 &lt;PID&gt;</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Forcefully and instantly terminate (kill) a running process on your computer or server.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">kill -15 &lt;PID&gt;</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Graceful Shutdown process of given running process PID</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">pkill -f "spring-boot"</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Kill by name pattern. Instantly find and terminate (kill) any running background processes with given name</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">pgrep -fa "spring-boot"</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Prints the matches to your screen safely before destroying them. Always use before, pkill cmd.</div>
+                </div>
+
+                <div class="cmd-sub-title">Check port usage</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">netstat -tulpn | grep 8080</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Find out which application is using (listening on) network port 8080</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">lsof -i :8080</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Modern Linux command used to find out exactly which application is using network port 8080</div>
+                </div>
+
+                <div class="cmd-sub-title">Background/foreground jobs</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">nohup java -jar app.jar &</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Run in background (nohup - No Hang-up). & - Shell operator that pushes execution of cmd into the background immediately.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">jobs</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">List all active background tasks/jobs that were started from your current terminal session.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">fg %1</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Bring background job to foreground for active view (%1 - Job No. 1, %2 - Job No. 2, ...)</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section2">
+            <h2>2. FILE OPERATIONS</h2>
+            <div class="cmd-group">
+                <div class="cmd-sub-title">Navigate and list</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">ls</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">List the names of all files and folders inside your current directory.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">ls -lah</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">List with hidden files and folders inside your current directory in human-readable sizes (KB,MB,GB,..,etc instead of bytes)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">cd</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Change Directory. Go to global user home directory.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">cd -</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Go to previous/last folder you were standing in. Think of it like the "Back" button on your web browser.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">cd ..</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Go to one level up into the parent directory of your current folder.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">pwd</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Print working directory</div>
+                </div>
+
+                <div class="cmd-sub-title">Search files</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">find . -name "*.jar"</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Find all JAR files in your current directory and all of its subfolders</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">find . -type f -mtime -7</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Find Files modified in last 7 days. (-7 ~ Modified less than 7 days ago, +7 ~ Modified more than 7 days ago, 7 ~ Modified exactly 7 days ago)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">locate application.properties</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Find the exact location of a file given anywhere on system</div>
+                </div>
+
+                <div class="cmd-sub-title">File content</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">cat application.yml</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">View entire file</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">less logs/app.log</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Paginated view (q to quit)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">head -n 50 app.log</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">View First 50 lines</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">tail -f logs/app.log</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">View line at very end of a file in real-time</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">tail -n 100 app.log</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">View Last 100 lines</div>
+                </div>
+
+                <div class="cmd-sub-title">Edit files using Editors</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">vim application.properties</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Open with Vim (Vi Improved is a Text-based Editor, it's upgraded version of Vi)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">nano application.properties</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Open with Nano (Nano is a Terminal-based text editor)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">vi config.yml</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Open with Vi (Vi is a Text-based Editor)</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section3">
+            <h2>3. FILE EDITING (VIM/VI/NANO)</h2>
+            <div class="cmd-group">
+                <div class="cmd-sub-title">VIM/VI BASICS</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">vim filename.txt</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Open file in Vim</div>
+                </div>
+
+                <div class="deep-dive">
+                    <h4>Vim Modes:</h4>
+                    <p># - Normal mode (default): Navigate and execute commands</p>
+                    <p># - Insert mode: Edit text</p>
+                    <p># - Command mode: Save, quit, search</p>
+                    
+                    <h4 style="margin-top: 1rem;">Vim Commands:</h4>
+                    <p><strong>i</strong> : Enter insert mode (insert before cursor)</p>
+                    <p><strong>a</strong> : Enter insert mode (insert after cursor)</p>
+                    <p><strong>ESC</strong> : Return to normal mode</p>
+                    <p><strong>:w</strong> : Save file</p>
+                    <p><strong>:q</strong> : Quit</p>
+                    <p><strong>:wq  or  :x</strong> : Save and quit</p>
+                    <p><strong>:q!</strong> : Quit without saving</p>
+                    <p><strong>:set number</strong> : Show line numbers</p>
+                    <p><strong>/searchterm</strong> : Search forward</p>
+                    <p><strong>?searchterm</strong> : Search backward</p>
+                    <p><strong>n</strong> : Next search result</p>
+                    <p><strong>dd</strong> : Delete current line</p>
+                    <p><strong>yy</strong> : Copy current line</p>
+                    <p><strong>p</strong> : Paste</p>
+                    <p><strong>u</strong> : Undo</p>
+                    <p><strong>Ctrl + r</strong> : Redo</p>
+                    <p><strong>gg</strong> : Go to first line</p>
+                    <p><strong>G</strong> : Go to last line</p>
+                    <p><strong>:10</strong> : Go to line 10</p>
+                </div>
+
+                <div class="cmd-sub-title">NANO BASICS (Easier for beginners)</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">nano filename.txt</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Open file in Nano</div>
+                </div>
+
+                <div class="deep-dive">
+                    <h4>Nano Commands (shown at bottom of screen):</h4>
+                    <p><strong>Ctrl + O</strong> : Save file (WriteOut)</p>
+                    <p><strong>Ctrl + X</strong> : Exit</p>
+                    <p><strong>Ctrl + K</strong> : Cut line</p>
+                    <p><strong>Ctrl + U</strong> : Paste</p>
+                    <p><strong>Ctrl + W</strong> : Search</p>
+                    <p><strong>Ctrl + \</strong> : Search and replace</p>
+                    <p><strong>Ctrl + G</strong> : Help</p>
+                    <p><strong>Alt + U</strong> : Undo</p>
+                    <p><strong>Alt + E</strong> : Redo</p>
+                </div>
+
+                <div class="cmd-sub-title">Quick edits without opening editor</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">echo "server.port=9090" &gt;&gt; application.properties</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Append line</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">echo "spring.profiles.active=prod" &gt; config.txt</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Overwrite file</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section4">
+            <h2>4. LOG ANALYSIS</h2>
+            <div class="cmd-group">
+                <div class="cmd-sub-title">Search logs</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">grep "ERROR" app.log</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Search through a given app.log file & print out every line that contains the word "ERROR".</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">grep -i "exception" app.log</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Case-insensitive search</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">grep -r "NullPointer" logs/</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Recursively scan every single log file inside the logs/ directory to pinpoint exactly where a NullPointerException has occurred. (-r ~ Recursive Search. It scans every single subfolder, sub-subfolder, and nested file)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">grep -A 5 "ERROR" app.log</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Show 5 lines after match</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">grep -B 5 "ERROR" app.log</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Show 5 lines before match</div>
+                </div>
+
+                <div class="cmd-sub-title">Count occurrences</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">grep -c "ERROR" app.log</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Return total count of how many errors words occurred in log file</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">grep "ERROR" app.log | wc -l</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Returns exact same result as above cmd, but it does it by chaining two separate Linux utilities together using a pipe. (wc -word count, l - lines)</div>
+                </div>
+
+                <div class="cmd-sub-title">Filter and pipe</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">grep "ERROR" app.log | grep "OrderService"</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Searches log file to find lines that contain both the word "ERROR" and "OrderService".</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">tail -f app.log | grep --line-buffered "ERROR"</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Used to stream your application logs live while instantly filtering for errors as they happen</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section5">
+            <h2>5. SYSTEM MONITORING</h2>
+            <div class="cmd-group">
+                <div class="cmd-sub-title">CPU and memory</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">top</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Used for Real-time system monitor (press 'q' to quit)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">htop</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Better alternative to top. Returns more human readable output than top.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">free -h</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Command used to check available memory. Checks how much memory (RAM) is currently available and being used on your system. (free - Free Memory)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">df -h</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Check Disk space</div>
+                </div>
+
+                <div class="cmd-sub-title">Java-specific monitoring tools</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">jstat -gc &lt;PID&gt; 1000</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">GC stats every 1 second (jstat - Java Virtual Machine Statistics Monitoring Tool)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">jmap -heap &lt;PID&gt;</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Heap summary (jmap - Java Memory Map)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">jstack &lt;PID&gt;</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Thread dump (jstack - Java Stack Trace)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">jcmd &lt;PID&gt; VM.uptime</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Check exactly how long a specific JVM has been running since its last startup (jcmd - Java Command)</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section6">
+            <h2>6. NETWORK & CONNECTIVITY</h2>
+            <div class="cmd-group">
+                <div class="cmd-sub-title">Test connectivity</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">ping google.com</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Test if your server can communicate with Google over the internet</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">curl http://localhost:8080/actuator/health</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Check the immediate health status of a Spring Boot application running locally on your machine.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">curl -X POST http://localhost:8080/api/orders -H "Content-Type: application/json" -d '{"id":1}'</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Used to manually trigger an HTTP POST request</div>
+                </div>
+
+                <div class="cmd-sub-title">Download files</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">wget https://example.com/file.jar</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">To download files directly from the internet</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">wget -c https://example.com/huge-file.jar</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Resume a Interrupted Download</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">wget -b https://example.com/huge-file.jar</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Download in the Background </div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">wget https://example.com/file.jar -O my-spring-app.jar</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Rename a file while downloading</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">curl -O https://example.com/file.jar</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Saves the file exactly as it's named on the server.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">curl -o custom-application.jar https://example.com/file.jar</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Saves the file with given custom name</div>
+                </div>
+
+                <div class="cmd-sub-title">Check DNS</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">nslookup example.com</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">It's an older, basic tool that prints a simplified summary of a domain's IP address (nslookup - Name Server Lookup)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">dig example.com</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Modern utility that displays the exact, raw cryptographic response records directly from the DNS nameserver. (dig - Domain Information Groper)</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section7">
+            <h2>7. FILE PERMISSIONS</h2>
+            <div class="cmd-group">
+                <div class="cmd-sub-title">Change permissions (chmod - Change Mode, chown - Change Owner)</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">chmod +x script.sh</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Grant execute permission. + means add permission</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">chmod -x script.sh</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Remove execute permission. - means remove permission</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">chmod -rwx script.sh</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Remove read, write and execution permission</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">chmod -r-x script.sh</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Remove read and execution permission. Format: rwx (read write execute). Keep - for skipping any one.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">chmod +rw script.sh</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Grant read and write permission</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">chmod 755 deploy.sh</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Grant rwx-xr-xr permission</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">chmod 644 config.properties</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Grant rw-r--r-- permission</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">chmod 000 deploy.sh</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Completely wipes out permissions for the Owner, the Group, and everyone else</div>
+                </div>
+
+                <div class="deep-dive">
+                    <h4>Pre-requisite:</h4>
+                    <p>Linux calculates permissions by adding up binary point scores for each individual file:
+                    4 = Read (r), 2 = Write (w) and 1 = Execute (x)
+                    
+                    So, 3-digit number passed to chmod represents three distinct entities in strict order: [ Owner ] [ Group ] [ Everyone Else ]
+                    
+                    chmod 755 deploy.sh # This math breaks down into three groups:
+                    
+                    &gt; Owner (7): 4 (read) + 2 (write) + 1 (execute) = 7 (rwx)
+                    The person who created the file can do absolutely everything 
+                    &gt; Group (5): 4 (read) + 0 (write) + 1 (execute) = 5 (r-x)
+                    Team members in the same user group can read and run the script, 
+                    but cannot edit or accidentally break the code (xr)
+                    &gt; Everyone Else (5): 4 (read) + 0 (write) + 1 (execute) = 5 (r-x)
+                    Anyone else on the server can also read and execute it</p>
+                </div>
+
+                <div class="cmd-sub-title">Change ownership</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">chown user:group app.jar</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">To transfer the ownership of a file or directory to a specific user and system group</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">chown -R user:group /opt/app</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Transfers the ownership of the /opt/app directory along with every single file, configuration, subfolder and asset hidden inside it to a new user and system group. (-R ~ Recursive Change Owner)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">chown user:group /opt/app</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Change the ownership of just the top-level /opt/app directory itself...without touching any of the files or folders inside it.</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section8">
+            <h2>8. TEXT PROCESSING</h2>
+            <div class="cmd-group">
+                <div class="cmd-sub-title">AWK - extract columns</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">ps aux | awk '{print $2, $11}'</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Print PID and command</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">cat app.log | awk '/ERROR/ {print $1, $2, $5}'</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">View given file & pull out three specific pieces of information: the date, timestamp, and error message details, ignoring the rest of the text on the line.</div>
+                </div>
+
+                <div class="deep-dive">
+                    <h4>Explanation:</h4>
+                    <p><strong>ps aux | awk '{print $2, $11}'</strong>
+                    -------------------------------
+                    Part 1: ps aux ~ Covered in Process Management Section (Sec. No. 1) 
+                    
+                    Part 2: awk '{print $2, $11}'
+                    By default, ps aux prints 11 distinct columns of data. awk is a powerful text-processing utility that treats each column as a variable designated by a dollar sign ($) and its position number.
+                    $2: Represents the 2nd column in the data stream, which is the PID (Process ID).
+                    $11: Represents the 11th column, which is the COMMAND (the actual program or binary executing).
+                    
+                    <strong>cat app.log | awk '/ERROR/ {print $1, $2, $5}'</strong>
+                    ----------------------------------------------
+                    Part 1: cat app.log
+                    The cat utility reads the entire app.log file from top to bottom and streams the text lines directly into the input of the next command.
+                    
+                    Part 2: awk '/ERROR/ {print $1, $2, $5}'
+                    This is an awk pattern-action block. It handles two tasks simultaneously on the incoming text stream:
+                    The Pattern Filter (/ERROR/): The forward slashes define a regular expression search. awk looks at every single line streaming in and instantly drops it unless the line explicitly contains the word "ERROR".
+                    The Action Block ({print $1, $2, $5}): For every line that passes the pattern filter, awk tokenizes the line by spaces and outputs only the 1st, 2nd, and 5th chunks of text.</p>
+                </div>
+
+                <div class="cmd-sub-title">SED - find and replace (sed - Stream Editor)</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">sed 's/localhost/prod-server/g' config.yml</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">It searches through the config.yml file, changes every text of localhost to prod-server & previews updated text on screen without modifying the original file.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">sed -i 's/8080/9090/g' application.properties</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">In-place edit. It searches through the application.properties file, changes every port number 8080 to 9090 & permanently saves modifications directly into the file.</div>
+                </div>
+
+                <div class="cmd-sub-title">Cut - extract fields</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">echo "user:password:1001" | cut -d: -f1</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Extract username (-f1 ~ first field). It splits the text string using the colon (:) as a dividing marker and prints out only the first section, which is user</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section9">
+            <h2>9. COMPRESSION & ARCHIVES</h2>
+            <div class="cmd-group">
+                <div class="cmd-sub-title">TAR archives</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">tar -czf app-backup.tar.gz /opt/app</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Create compressed archive. Used to compress the entire /opt/app folder into a single, compact archive file called app-backup.tar.gz. (tar - Tape Archive)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">tar -xzf app-backup.tar.gz</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Extract archive. Used to Decompress and extract (unpack) all the files out of your backup archive back into your current directory</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">tar -tzf app-backup.tar.gz</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">List contents of archive. Used to preview the contents of a compressed archive without actually extracting any files onto your disk</div>
+                </div>
+
+                <div class="deep-dive">
+                    <p>c (Create): Tells the system to build a brand new archive file.
+                    z (gzip): Tells the system to compress the archive using gzip algorithm to make the final file size as small as possible.
+                    f (File): Specifies that the output should be saved as a specific file on your disk (must always be placed immediately before the backup file name).
+                    x (eXtract): The key change here. Instead of packing files together, this tells the system to split the archive open and extract the contents.
+                    t (List/Table of Contents): The key modifier here. It tells the system to read the file headers and print out a text list of all the file and directory paths stored inside.</p>
+                </div>
+
+                <div class="cmd-sub-title">ZIP</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">zip -r app.zip /opt/app</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Compress the entire /opt/app directory and everything inside it into a standard .zip archive named app.zip</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">unzip app.zip</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Extract all the files and folders out of a .zip archive back onto your disk.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">unzip -l app.zip</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">List contents of zip archive. Used to preview the entire contents of a .zip archive without extracting any files</div>
+                </div>
+
+                <div class="deep-dive">
+                    <p>-r : Recursive Compress
+                    -l : List content
+                    
+                    Note: By default, tar just groups files together while zip groups file together and compresses them.
+                    -z flag is needed for tar compression.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="section10">
+            <h2>10. ENVIRONMENT & VARIABLES</h2>
+            <div class="cmd-group">
+                <div class="cmd-sub-title">Environment variables</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">export JAVA_HOME=/usr/lib/jvm/java-17</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Set given environment variable</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">export PATH=$PATH:$JAVA_HOME/bin</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">It adds Java's executable tools directory to your system's command search highway, allowing you to run Java programs from any folder on your server.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">echo $JAVA_HOME</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Prints the folder path where Java installed</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">env | grep JAVA</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">List Java-related variables. It searches through your system's active environment variables and filters the output to show only the lines that contain the word JAVA</div>
+                </div>
+
+                <div class="cmd-sub-title">Check Java and Maven version</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">java -version</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Checks the version of Java Runtime Environment (JRE)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">javac -version</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Checks the version of Java Compiler (JDK) (javac -Java Compiler)</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">mvn -version</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Checks the version of Maven</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section11">
+            <h2>11. MAVEN/GRADLE COMMANDS</h2>
+            <div class="cmd-group">
+                <div class="cmd-sub-title">Maven</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">mvn clean install</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Build a project from scratch using the Apache Maven build tool</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">mvn spring-boot:run</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Compile and launch a Spring Boot Java application using Apache Maven</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">mvn test</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Run all the unit tests and integration tests using Apache Maven</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">mvn package -DskipTests</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Package Java source code into its final distributable format (like a .jar or .war file) while completely skipping the time-consuming test execution phase</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">mvn dependency:tree</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">View dependencies. Generate a visual, hierarchical map of every external library (dependency) in Project</div>
+                </div>
+
+                <div class="cmd-sub-title">Gradle</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">./gradlew build</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Compile, test, and package a project using Gradle</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">./gradlew bootRun</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Compile and launch a Spring Boot application instantly from source code using the Gradle Wrapper</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">./gradlew test</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Execute all the unit and integration tests in project using the Gradle Wrapper</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">./gradlew clean build --refresh-dependencies</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Force Gradle to completely rebuild your project from absolute scratch while throwing away all cached external libraries and downloading them fresh from the remote repositories.</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section12">
+            <h2>12. DOCKER (Common for Java Developer)</h2>
+            <div class="cmd-group">
+                <div class="cmd-sub-title">Container management</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">docker ps</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">List all the Docker containers currently running on machine</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">docker ps -a</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">List every single Docker container on machine regardless of its current state</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">docker logs -f &lt;container-id&gt;</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Follow logs. Used to open a live, real-time stream of the log outputs from a specific Docker container</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">docker exec -it &lt;container-id&gt; bash</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Enter container. Used to open a live, interactive command-line terminal inside a running Docker container</div>
+                </div>
+
+                <div class="cmd-sub-title">Images</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">docker images</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">List all the Docker images currently downloaded or built on machine</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">docker pull rabbitmq:3-management</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Download the RabbitMQ message broker image from Docker Hub onto machine,</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">docker build -t myapp:1.0 .</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Used to create a custom Docker image from a Docker file located in current directory</div>
+                </div>
+
+                <div class="cmd-sub-title">Docker Compose</div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">docker-compose up -d</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Start and run an entire multi-container application stack in the background based on the configurations defined in a single docker-compose.yml file.</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">docker-compose down</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Used to completely stop a multi-container application stack that was previously started using Docker Compose</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">docker-compose logs -f</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Open a live, aggregated stream of log outputs from every single container running inside Docker Compose stack</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">docker-compose ps</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">List all the containers managed by current Docker Compose environment and show their real-time operational status</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section13">
+            <h2>13. USEFUL COMBINATIONS</h2>
+            <div class="cmd-group">
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">lsof -ti:8080 | xargs kill -9</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Find and kill Java process on port 8080</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">tail -f app.log | grep --color=always -i "error|exception"</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Monitor log for errors in real-time</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">du -ah /opt/app | sort -rh | head -20</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Find largest files</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">find . -name "*.java" | xargs wc -l</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Count lines of Java code</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">curl -s http://localhost:8080/actuator/health | grep UP</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Check if service is responding</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">find logs/ -name "*.log" -mtime +7 -exec gzip {} \;</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Archive logs older than 7 days</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section14">
+            <h2>14. TERMINAL SHORTCUTS & TIPS</h2>
+            <div class="cmd-group">
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">Ctrl + C</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Kill current process</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">Ctrl + Z</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Suspend process</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">Ctrl + R</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Search command history</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">Ctrl + L</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Clear screen</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">!!</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Repeat last command</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">!$</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Last argument of previous command</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">history</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Show command history</div>
+                </div>
+                <div class="cmd-card">
+                    <div class="cmd-header">
+                        <span class="cmd-string">alias ll='ls -lah'</span>
+                        <button class="copy-btn" onclick="copyCmd(this)">📋</button>
+                    </div>
+                    <div class="cmd-desc">Create alias. Whenever you type ll, the system will automatically expand and execute ls -lah instead</div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <h3>All the best, CHAMP! Keep growing ⭐...</h3>
+            <p>Remember, we're really proud of you, always! ✅<br>
+            We believe in you and know you are going to achieve even greater success ahead!</p>
+        </footer>
+    </main>
+
+    <script>
+        function copyCmd(btn) {
+            const cmdText = btn.previousElementSibling.textContent;
+            navigator.clipboard.writeText(cmdText).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                btn.style.color = '#4ade80';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.color = '';
+                }, 1500);
+            });
+        }
+
+        function filterCommands() {
+            const query = document.getElementById('cheatsheetSearch').value.toLowerCase();
+            const cards = document.querySelectorAll('.cmd-card, .utility-item');
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    card.style.display = 'block';
+                    if (card.classList.contains('cmd-card')) {
+                        card.style.display = 'flex';
+                    }
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            document.querySelectorAll('section').forEach(section => {
+                const internalCards = section.querySelectorAll('.cmd-card, .utility-item');
+                let visibleCount = 0;
+                internalCards.forEach(c => { if(c.style.display !== 'none') visibleCount++; });
+                
+                if(visibleCount === 0 && query !== '') {
+                    section.style.display = 'none';
+                } else {
+                    section.style.display = 'block';
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    const id = entry.target.getAttribute('id');
+                    const link = document.querySelector(`nav a[href="#${id}"]`);
+                    if (link && entry.isIntersecting) {
+                        document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+                        link.classList.add('active');
+                    }
+                });
+            }, { rootMargin: '-20% 0px -60% 0px' });
+
+            document.querySelectorAll('section').forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
+
