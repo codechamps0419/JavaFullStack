@@ -1,0 +1,400 @@
+
+/* @Author: Dynamic Duo Learners */
+
+==================================================
+1. WHAT ARE AGGREGATE FUNCTIONS?
+==================================================
+
+Aggregate Functions perform calculations on multiple rows and return a single result.
+
+Examples:
+- Total Salary
+- Average Salary
+- Highest Salary
+- Lowest Salary
+- Employee Count
+
+Sample Table:
+
+| emp_id | name  | dept | salary |
+|--------|-------|------|--------|
+| 101    | Amit  | IT   | 50000 |
+| 102    | Rahul | IT   | 60000 |
+| 103    | Neha  | HR   | 40000 |
+| 104    | Pooja | HR   | 45000 |
+
+==================================================
+2. COUNT()
+==================================================
+
+Returns number of rows.
+
+SELECT COUNT(*)
+FROM employee;
+
+Result:
+
+4
+
+------------------------------------------
+
+Count specific column
+
+SELECT COUNT(salary)
+FROM employee;
+
+Interview:
+
+COUNT(*) counts rows.
+COUNT(column) ignores NULL values.
+
+==================================================
+3. SUM()
+==================================================
+
+Returns total value.
+
+SELECT SUM(salary)
+FROM employee;
+
+Result:
+
+195000
+
+Use Cases:
+- Total Sales
+- Total Revenue
+- Total Salary
+
+==================================================
+4. AVG()
+==================================================
+
+Returns average value.
+
+SELECT AVG(salary)
+FROM employee;
+
+Result:
+
+48750
+
+Interview:
+
+AVG ignores NULL values.
+
+==================================================
+5. MIN()
+==================================================
+
+Returns smallest value.
+
+SELECT MIN(salary)
+FROM employee;
+
+Result:
+
+40000
+
+==================================================
+6. MAX()
+==================================================
+
+Returns largest value.
+
+SELECT MAX(salary)
+FROM employee;
+
+Result:
+
+60000
+
+==================================================
+7. GROUP BY
+==================================================
+
+It is used to grouping rows which is having same values.
+
+Example:
+
+SELECT dept,
+COUNT(*)
+FROM employee
+GROUP BY dept;
+
+Result:
+
+| dept | count |
+|------|-------|
+| IT   | 2     |
+| HR   | 2     |
+
+Interview:
+
+GROUP BY converts multiple rows into grouped summary rows.
+
+==================================================
+8. GROUP BY WITH SUM
+==================================================
+
+Department wise salary.
+
+SELECT dept,
+SUM(salary)
+FROM employee
+GROUP BY dept;
+
+Result:
+
+| dept | total_salary |
+|------|-------------|
+| IT   | 110000      |
+| HR   | 85000       |
+
+==================================================
+9. GROUP BY WITH AVG
+==================================================
+
+SELECT dept,
+AVG(salary)
+FROM employee
+GROUP BY dept;
+
+Result:
+
+| dept | avg_salary |
+|------|-----------|
+| IT   | 55000     |
+| HR   | 42500     |
+
+==================================================
+10. GROUP BY MULTIPLE COLUMNS
+==================================================
+
+SELECT department,
+city,
+COUNT(*)
+FROM employee
+GROUP BY department, city;
+
+Groups by both columns.
+
+==================================================
+11. HAVING
+==================================================
+
+It is used to filter the grouped data. Used with GROUP BY clause.
+
+Example:
+
+SELECT dept,
+COUNT(*)
+FROM employee
+GROUP BY dept
+HAVING COUNT(*) > 1;
+
+Result:
+
+Only departments having more than one employee.
+
+==================================================
+12. WHERE VS HAVING
+==================================================
+
+WHERE
+
+- Filters rows
+- Before GROUP BY
+
+Example:
+
+SELECT *
+FROM employee
+WHERE salary > 50000;
+
+------------------------------------------
+
+HAVING
+
+- Filters groups
+- After GROUP BY
+
+Example:
+
+SELECT dept,
+AVG(salary)
+FROM employee
+GROUP BY dept
+HAVING AVG(salary) > 50000;
+
+Interview:
+
+WHERE filters rows.
+HAVING filters groups.
+
+Very frequently asked.
+
+==================================================
+13. ORDER OF EXECUTION
+==================================================
+
+SQL execution order:
+
+1. FROM
+2. WHERE
+3. GROUP BY
+4. HAVING
+5. SELECT
+6. ORDER BY
+7. LIMIT
+
+Interview:
+
+This is a favorite interview question.
+
+==================================================
+14. REAL PROJECT EXAMPLES
+==================================================
+
+Department-wise employee count
+
+SELECT dept,
+COUNT(*)
+FROM employee
+GROUP BY dept;
+
+------------------------------------------
+
+Department-wise average salary
+
+SELECT dept,
+AVG(salary)
+FROM employee
+GROUP BY dept;
+
+------------------------------------------
+
+Top earning department
+
+SELECT dept,
+SUM(salary)
+FROM employee
+GROUP BY dept
+ORDER BY SUM(salary) DESC;
+
+==================================================
+15. COMMON MISTAKES
+==================================================
+
+Wrong:
+
+SELECT dept,
+name,
+COUNT(*)
+FROM employee
+GROUP BY dept;
+
+Reason:
+
+name is not grouped or aggregated.
+
+------------------------------------------
+
+Correct:
+
+SELECT dept,
+COUNT(*)
+FROM employee
+GROUP BY dept;
+
+==================================================
+INTERVIEW QUESTIONS
+==================================================
+
+1. What are Aggregate Functions?
+2. Difference between COUNT(*) and COUNT(column)?
+3. Does AVG ignore NULL values?
+4. Difference between WHERE and HAVING?
+5. Why use GROUP BY?
+6. Can GROUP BY work without Aggregate Functions?
+7. SQL Execution Order?
+8. Why is this query invalid?
+
+SELECT dept, name
+FROM employee
+GROUP BY dept;
+
+9. Difference between MIN and MAX?
+10. Real use cases of GROUP BY?
+
+==================================================
+MOST ASKED ANSWERS
+==================================================
+
+Q. Difference between WHERE and HAVING?
+
+WHERE:
+Filters rows before grouping.
+
+HAVING:
+Filters grouped data after GROUP BY.
+
+------------------------------------------
+
+Q. COUNT(*) vs COUNT(column)?
+
+COUNT(*)
+Counts all rows.
+
+COUNT(column)
+Ignores NULL values.
+
+------------------------------------------
+
+Q. Can GROUP BY work without aggregate?
+
+Yes.
+
+SELECT dept
+FROM employee
+GROUP BY dept;
+
+Used to get unique departments.
+
+==================================================
+QUICK REVISION
+==================================================
+
+COUNT()
+    -> Row count
+
+SUM()
+    -> Total value
+
+AVG()
+    -> Average value
+
+MIN()
+    -> Smallest value
+
+MAX()
+    -> Largest value
+
+GROUP BY
+    -> Group similar rows
+
+HAVING
+    -> Filter groups
+
+WHERE
+    -> Filter rows
+
+Execution Order
+
+FROM
+WHERE
+GROUP BY
+HAVING
+SELECT
+ORDER BY
+LIMIT

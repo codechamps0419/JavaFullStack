@@ -1,0 +1,494 @@
+/* @Author: Dynamic Duo Learners */
+
+==================================================
+1. SELECT STATEMENT
+==================================================
+
+SELECT is used to retrieve data from a table.
+
+Table: employee
+
+| emp_id | name      | salary |
+|---------|-----------|--------|
+| 101     | Rahul     | 50000  |
+| 102     | Amit      | 60000  |
+| 103     | Neha      | 70000  |
+
+Fetch all records:
+
+SELECT * FROM employee;
+
+Output:
+Returns all rows and all columns.
+
+------------------------------------------
+
+Fetch specific columns:
+
+SELECT name, salary
+FROM employee;
+
+Output:
+
+| name  | salary |
+|--------|--------|
+| Rahul | 50000 |
+| Amit  | 60000 |
+| Neha  | 70000 |
+
+Interview:
+
+Avoid SELECT * in production because it retrieves unnecessary data and may impact performance.
+
+==================================================
+2. WHERE CLAUSE
+==================================================
+
+WHERE filters records.
+
+Example:
+
+SELECT *
+FROM employee
+WHERE salary > 50000;
+
+Output:
+
+| emp_id | name | salary |
+|---------|------|--------|
+| 102     | Amit | 60000 |
+| 103     | Neha | 70000 |
+
+Interview:
+
+WHERE filters rows before grouping happens.
+
+==================================================
+3. COMPARISON OPERATORS
+==================================================
+
+Equal
+
+SELECT *
+FROM employee
+WHERE salary = 50000;
+
+------------------------------------------
+
+Not Equal
+
+SELECT *
+FROM employee
+WHERE salary != 50000;
+
+or
+
+SELECT *
+FROM employee
+WHERE salary <> 50000;
+
+------------------------------------------
+
+Greater Than
+
+SELECT *
+FROM employee
+WHERE salary > 50000;
+
+------------------------------------------
+
+Less Than
+
+SELECT *
+FROM employee
+WHERE salary < 50000;
+
+------------------------------------------
+
+Greater Than or Equal
+
+SELECT *
+FROM employee
+WHERE salary >= 50000;
+
+------------------------------------------
+
+Less Than or Equal
+
+SELECT *
+FROM employee
+WHERE salary <= 50000;
+
+==================================================
+4. AND OPERATOR
+==================================================
+
+All conditions must be true.
+
+SELECT *
+FROM employee
+WHERE salary > 50000
+AND city = 'Pune';
+
+Example:
+
+| name | salary | city |
+|------|--------|------|
+| Amit | 60000 | Pune |
+
+Interview:
+
+AND narrows results.
+
+==================================================
+5. OR OPERATOR
+==================================================
+
+Any one condition can be true.
+
+SELECT *
+FROM employee
+WHERE city = 'Pune'
+OR city = 'Mumbai';
+
+Output:
+
+Employees from Pune or Mumbai.
+
+Interview:
+
+OR broadens results.
+
+==================================================
+6. NOT OPERATOR
+==================================================
+
+Negates condition.
+
+SELECT *
+FROM employee
+WHERE NOT city = 'Pune';
+
+Returns everyone except Pune employees.
+
+==================================================
+7. IN OPERATOR
+==================================================
+
+Used when checking multiple values.
+
+Without IN:
+
+SELECT *
+FROM employee
+WHERE city='Pune'
+OR city='Mumbai'
+OR city='Delhi';
+
+With IN:
+
+SELECT *
+FROM employee
+WHERE city IN ('Pune','Mumbai','Delhi');
+
+Interview:
+
+IN makes query cleaner and more readable.
+
+==================================================
+8. BETWEEN OPERATOR
+==================================================
+
+Used for ranges.
+
+SELECT *
+FROM employee
+WHERE salary BETWEEN 50000 AND 70000;
+
+Equivalent:
+
+salary >= 50000
+AND
+salary <= 70000
+
+Interview:
+
+BETWEEN includes both start and end values.
+
+==================================================
+9. LIKE OPERATOR
+==================================================
+
+It is used for pattern matching.
+
+------------------------------------------
+
+Starts With
+
+SELECT *
+FROM employee
+WHERE name LIKE 'A%';
+
+Matches:
+
+Amit
+Akshay
+Ankit
+
+------------------------------------------
+
+Ends With
+
+SELECT *
+FROM employee
+WHERE name LIKE '%h';
+
+Matches:
+
+Rahul
+Ramesh
+
+------------------------------------------
+
+Contains
+
+SELECT *
+FROM employee
+WHERE name LIKE '%it%';
+
+Matches:
+
+Amit
+
+------------------------------------------
+
+Single Character
+
+SELECT *
+FROM employee
+WHERE name LIKE '_mit';
+
+Matches:
+
+Amit
+
+Interview:
+
+% -> Multiple characters
+
+_ -> Single character
+
+
+==================================================
+10. ORDER BY
+==================================================
+
+Order By clause is Used for sorting.
+
+Ascending (Default)
+
+SELECT *
+FROM employee
+ORDER BY salary;
+
+Output:
+
+50000
+60000
+70000
+
+------------------------------------------
+
+Descending
+
+SELECT *
+FROM employee
+ORDER BY salary DESC;
+
+Output:
+
+70000
+60000
+50000
+
+Interview:
+
+Default order is ASC.
+
+==================================================
+11. ORDER BY MULTIPLE COLUMNS
+==================================================
+
+SELECT *
+FROM employee
+ORDER BY department,
+salary DESC;
+
+First sorts by department.
+
+Within department sorts by salary.
+
+==================================================
+12. LIMIT
+==================================================
+
+It restricts number of records.
+
+SELECT *
+FROM employee
+LIMIT 5;
+
+Returns first 5 rows.
+
+Interview:
+
+Useful in pagination and testing.
+
+==================================================
+13. OFFSET
+==================================================
+
+It is used to skips rows.
+
+SELECT *
+FROM employee
+LIMIT 5 OFFSET 10;
+
+Meaning:
+
+Skip first 10 rows.
+Return next 5 rows.
+
+Interview:
+
+Used with LIMIT for pagination.
+
+==================================================
+14. PAGINATION EXAMPLE
+==================================================
+
+Page Size = 10
+
+Page 1
+
+LIMIT 10 OFFSET 0
+
+------------------------------------------
+
+Page 2
+
+LIMIT 10 OFFSET 10
+
+------------------------------------------
+
+Page 3
+
+LIMIT 10 OFFSET 20
+
+Formula:
+
+OFFSET =
+(PageNumber - 1) * PageSize
+
+==================================================
+15. FETCH FIRST
+==================================================
+
+Alternative to LIMIT.
+
+SELECT *
+FROM employee
+FETCH FIRST 5 ROWS ONLY;
+
+Interview:
+
+Common in Oracle and standard SQL.
+
+==================================================
+INTERVIEW QUESTIONS
+==================================================
+
+1. Difference between WHERE and HAVING?
+2. Why avoid SELECT *?
+3. Difference between LIKE and ILIKE?
+4. Difference between LIMIT and OFFSET?
+5. What does BETWEEN include?
+6. Difference between AND and OR?
+7. What is pagination?
+8. Difference between LIMIT and FETCH FIRST?
+9. What is the use of IN?
+10. What do % and _ mean in LIKE?
+
+==================================================
+MOST ASKED INTERVIEW ANSWERS
+==================================================
+
+Q. Difference between WHERE and HAVING?
+
+WHERE:
+Filters rows before grouping.
+
+HAVING:
+Filters grouped results after GROUP BY.
+
+------------------------------------------
+
+Q. Difference between LIMIT and OFFSET?
+
+LIMIT:
+How many rows to fetch.
+
+OFFSET:
+How many rows to skip.
+
+------------------------------------------
+
+Q. Why avoid SELECT *?
+
+- Fetches unnecessary columns
+- Increases network traffic
+- Reduces performance
+- Makes code harder to maintain
+
+==================================================
+QUICK REVISION
+==================================================
+
+SELECT
+    -> Retrieve data
+
+WHERE
+    -> Filter rows
+
+AND
+    -> All conditions true
+
+OR
+    -> Any condition true
+
+NOT
+    -> Negates condition
+
+IN
+    -> Multiple values
+
+BETWEEN
+    -> Range search
+
+LIKE
+    -> Pattern matching
+
+ILIKE
+    -> Case-insensitive LIKE
+
+ORDER BY
+    -> Sorting
+
+LIMIT
+    -> Restrict rows
+
+OFFSET
+    -> Skip rows
+
+FETCH FIRST
+    -> Alternative to LIMIT

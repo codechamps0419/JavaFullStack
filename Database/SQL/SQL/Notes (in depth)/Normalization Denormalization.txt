@@ -1,0 +1,1014 @@
+/* @Author: Dynamic Duo Learners */
+
+==================================================
+1. WHAT IS NORMALIZATION?
+==================================================
+
+Normalization is the process of organizing data in a relational database to reduce data duplication and improve data consistency.
+
+Simple meaning:
+
+Normalization means breaking large tables into smaller related tables so that repeated data is avoided.
+
+Example:
+
+Bad table:
+
+| order_id | customer_name | customer_email | product_name | product_price |
+|----------|---------------|----------------|--------------|---------------|
+| 101      | Amit          | a@gmail.com    | Laptop       | 50000         |
+| 102      | Amit          | a@gmail.com    | Mouse        | 500           |
+
+Here customer details are repeated.
+
+Better design:
+
+CUSTOMER table:
+
+| customer_id | customer_name | customer_email |
+|-------------|---------------|----------------|
+| 1           | Amit          | a@gmail.com    |
+
+PRODUCT table:
+
+| product_id | product_name | product_price |
+|------------|--------------|---------------|
+| 1          | Laptop       | 50000         |
+| 2          | Mouse        | 500           |
+
+ORDERS table:
+
+| order_id | customer_id | product_id |
+|----------|-------------|------------|
+| 101      | 1           | 1          |
+| 102      | 1           | 2          |
+
+Interview Answer:
+
+Normalization is a database design technique used to reduce redundancy and dependency by dividing data into related tables.
+
+==================================================
+2. WHY DO WE NEED NORMALIZATION?
+==================================================
+
+Normalization helps to:
+
+1. Reduce duplicate data
+2. Avoid data inconsistency
+3. Save storage
+4. Improve data integrity
+5. Make updates easier
+6. Maintain proper relationships
+7. Avoid insert, update, and delete anomalies
+
+Real project examples:
+- Customer data should not repeat in every order row
+- Product price should not be stored repeatedly in multiple places
+- Department name should not repeat for every employee if department has its own table
+
+==================================================
+3. PROBLEMS WITHOUT NORMALIZATION
+==================================================
+
+If database is not normalized, we may face:
+
+1. Data Redundancy
+2. Update Anomaly
+3. Insert Anomaly
+4. Delete Anomaly
+
+These are very common interview topics.
+
+==================================================
+4. DATA REDUNDANCY
+==================================================
+
+Data Redundancy means duplicate/repeated data.
+
+Example:
+
+| emp_id | emp_name | dept_name | dept_location |
+|--------|----------|-----------|---------------|
+| 101    | Amit     | IT        | Pune          |
+| 102    | Rahul    | IT        | Pune          |
+| 103    | Neha     | HR        | Mumbai        |
+
+Here IT and Pune are repeated.
+
+Problem:
+
+If IT department location changes, we need to update many rows.
+
+Interview Answer:
+
+Data redundancy means unnecessary duplication of data, which increases storage and can cause inconsistency.
+
+==================================================
+5. UPDATE ANOMALY
+==================================================
+
+Update Anomaly occurs when same data exists in multiple rows and updating one row but not others creates inconsistency.
+
+Example:
+
+| emp_id | emp_name | dept_name | dept_location |
+|--------|----------|-----------|---------------|
+| 101    | Amit     | IT        | Pune          |
+| 102    | Rahul    | IT        | Pune          |
+
+If IT location changes from Pune to Bangalore and only Amit's row is updated:
+
+| emp_id | emp_name | dept_name | dept_location |
+|--------|----------|-----------|---------------|
+| 101    | Amit     | IT        | Bangalore     |
+| 102    | Rahul    | IT        | Pune          |
+
+Now data is inconsistent.
+
+Interview Answer:
+
+Update anomaly happens when repeated data must be updated in multiple places and missing one update causes inconsistency.
+
+==================================================
+6. INSERT ANOMALY
+==================================================
+
+Insert Anomaly occurs when we cannot insert data because some other unrelated data is missing.
+
+Example:
+
+One table stores employee and department together:
+
+| emp_id | emp_name | dept_name | dept_location |
+|--------|----------|-----------|---------------|
+
+Suppose company creates a new department "Legal", but no employee is assigned yet.
+
+We cannot insert Legal department because emp_id and emp_name are missing.
+
+Interview Answer:
+
+Insert anomaly happens when we cannot insert one type of data without another unrelated data.
+
+==================================================
+7. DELETE ANOMALY
+==================================================
+
+Delete Anomaly occurs when deleting one record accidentally removes important information.
+
+Example:
+
+| emp_id | emp_name | dept_name | dept_location |
+|--------|----------|-----------|---------------|
+| 101    | Amit     | Legal     | Delhi         |
+
+If Amit is the only employee in Legal department and we delete Amit, we also lose Legal department information.
+
+Interview Answer:
+
+Delete anomaly happens when deleting a row causes loss of additional important data.
+
+==================================================
+8. NORMAL FORMS
+==================================================
+
+Normalization is done in stages called Normal Forms.
+
+Important Normal Forms:
+
+1. 1NF - First Normal Form
+2. 2NF - Second Normal Form
+3. 3NF - Third Normal Form
+4. BCNF - Boyce-Codd Normal Form
+
+For Java backend interviews, 1NF, 2NF, 3NF are most important.
+
+==================================================
+9. FIRST NORMAL FORM - 1NF
+==================================================
+
+A table is in 1NF if:
+
+1. Each column contains atomic values
+2. No repeating groups
+3. Each row is unique
+
+Atomic means indivisible/single value.
+
+Bad table:
+
+| student_id | student_name | phone_numbers        |
+|------------|--------------|----------------------|
+| 1          | Amit         | 9999, 8888           |
+
+Problem:
+
+phone_numbers column contains multiple values.
+
+This violates 1NF.
+
+Correct 1NF design:
+
+| student_id | student_name | phone_number |
+|------------|--------------|--------------|
+| 1          | Amit         | 9999         |
+| 1          | Amit         | 8888         |
+
+Now each column has atomic value.
+
+Interview Answer:
+
+1NF means each column should contain atomic values and there should be no repeating groups.
+
+==================================================
+10. 1NF REAL PROJECT EXAMPLE
+==================================================
+
+Bad design:
+
+| order_id | products             |
+|----------|----------------------|
+| 101      | Laptop, Mouse, Bag   |
+
+Problem:
+
+Multiple products stored in one column.
+
+Correct design:
+
+ORDER table:
+
+| order_id |
+|----------|
+| 101      |
+
+ORDER_ITEM table:
+
+| order_id | product_name |
+|----------|--------------|
+| 101      | Laptop       |
+| 101      | Mouse        |
+| 101      | Bag          |
+
+This follows 1NF.
+
+==================================================
+11. SECOND NORMAL FORM - 2NF
+==================================================
+
+A table is in 2NF if:
+
+1. It is already in 1NF
+2. No partial dependency
+
+Partial dependency happens when a non-key column depends only on part of a composite key.
+
+Important:
+
+2NF mainly applies when table has composite primary key.
+
+==================================================
+12. PARTIAL DEPENDENCY EXAMPLE
+==================================================
+
+Bad table:
+
+| student_id | course_id | student_name | course_name |
+|------------|-----------|--------------|-------------|
+| 1          | 101       | Amit         | Java        |
+| 1          | 102       | Amit         | SQL         |
+| 2          | 101       | Neha         | Java        |
+
+Composite Key:
+
+(student_id, course_id)
+
+Problem:
+
+student_name depends only on student_id.
+course_name depends only on course_id.
+
+They do not depend on the full composite key.
+
+This violates 2NF.
+
+==================================================
+13. CONVERT TO 2NF
+==================================================
+
+Break table into smaller tables.
+
+STUDENT table:
+
+| student_id | student_name |
+|------------|--------------|
+| 1          | Amit         |
+| 2          | Neha         |
+
+COURSE table:
+
+| course_id | course_name |
+|-----------|-------------|
+| 101       | Java        |
+| 102       | SQL         |
+
+STUDENT_COURSE table:
+
+| student_id | course_id |
+|------------|-----------|
+| 1          | 101       |
+| 1          | 102       |
+| 2          | 101       |
+
+Now:
+- student_name depends on student_id
+- course_name depends on course_id
+- mapping table stores relationship
+
+Interview Answer:
+
+2NF means table must be in 1NF and every non-key column must depend on the complete primary key, not part of a composite key.
+
+==================================================
+14. THIRD NORMAL FORM - 3NF
+==================================================
+
+A table is in 3NF if:
+
+1. It is already in 2NF
+2. No transitive dependency
+
+Transitive dependency means:
+
+Non-key column depends on another non-key column.
+
+Example:
+
+emp_id -> dept_id
+dept_id -> dept_name
+
+So:
+
+emp_id indirectly determines dept_name through dept_id.
+
+==================================================
+15. TRANSITIVE DEPENDENCY EXAMPLE
+==================================================
+
+Bad table:
+
+| emp_id | emp_name | dept_id | dept_name |
+|--------|----------|---------|-----------|
+| 101    | Amit     | 1       | IT        |
+| 102    | Rahul    | 1       | IT        |
+| 103    | Neha     | 2       | HR        |
+
+Primary Key:
+
+emp_id
+
+Dependencies:
+
+emp_id -> emp_name
+emp_id -> dept_id
+dept_id -> dept_name
+
+Problem:
+
+dept_name depends on dept_id, not directly on emp_id.
+
+This violates 3NF.
+
+==================================================
+16. CONVERT TO 3NF
+==================================================
+
+EMPLOYEE table:
+
+| emp_id | emp_name | dept_id |
+|--------|----------|---------|
+| 101    | Amit     | 1       |
+| 102    | Rahul    | 1       |
+| 103    | Neha     | 2       |
+
+DEPARTMENT table:
+
+| dept_id | dept_name |
+|---------|-----------|
+| 1       | IT        |
+| 2       | HR        |
+
+Now dept_name is stored only once in department table.
+
+Interview Answer:
+
+3NF means table must be in 2NF and non-key columns should not depend on other non-key columns.
+
+==================================================
+17. BCNF - BOYCE-CODD NORMAL FORM
+==================================================
+
+BCNF is a stronger version of 3NF.
+
+A table is in BCNF if:
+
+For every functional dependency X -> Y, X must be a super key.
+
+Simple Interview Level Meaning:
+
+Every determinant must be a candidate key.
+
+BCNF handles some special cases that 3NF may not fully solve.
+
+For most Java backend interviews, basic understanding is enough.
+
+Interview Answer:
+
+BCNF is a stricter form of 3NF where every determinant must be a candidate key.
+
+==================================================
+18. FUNCTIONAL DEPENDENCY
+==================================================
+
+Functional Dependency means one column determines another column.
+
+Example:
+
+emp_id -> emp_name
+
+If we know emp_id, we can determine emp_name.
+
+Another example:
+
+dept_id -> dept_name
+
+If we know dept_id, we can determine dept_name.
+
+Interview Answer:
+
+Functional dependency means the value of one column uniquely determines the value of another column.
+
+==================================================
+19. CANDIDATE KEY
+==================================================
+
+Candidate Key is a column or set of columns that can uniquely identify a row.
+
+Example:
+
+EMPLOYEE table:
+
+| emp_id | email | pan_number |
+|--------|-------|------------|
+
+Possible candidate keys:
+- emp_id
+- email
+- pan_number
+
+One candidate key becomes primary key.
+Others can be unique keys.
+
+==================================================
+20. SUPER KEY
+==================================================
+
+Super Key is any column or combination of columns that uniquely identifies a row.
+
+Example:
+
+emp_id alone can identify employee.
+
+So:
+- emp_id is a super key
+- emp_id + emp_name is also a super key
+
+Candidate key is minimal super key.
+
+Interview Answer:
+
+A super key uniquely identifies a row, while a candidate key is a minimal super key.
+
+==================================================
+21. NORMALIZATION FLOW SUMMARY
+==================================================
+
+Unnormalized Table:
+
+May contain repeating groups and duplicate data.
+
+1NF:
+- Remove repeating groups
+- Make values atomic
+
+2NF:
+- Remove partial dependency
+
+3NF:
+- Remove transitive dependency
+
+BCNF:
+- Every determinant should be candidate key
+
+==================================================
+22. DENORMALIZATION
+==================================================
+
+Denormalization is the process of intentionally adding redundant data to improve read performance.
+
+Simple meaning:
+
+Sometimes we duplicate data on purpose to avoid too many joins and improve query speed.
+
+Example:
+
+Normalized design:
+
+ORDERS table has customer_id.
+CUSTOMER table has customer_name.
+
+To show order report, we join orders with customer.
+
+Denormalized design:
+
+ORDERS table stores customer_name also.
+
+| order_id | customer_id | customer_name | amount |
+|----------|-------------|---------------|--------|
+| 101      | 1           | Amit          | 5000   |
+
+This avoids join but duplicates data.
+
+Interview Answer:
+
+Denormalization intentionally introduces redundancy to improve read performance.
+
+==================================================
+23. WHY DENORMALIZATION IS USED?
+==================================================
+
+Denormalization is used for:
+
+1. Faster read queries
+2. Reporting systems
+3. Analytics dashboards
+4. Data warehouses
+5. Avoiding expensive joins
+6. Caching frequently used values
+7. Improving performance in read-heavy systems
+
+==================================================
+24. NORMALIZATION VS DENORMALIZATION
+==================================================
+
+Normalization:
+
+- Reduces duplicate data
+- Improves consistency
+- Uses multiple related tables
+- More joins may be required
+- Good for OLTP systems
+
+Denormalization:
+
+- Adds duplicate data
+- Improves read performance
+- Reduces joins
+- Can cause inconsistency if not handled carefully
+- Good for reporting/analytics/read-heavy systems
+
+Interview Answer:
+
+Normalization reduces redundancy and improves consistency, while denormalization adds redundancy to improve read performance.
+
+==================================================
+25. OLTP VS OLAP
+==================================================
+
+OLTP = Online Transaction Processing
+
+Examples:
+- Banking transactions
+- Order placement
+- Payment processing
+- User registration
+
+Needs:
+- Normalized design
+- Data consistency
+- Fast writes
+- ACID transactions
+
+------------------------------------------
+
+OLAP = Online Analytical Processing
+
+Examples:
+- Reports
+- Dashboards
+- Sales analytics
+- Business intelligence
+
+Needs:
+- Faster reads
+- Aggregated data
+- Denormalized structures
+- Historical analysis
+
+Interview Answer:
+
+OLTP systems are usually normalized for consistency, while OLAP systems are often denormalized for faster analytical queries.
+
+==================================================
+26. STAR SCHEMA
+==================================================
+
+Star Schema is commonly used in data warehouses.
+
+It has:
+- Fact table
+- Dimension tables
+
+Example:
+
+Fact table:
+SALES_FACT
+
+| sale_id | product_id | customer_id | date_id | amount |
+|---------|------------|-------------|---------|--------|
+
+Dimension tables:
+- PRODUCT_DIM
+- CUSTOMER_DIM
+- DATE_DIM
+
+Fact table stores measurable data.
+Dimension tables store descriptive data.
+
+Interview Basic Answer:
+
+Star schema is a denormalized design used in data warehouses for faster reporting and analytics.
+
+==================================================
+27. REAL PROJECT DESIGN EXAMPLE
+==================================================
+
+E-commerce normalized design:
+
+CUSTOMER
+- customer_id
+- name
+- email
+
+PRODUCT
+- product_id
+- name
+- price
+
+ORDERS
+- order_id
+- customer_id
+- order_date
+
+ORDER_ITEM
+- order_id
+- product_id
+- quantity
+- price_at_purchase
+
+Why price_at_purchase in ORDER_ITEM?
+
+Because product price can change later.
+Order should preserve price at the time of purchase.
+
+This is controlled denormalization.
+
+Interview Point:
+
+Some redundancy is necessary to preserve historical correctness.
+
+==================================================
+28. NORMALIZATION IN JAVA BACKEND PROJECTS
+==================================================
+
+In Spring Boot/JPA projects:
+
+Entities often map to normalized tables.
+
+Example:
+
+Employee has Department.
+
+EMPLOYEE table:
+
+emp_id
+emp_name
+dept_id
+
+DEPARTMENT table:
+
+dept_id
+dept_name
+
+JPA relation:
+
+@ManyToOne
+private Department department;
+
+Normalization helps maintain clean relationships.
+
+==================================================
+29. COMMON NORMALIZATION MISTAKES
+==================================================
+
+Mistake 1:
+
+Storing comma-separated values in one column.
+
+Example:
+
+phone_numbers = '9999,8888'
+
+Violates 1NF.
+
+------------------------------------------
+
+Mistake 2:
+
+Repeating same data in many rows.
+
+Example:
+
+department name repeated in employee table.
+
+Causes update anomaly.
+
+------------------------------------------
+
+Mistake 3:
+
+Over-normalization.
+
+Too many small tables can make queries complex and slow.
+
+------------------------------------------
+
+Mistake 4:
+
+Ignoring historical data.
+
+Example:
+
+Only storing product_id in order_item and using current product price later.
+
+Wrong for historical invoices.
+
+------------------------------------------
+
+Mistake 5:
+
+Denormalizing without update strategy.
+
+If duplicated data changes, all copies must be handled.
+
+==================================================
+30. WHEN TO NORMALIZE?
+==================================================
+
+Normalize when:
+
+1. Data consistency is important
+2. System is write-heavy
+3. Avoiding duplicate data matters
+4. Data changes frequently
+5. Transaction accuracy is important
+6. Building OLTP systems
+
+Examples:
+- Banking
+- Payment
+- Inventory
+- User management
+
+==================================================
+31. WHEN TO DENORMALIZE?
+==================================================
+
+Denormalize when:
+
+1. Read performance is more important
+2. Reports are slow due to joins
+3. Same calculated value is used frequently
+4. Historical snapshot is needed
+5. Analytics/dashboard queries are heavy
+6. Data is read-heavy and rarely updated
+
+Examples:
+- Reporting tables
+- Search screens
+- Dashboards
+- Data warehouses
+- Caching summary data
+
+==================================================
+32. NORMALIZATION AND PERFORMANCE
+==================================================
+
+Normalization improves data quality but may increase joins.
+
+More joins can affect performance for read-heavy queries.
+
+But this does not mean normalization is bad.
+
+Good design often starts normalized.
+Then denormalize selected areas only when performance demands it.
+
+Interview Answer:
+
+Normalization improves consistency but may require more joins. Denormalization can improve read performance but increases redundancy.
+
+==================================================
+33. IMPORTANT INTERVIEW PROBLEM
+==================================================
+
+Question:
+
+You have this table:
+
+| order_id | customer_name | customer_email | product_name | product_price |
+|----------|---------------|----------------|--------------|---------------|
+
+Normalize it.
+
+Answer:
+
+CUSTOMER
+
+| customer_id | customer_name | customer_email |
+
+PRODUCT
+
+| product_id | product_name | product_price |
+
+ORDERS
+
+| order_id | customer_id |
+
+ORDER_ITEM
+
+| order_id | product_id | quantity | price_at_purchase |
+
+Explanation:
+
+Customer data is separated.
+Product data is separated.
+Order stores customer relation.
+Order item stores product relation and purchase-specific details.
+
+==================================================
+34. MOST ASKED INTERVIEW QUESTIONS
+==================================================
+
+1. What is Normalization?
+2. Why do we need Normalization?
+3. What is Data Redundancy?
+4. What is Update Anomaly?
+5. What is Insert Anomaly?
+6. What is Delete Anomaly?
+7. Explain 1NF.
+8. Explain 2NF.
+9. Explain 3NF.
+10. What is BCNF?
+11. What is Functional Dependency?
+12. What is Partial Dependency?
+13. What is Transitive Dependency?
+14. Normalization vs Denormalization?
+15. When to denormalize?
+16. OLTP vs OLAP?
+17. What is Star Schema?
+18. Can normalization impact performance?
+19. What is over-normalization?
+20. How do you design order tables in e-commerce?
+
+==================================================
+35. INTERVIEW ANSWERS
+==================================================
+
+Q1. What is Normalization?
+
+Normalization is the process of organizing data into related tables to reduce redundancy and improve consistency.
+
+------------------------------------------
+
+Q2. What is 1NF?
+
+1NF means each column should contain atomic values and there should be no repeating groups.
+
+------------------------------------------
+
+Q3. What is 2NF?
+
+2NF means table should be in 1NF and every non-key column should depend on the complete primary key, not part of a composite key.
+
+------------------------------------------
+
+Q4. What is 3NF?
+
+3NF means table should be in 2NF and non-key columns should not depend on other non-key columns.
+
+------------------------------------------
+
+Q5. What is BCNF?
+
+BCNF is a stronger form of 3NF where every determinant must be a candidate key.
+
+------------------------------------------
+
+Q6. Normalization vs Denormalization?
+
+Normalization reduces duplicate data and improves consistency.
+
+Denormalization adds duplicate data intentionally to improve read performance.
+
+------------------------------------------
+
+Q7. What is Update Anomaly?
+
+Update anomaly happens when duplicate data is updated in one place but not another, causing inconsistency.
+
+------------------------------------------
+
+Q8. What is Insert Anomaly?
+
+Insert anomaly happens when we cannot insert data because some unrelated data is missing.
+
+------------------------------------------
+
+Q9. What is Delete Anomaly?
+
+Delete anomaly happens when deleting one record accidentally removes other important information.
+
+------------------------------------------
+
+Q10. When should we denormalize?
+
+Denormalize when read performance is critical, joins are expensive, or reporting/dashboard queries need faster response.
+
+==================================================
+36. QUICK REVISION
+==================================================
+
+Normalization
+    -> Reduce duplicate data
+    -> Improve consistency
+
+Data Redundancy
+    -> Duplicate data
+
+Update Anomaly
+    -> Inconsistent update
+
+Insert Anomaly
+    -> Cannot insert without unrelated data
+
+Delete Anomaly
+    -> Deleting row removes extra information
+
+1NF
+    -> Atomic values
+    -> No repeating groups
+
+2NF
+    -> 1NF + no partial dependency
+
+3NF
+    -> 2NF + no transitive dependency
+
+BCNF
+    -> Every determinant is candidate key
+
+Functional Dependency
+    -> One column determines another
+
+Partial Dependency
+    -> Non-key column depends on part of composite key
+
+Transitive Dependency
+    -> Non-key column depends on another non-key column
+
+Denormalization
+    -> Add redundancy for faster reads
+
+OLTP
+    -> Normalized
+    -> Transaction systems
+
+OLAP
+    -> Denormalized
+    -> Reporting and analytics
+
+Most Important Interview Points:
+    -> 1NF, 2NF, 3NF
+    -> Normalization vs Denormalization
+    -> Anomalies
+    -> E-commerce order table design

@@ -1,0 +1,550 @@
+
+/* @Author: Dynamic Duo Learners */
+
+==================================================
+1. WHAT IS A LOCK?
+==================================================
+
+A lock is a database mechanism that controls concurrent access to data.
+
+Purpose:
+- Prevent data corruption
+- Prevent lost updates
+- Maintain consistency
+- Coordinate concurrent transactions
+
+Interview Answer:
+A lock is a concurrency control mechanism that restricts access to database resources so multiple transactions can execute safely.
+
+==================================================
+2. WHY LOCKS ARE NEEDED?
+==================================================
+
+Without locks:
+
+Transaction A reads balance = 5000
+Transaction B reads balance = 5000
+
+A withdraws 1000 -> 4000
+B withdraws 2000 -> 3000
+
+Expected balance = 2000
+Actual balance = 3000
+
+This is Lost Update.
+
+Locks prevent such problems.
+
+==================================================
+3. TYPES OF LOCKS
+==================================================
+
+1. Shared Lock (Read Lock)
+2. Exclusive Lock (Write Lock)
+3. Row-Level Lock
+4. Table-Level Lock
+5. Advisory Lock
+6. Intent Lock
+
+==================================================
+4. SHARED LOCK (S LOCK)
+==================================================
+
+Used for reading.
+
+Multiple transactions can hold shared locks simultaneously.
+
+Example:
+
+Transaction A:
+SELECT * FROM employee;
+
+Transaction B:
+SELECT * FROM employee;
+
+Both can read at same time.
+
+Advantages:
+- High concurrency
+- Safe reads
+
+==================================================
+5. EXCLUSIVE LOCK (X LOCK)
+==================================================
+
+Used for updates, deletes and inserts.
+
+Example:
+
+UPDATE employee
+SET salary = salary + 1000
+WHERE emp_id = 1;
+
+Database acquires Exclusive Lock.
+
+Characteristics:
+- Only one writer allowed
+- Blocks conflicting operations
+
+==================================================
+6. SHARED VS EXCLUSIVE LOCK
+==================================================
+
+Shared + Shared = Allowed
+
+Shared + Exclusive = Not Allowed
+
+Exclusive + Exclusive = Not Allowed
+
+Interview Favorite.
+
+==================================================
+7. ROW LEVEL LOCKING
+==================================================
+
+Locks only selected rows.
+
+Example:
+
+UPDATE account
+SET balance = balance - 1000
+WHERE account_id = 1;
+
+Only account_id=1 row is locked.
+
+Advantages:
+- Better concurrency
+- Less blocking
+- Higher throughput
+
+==================================================
+8. TABLE LEVEL LOCKING
+==================================================
+
+Entire table becomes locked.
+
+Example:
+
+ALTER TABLE employee
+ADD COLUMN department VARCHAR(50);
+
+May lock the entire table.
+
+Disadvantages:
+- More blocking
+- Lower concurrency
+
+==================================================
+9. ROW LOCK VS TABLE LOCK
+==================================================
+
+Row Lock:
+- Fine-grained
+- Better concurrency
+
+Table Lock:
+- Coarse-grained
+- More blocking
+
+==================================================
+10. SELECT FOR UPDATE
+==================================================
+
+Most Asked Interview Topic
+
+Example:
+
+BEGIN;
+
+SELECT *
+FROM account
+WHERE account_id = 1
+FOR UPDATE;
+
+Row becomes locked.
+
+Other transactions trying to update same row must wait.
+
+==================================================
+11. HOW SELECT FOR UPDATE WORKS
+==================================================
+
+Step 1:
+Read row
+
+Step 2:
+Acquire lock
+
+Step 3:
+Validate business logic
+
+Step 4:
+Update row
+
+Step 5:
+Commit
+
+==================================================
+12. BANKING EXAMPLE
+==================================================
+
+Balance = 5000
+
+User A withdraws 4000.
+User B withdraws 3000.
+
+Without lock:
+Both may succeed.
+
+With FOR UPDATE:
+User B waits.
+
+Balance remains correct.
+
+==================================================
+13. FOR UPDATE NOWAIT
+==================================================
+
+Example:
+
+SELECT *
+FROM account
+WHERE account_id = 1
+FOR UPDATE NOWAIT;
+
+If locked:
+Immediate error.
+
+Use Case:
+Fail fast systems.
+
+==================================================
+14. FOR UPDATE SKIP LOCKED
+==================================================
+
+Example:
+
+SELECT *
+FROM jobs
+WHERE status='PENDING'
+FOR UPDATE SKIP LOCKED
+LIMIT 10;
+
+Locked rows skipped.
+
+Useful for:
+- Job queues
+- Background workers
+- Batch processing
+
+==================================================
+15. LOCK WAITING
+==================================================
+
+Transaction A:
+
+UPDATE account
+SET balance = 1000
+WHERE account_id = 1;
+
+Transaction B:
+
+UPDATE account
+SET balance = 2000
+WHERE account_id = 1;
+
+Transaction B waits.
+
+This is Lock Waiting.
+
+==================================================
+16. BLOCKING
+==================================================
+
+One transaction waits for another transaction's lock.
+
+Example:
+
+A blocks B.
+B blocks C.
+
+Known as Blocking Chain.
+
+==================================================
+17. LOCK TIMEOUT
+==================================================
+
+PostgreSQL:
+
+SET lock_timeout='5s';
+
+If lock unavailable after 5 seconds:
+
+Error generated.
+
+==================================================
+18. DEADLOCK
+==================================================
+
+Transaction A:
+Locks Row 1
+Needs Row 2
+
+Transaction B:
+Locks Row 2
+Needs Row 1
+
+Both wait forever.
+
+Deadlock occurs.
+
+==================================================
+19. DEADLOCK DETECTION
+==================================================
+
+Database builds Wait-For Graph.
+
+Example:
+
+A -> B
+B -> A
+
+Cycle found.
+
+Database kills one transaction.
+
+==================================================
+20. DEADLOCK PREVENTION
+==================================================
+
+1. Access rows in same order
+2. Keep transactions short
+3. Use indexes
+4. Avoid user interaction inside transaction
+5. Retry failed transactions
+
+==================================================
+21. OPTIMISTIC LOCKING
+==================================================
+
+Assumption:
+Conflicts are rare.
+
+Uses version column.
+
+Table:
+
+id | stock | version
+
+Update:
+
+UPDATE product
+SET stock = 9,
+    version = version + 1
+WHERE id = 1
+AND version = 1;
+
+If version changed:
+Update fails.
+
+==================================================
+22. OPTIMISTIC LOCKING IN JPA
+==================================================
+
+@Version
+private Long version;
+
+JPA automatically checks version.
+
+Throws:
+OptimisticLockException
+
+==================================================
+23. PESSIMISTIC LOCKING
+==================================================
+
+Assumption:
+Conflicts are common.
+
+Lock immediately.
+
+Example:
+
+SELECT *
+FROM product
+FOR UPDATE;
+
+Other transactions wait.
+
+==================================================
+24. OPTIMISTIC VS PESSIMISTIC
+==================================================
+
+Optimistic:
+- No lock during read
+- Better concurrency
+- Version based
+
+Pessimistic:
+- Immediate lock
+- More blocking
+- Safer for high conflict systems
+
+==================================================
+25. ADVISORY LOCKS
+==================================================
+
+Application controlled locks.
+
+Example:
+Only one monthly billing job should run.
+
+Acquire advisory lock before processing.
+
+==================================================
+26. LOCK ESCALATION
+==================================================
+
+Many row locks may become table lock.
+
+Purpose:
+Reduce lock management overhead.
+
+Can reduce concurrency.
+
+==================================================
+27. LOCKS AND INDEXES
+==================================================
+
+Indexes help find rows faster.
+
+Faster row lookup:
+- Shorter lock duration
+- Less blocking
+
+Without index:
+More rows scanned
+More lock contention
+
+==================================================
+28. POSTGRESQL LOCK MONITORING
+==================================================
+
+Current locks:
+
+SELECT * FROM pg_locks;
+
+Active sessions:
+
+SELECT * FROM pg_stat_activity;
+
+Blocked sessions:
+
+SELECT *
+FROM pg_stat_activity
+WHERE wait_event_type='Lock';
+
+==================================================
+29. REAL PROJECT SCENARIOS
+==================================================
+
+Inventory Reservation:
+Use FOR UPDATE
+
+Bank Transfer:
+Use FOR UPDATE
+
+Seat Booking:
+Use Unique Constraint + Transaction
+
+Coupon Usage:
+Use Atomic Update + Transaction
+
+==================================================
+30. COMMON MISTAKES
+==================================================
+
+1. Long running transactions
+2. Missing indexes
+3. Unnecessary table locks
+4. Not handling deadlock retries
+5. Using pessimistic lock everywhere
+
+==================================================
+31. BEST PRACTICES
+==================================================
+
+1. Keep transactions short
+2. Use indexes
+3. Lock minimum rows
+4. Use optimistic locking when possible
+5. Monitor blocked sessions
+6. Retry deadlock victims
+7. Avoid user interaction during transactions
+
+==================================================
+32. MOST ASKED INTERVIEW QUESTIONS
+==================================================
+
+1. What is Lock?
+2. Why do we need locks?
+3. Shared vs Exclusive Lock?
+4. Row Lock vs Table Lock?
+5. What is SELECT FOR UPDATE?
+6. What is NOWAIT?
+7. What is SKIP LOCKED?
+8. What is Blocking?
+9. What is Deadlock?
+10. How to avoid Deadlock?
+11. What is Lock Escalation?
+12. What is Advisory Lock?
+13. Optimistic vs Pessimistic Locking?
+14. What is @Version?
+15. How does PostgreSQL handle locks?
+
+==================================================
+33. QUICK REVISION
+==================================================
+
+Lock
+ -> Controls concurrent access
+
+Shared Lock
+ -> Read Lock
+
+Exclusive Lock
+ -> Write Lock
+
+Row Lock
+ -> Locks selected rows
+
+Table Lock
+ -> Locks whole table
+
+FOR UPDATE
+ -> Row lock for update
+
+NOWAIT
+ -> Fail immediately
+
+SKIP LOCKED
+ -> Ignore locked rows
+
+Blocking
+ -> Waiting for lock
+
+Deadlock
+ -> Circular waiting
+
+Optimistic Locking
+ -> Version based
+
+Pessimistic Locking
+ -> Immediate lock
+
+Most Important Interview Topics:
+ -> Shared vs Exclusive Lock
+ -> SELECT FOR UPDATE
+ -> Deadlock
+ -> Optimistic vs Pessimistic Locking
+ -> PostgreSQL Lock Monitoring

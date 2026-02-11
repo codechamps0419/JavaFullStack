@@ -1,0 +1,459 @@
+/* @Author: Dynamic Duo Learners */
+
+1. SQL LANGUAGE TYPES
+==================================================
+
+SQL statements are divided into five major categories:
+
+1. DDL (Data Definition Language)
+2. DML (Data Manipulation Language)
+3. DQL (Data Query Language)
+4. DCL (Data Control Language)
+5. TCL (Transaction Control Language)
+
+==================================================
+2. DDL (DATA DEFINITION LANGUAGE)
+=================================
+
+DDL is used to define and modify database structures.
+
+Used for:
+
+* Creating tables
+* Modifying tables
+* Deleting tables
+* Managing database objects
+
+Common DDL Commands:
+
+1. CREATE
+2. ALTER
+3. DROP
+4. TRUNCATE
+5. RENAME
+
+---
+
+## CREATE
+
+Used to create database objects.
+
+Example:
+
+CREATE TABLE employee (
+eid INT PRIMARY KEY,
+ename VARCHAR(50),
+salary DECIMAL(10,2)
+);
+
+---
+
+## ALTER
+
+Used to modify existing database objects.
+
+Add Column:
+
+ALTER TABLE employee
+ADD email VARCHAR(100);
+
+Modify Column:
+
+ALTER TABLE employee
+MODIFY salary DECIMAL(12,2);
+
+Drop Column:
+
+ALTER TABLE employee
+DROP COLUMN email;
+
+---
+
+## DROP
+
+Used to permanently remove an object.
+
+Example:
+
+DROP TABLE employee;
+
+Effects:
+
+* Structure removed
+* Data removed
+
+---
+
+## TRUNCATE
+
+Removes all rows from a table.
+
+Example:
+
+TRUNCATE TABLE employee;
+
+Effects:
+
+* Deletes all data
+* Keeps table structure
+
+---
+
+## RENAME
+
+Used to rename database objects.
+
+Example:
+
+ALTER TABLE employee
+RENAME TO employees;
+
+Interview Answer:
+
+DDL commands define and modify database objects such as tables, indexes, and schemas.
+
+==================================================
+3. DML (DATA MANIPULATION LANGUAGE)
+===================================
+
+DML is used to manipulate data inside tables.
+
+Common DML Commands:
+
+1. INSERT
+2. UPDATE
+3. DELETE
+
+---
+
+## INSERT
+
+Used to insert new rows.
+
+Example:
+
+INSERT INTO employee
+VALUES (1, 'Amit', 50000);
+
+INSERT INTO employee (id, name, salary)
+VALUES (1, 'Amit', 50000);
+
+---
+
+## UPDATE
+
+Used to modify existing rows.
+
+Example:
+
+UPDATE employee
+SET salary = 60000
+WHERE eid = 1;
+
+---
+
+## DELETE
+
+Used to remove rows.
+
+Example:
+
+DELETE FROM employee
+WHERE eid = 1;
+
+Interview Answer:
+
+DML commands are used to insert, update, and delete data from database tables.
+
+==================================================
+4. DQL (DATA QUERY LANGUAGE)
+============================
+
+DQL is used to retrieve data.
+
+Main Command:
+
+SELECT
+
+Example:
+
+SELECT *
+FROM employee;
+
+Specific Columns:
+
+SELECT eid, ename
+FROM employee;
+
+With Condition:
+
+SELECT *
+FROM employee
+WHERE salary > 50000;
+
+Interview Answer:
+
+DQL is used to retrieve data from database tables using the SELECT statement.
+
+==================================================
+5. DCL (DATA CONTROL LANGUAGE)
+==============================
+
+DCL is used to control permissions and access.
+
+Common Commands:
+
+1. GRANT
+2. REVOKE
+
+---
+
+## GRANT
+
+Provides permissions.
+
+Example:
+
+GRANT SELECT
+ON employee
+TO user1;
+
+---
+
+## REVOKE
+
+Removes permissions.
+
+Example:
+
+REVOKE SELECT
+ON employee
+FROM user1;
+
+Interview Answer:
+
+DCL commands manage user permissions and access control in the database.
+
+==================================================
+6. TCL (TRANSACTION CONTROL LANGUAGE)
+=====================================
+
+TCL is used to manage transactions.
+
+Common Commands:
+
+1. COMMIT
+2. ROLLBACK
+3. SAVEPOINT
+
+---
+
+## COMMIT
+
+Makes changes permanent.
+
+Example:
+
+COMMIT;
+
+---
+
+## ROLLBACK
+
+Undo changes since last commit.
+
+Example:
+
+ROLLBACK;
+
+---
+
+## SAVEPOINT
+
+Creates a checkpoint.
+
+Example:
+
+SAVEPOINT sp1;
+
+ROLLBACK TO sp1;
+
+Interview Answer:
+
+TCL commands manage transactions and ensure data consistency.
+
+==================================================
+7. DIFFERENCE BETWEEN DELETE, TRUNCATE, DROP
+============================================
+
+## DELETE
+
+* DML Command
+* Removes selected rows
+* WHERE clause allowed
+* Structure remains
+
+Example:
+
+DELETE FROM employee
+WHERE eid = 1;
+
+---
+
+## TRUNCATE
+
+* DDL Command
+* Removes all rows
+* WHERE clause not allowed
+* Structure remains
+* Faster than DELETE
+
+Example:
+
+TRUNCATE TABLE employee;
+
+---
+
+## DROP
+
+* DDL Command
+* Removes entire table
+* Data removed
+* Structure removed
+
+Example:
+
+DROP TABLE employee;
+
+==================================================
+8. SQL COMMAND SUMMARY
+======================
+
+## DDL
+
+CREATE
+ALTER
+DROP
+TRUNCATE
+RENAME
+
+## DML
+
+INSERT
+UPDATE
+DELETE
+
+## DQL
+
+SELECT
+
+## DCL
+
+GRANT
+REVOKE
+
+## TCL
+
+COMMIT
+ROLLBACK
+SAVEPOINT
+
+==================================================
+9. INTERVIEW QUESTIONS
+======================
+
+1. What are the different types of SQL commands?
+
+Answer:
+DDL, DML, DQL, DCL, and TCL.
+
+---
+
+2. What is DDL?
+
+Answer:
+DDL is used to define and modify database structures.
+
+---
+
+3. What is DML?
+
+Answer:
+DML is used to insert, update, and delete data.
+
+---
+
+4. What is DQL?
+
+Answer:
+DQL is used to retrieve data using SELECT.
+
+---
+
+5. What is DCL?
+
+Answer:
+DCL manages permissions and access control.
+
+---
+
+6. What is TCL?
+
+Answer:
+TCL manages transactions using COMMIT, ROLLBACK, and SAVEPOINT.
+
+---
+
+7. Difference between DELETE and TRUNCATE?
+
+Answer:
+DELETE removes selected rows and supports WHERE clause.
+TRUNCATE removes all rows and does not support WHERE clause.
+
+---
+
+8. Difference between TRUNCATE and DROP?
+
+Answer:
+TRUNCATE removes data only.
+DROP removes both data and table structure.
+
+==================================================
+10. QUICK REVISION
+==================
+
+DDL
+-> CREATE
+-> ALTER
+-> DROP
+-> TRUNCATE
+-> RENAME
+
+DML
+-> INSERT
+-> UPDATE
+-> DELETE
+
+DQL
+-> SELECT
+
+DCL
+-> GRANT
+-> REVOKE
+
+TCL
+-> COMMIT
+-> ROLLBACK
+-> SAVEPOINT
+
+DELETE
+-> Removes rows
+-> WHERE allowed
+
+TRUNCATE
+-> Removes all rows
+-> Structure remains
+
+DROP
+-> Removes table completely
+-> Structure + Data removed

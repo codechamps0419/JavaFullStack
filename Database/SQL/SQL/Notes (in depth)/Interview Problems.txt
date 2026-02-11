@@ -1,0 +1,571 @@
+/* @Author: Dynamic Duo Learners */
+
+================================================================================
+EASY PROBLEMS
+================================================================================
+
+1. Second Highest Salary
+--------------------------------------------------------------------------------
+Problem: Find the second highest salary from the employee table.
+
+[Sample Input: employee]
++--------+----------+---------+--------+
+| emp_id | emp_name | email   | salary |
++--------+----------+---------+--------+
+| 1      | Alice    | a@a.com | 90000  |
+| 2      | Bob      | b@b.com | 80000  |
+| 3      | Charlie  | c@c.com | 80000  |
+| 4      | David    | d@d.com | 60000  |
++--------+----------+---------+--------+
+
+-- Traditional Approach (Using Subquery)
+SELECT MAX(salary) AS SecondHighestSalary
+FROM employee
+WHERE salary < (
+    SELECT MAX(salary) 
+    FROM employee
+);
+
+-- Window Function Approach (Handles ties gracefully)
+SELECT salary AS SecondHighestSalary
+FROM (
+    SELECT salary,
+           DENSE_RANK() OVER(ORDER BY salary DESC) as rnk
+    FROM employee
+) t
+WHERE rnk = 2
+LIMIT 1;
+
+[Expected Output]
++---------------------+
+| SecondHighestSalary |
++---------------------+
+| 80000               |
++---------------------+
+
+--------------------------------------------------------------------------------
+
+2. Nth Highest Salary
+--------------------------------------------------------------------------------
+Problem: Extract the Nth highest salary dynamically from the employee table.
+
+[Sample Input: employee]
++--------+----------+---------+--------+
+| emp_id | emp_name | email   | salary |
++--------+----------+---------+--------+
+| 1      | Alice    | a@a.com | 90000  |
+| 2      | Bob      | b@b.com | 85000  |
+| 3      | Charlie  | c@c.com | 80000  |
+| 4      | David    | d@d.com | 60000  |
++--------+----------+---------+--------+
+
+-- General Query Solution (Substitute N with target rank, e.g., N=3)
+SELECT DISTINCT salary
+FROM (
+    SELECT salary,
+           DENSE_RANK() OVER(ORDER BY salary DESC) as rnk
+    FROM employee
+) t
+WHERE rnk = 3;
+
+[Expected Output for N=3]
++--------+
+| salary |
++--------+
+| 80000  |
++--------+
+
+--------------------------------------------------------------------------------
+
+3. Duplicate Records
+--------------------------------------------------------------------------------
+Problem: Identify emails that are duplicated along with their frequency.
+
+[Sample Input: employee]
++--------+----------+---------+--------+
+| emp_id | emp_name | email   | salary |
++--------+----------+---------+--------+
+| 1      | Alice    | a@a.com | 90000  |
+| 2      | Bob      | b@b.com | 80000  |
+| 3      | Charlie  | a@a.com | 75000  |
+| 4      | David    | d@d.com | 60000  |
++--------+----------+---------+--------+
+
+SELECT email,
+       COUNT(*) as duplicate_count
+FROM employee
+GROUP BY email
+HAVING COUNT(*) > 1;
+
+[Expected Output]
++---------+-----------------+
+| email   | duplicate_count |
++---------+-----------------+
+| a@a.com | 2               |
++---------+-----------------+
+
+--------------------------------------------------------------------------------
+
+4. Remove Duplicates
+--------------------------------------------------------------------------------
+Problem: Delete duplicate records based on email, keeping only the lowest emp_id.
+
+[Sample Input: employee (Pre-Delete)]
++--------+----------+---------+--------+
+| emp_id | emp_name | email   | salary |
++--------+----------+---------+--------+
+| 1      | Alice    | a@a.com | 90000  |
+| 2      | Bob      | b@b.com | 80000  |
+| 3      | Charlie  | a@a.com | 75000  |
+| 4      | David    | d@d.com | 60000  |
++--------+----------+---------+--------+
+
+WITH duplicates AS (
+    SELECT emp_id,
+           ROW_NUMBER() OVER(
+               PARTITION BY email 
+               ORDER BY emp_id
+           ) as rn
+    FROM employee
+)
+DELETE FROM employee
+WHERE emp_id IN (
+    SELECT emp_id 
+    FROM duplicates 
+    WHERE rn > 1
+);
+
+[Expected State: employee (Post-Delete)]
++--------+----------+---------+--------+
+| emp_id | emp_name | email   | salary |
++--------+----------+---------+--------+
+| 1      | Alice    | a@a.com | 90000  |
+| 2      | Bob      | b@b.com | 80000  |
+| 4      | David    | d@d.com | 60000  |
++--------+----------+---------+--------+
+
+--------------------------------------------------------------------------------
+
+5. Employee With Max Salary
+--------------------------------------------------------------------------------
+Problem: Fetch complete profile details for the employee earning the maximum salary.
+
+[Sample Input: employee]
++--------+----------+---------+--------+
+| emp_id | emp_name | email   | salary |
++--------+----------+---------+--------+
+| 1      | Alice    | a@a.com | 90000  |
+| 2      | Bob      | b@b.com | 95000  |
+| 3      | Charlie  | c@c.com | 80000  |
++--------+----------+---------+--------+
+
+SELECT emp_id, emp_name, email, salary
+FROM employee
+WHERE salary = (
+    SELECT MAX(salary) 
+    FROM employee
+);
+
+[Expected Output]
++--------+----------+---------+--------+
+| emp_id | emp_name | email   | salary |
++--------+----------+---------+--------+
+| 2      | Bob      | b@b.com | 95000  |
++--------+----------+---------+--------+
+
+
+================================================================================
+MEDIUM PROBLEMS
+================================================================================
+
+6. Top 3 Salaries Per Department
+--------------------------------------------------------------------------------
+Problem: Identify the top 3 earners within every department. Include ties.
+
+[Sample Input: employee]
++--------+----------+---------+--------+---------+
+| emp_id | emp_name | email   | salary | dept_id |
++--------+----------+---------+--------+---------+
+| 1      | Alice    | a@a.com | 90000  | D1      |
+| 2      | Bob      | b@b.com | 95000  | D1      |
+| 3      | Charlie  | c@c.com | 80000  | D1      |
+| 4      | David    | d@d.com | 80000  | D1      |
+| 5      | Eva      | e@e.com | 50000  | D1      |
+| 6      | Frank    | f@f.com | 70000  | D2      |
++--------+----------+---------+--------+---------+
+
+SELECT dept_id, emp_id, emp_name, salary
+FROM (
+    SELECT dept_id, emp_id, emp_name, salary,
+           DENSE_RANK() OVER(
+               PARTITION BY dept_id 
+               ORDER BY salary DESC
+           ) as rnk
+    FROM employee
+) x
+WHERE rnk <= 3;
+
+[Expected Output]
++---------+--------+----------+--------+
+| dept_id | emp_id | emp_name | salary |
++---------+--------+----------+--------+
+| D1      | 2      | Bob      | 95000  |
+| D1      | 1      | Alice    | 90000  |
+| D1      | 3      | Charlie  | 80000  |
+| D1      | 4      | David    | 80000  |
+| D2      | 6      | Frank    | 70000  |
++---------+--------+----------+--------+
+
+--------------------------------------------------------------------------------
+
+7. Running Total
+--------------------------------------------------------------------------------
+Problem: Compute cumulative orders revenue sequence over chronological time steps.
+
+[Sample Input: orders]
++----------+------------+--------+
+| order_id | order_date | amount |
++----------+------------+--------+
+| 101      | 2026-01-01 | 150.00 |
+| 102      | 2026-01-02 | 200.00 |
+| 103      | 2026-01-03 | 50.00  |
++----------+------------+--------+
+
+SELECT order_id,
+       order_date,
+       amount,
+       SUM(amount) OVER(
+           ORDER BY order_date
+       ) as running_total
+FROM orders;
+
+[Expected Output]
++----------+------------+--------+---------------+
+| order_id | order_date | amount | running_total |
++----------+------------+--------+---------------+
+| 101      | 2026-01-01 | 150.00 | 150.00        |
+| 102      | 2026-01-02 | 200.00 | 350.00        |
+| 103      | 2026-01-03 | 50.00  | 400.00        |
++----------+------------+--------+---------------+
+
+--------------------------------------------------------------------------------
+
+8. Consecutive Records
+--------------------------------------------------------------------------------
+Problem: Find user logins stretching across 3 consecutive active days.
+
+[Sample Input: logins]
++---------+------------+
+| user_id | login_date |
++---------+------------+
+| 1       | 2026-03-01 |
+| 1       | 2026-03-02 |
+| 1       | 2026-03-03 |
+| 2       | 2026-03-01 |
+| 2       | 2026-03-03 |
++---------+------------+
+
+-- Using a date grouping subtraction trick
+WITH dated_groups AS (
+    SELECT user_id,
+           login_date,
+           login_date - CAST(ROW_NUMBER() OVER(
+               PARTITION BY user_id 
+               ORDER BY login_date
+           ) AS INT) as grp
+    FROM logins
+)
+SELECT DISTINCT user_id
+FROM dated_groups
+GROUP BY user_id, grp
+HAVING COUNT(*) >= 3;
+
+[Expected Output]
++---------+
+| user_id |
++---------+
+| 1       |
++---------+
+
+--------------------------------------------------------------------------------
+
+9. Gap Analysis
+--------------------------------------------------------------------------------
+Problem: Isolate identity primary missing numerical sequencing key values in tracking systems.
+
+[Sample Input: orders]
++----------+--------+
+| order_id | amount |
++----------+--------+
+| 1        | 100    |
+| 2        | 150    |
+| 5        | 300    |
++----------+--------+
+
+WITH ids AS (
+    SELECT generate_series(
+        (SELECT MIN(order_id) FROM orders),
+        (SELECT MAX(order_id) FROM orders)
+    ) AS order_id
+)
+SELECT ids.order_id as missing_id
+FROM ids
+LEFT JOIN orders o ON ids.order_id = o.order_id
+WHERE o.order_id IS NULL;
+
+[Expected Output]
++------------+
+| missing_id |
++------------+
+| 3          |
+| 4          |
++------------+
+
+--------------------------------------------------------------------------------
+
+10. Manager Hierarchy
+--------------------------------------------------------------------------------
+Problem: Pair employees directly with their respective managers using self-joins.
+
+[Sample Input: employee]
++--------+----------+------------+
+| emp_id | emp_name | manager_id |
++--------+----------+------------+
+| 1      | Alice    | NULL       |
+| 2      | Bob      | 1          |
+| 3      | Charlie  | 1          |
++--------+----------+------------+
+
+SELECT e.emp_name as employee,
+       m.emp_name as manager
+FROM employee e
+LEFT JOIN employee m ON e.manager_id = m.emp_id;
+
+[Expected Output]
++----------+---------+
+| employee | manager |
++----------+---------+
+| Alice    | NULL    |
+| Bob      | Alice   |
+| Charlie  | Alice   |
++----------+---------+
+
+
+================================================================================
+ADVANCED PROBLEMS (Senior & Lead Developers or Data Engineers (7+ Years)
+================================================================================
+
+11. Recursive Employee Tree
+--------------------------------------------------------------------------------
+Problem: Build organizational hierarchy level maps tracking relationships downstream.
+
+[Sample Input: employee]
++--------+----------+------------+
+| emp_id | emp_name | manager_id |
++--------+----------+------------+
+| 1      | Alice    | NULL       |
+| 2      | Bob      | 1          |
+| 3      | Charlie  | 2          |
++--------+----------+------------+
+
+WITH RECURSIVE employee_tree AS (
+    SELECT emp_id,
+           emp_name,
+           manager_id,
+           1 as level
+    FROM employee
+    WHERE manager_id IS NULL
+    
+    UNION ALL
+    
+    SELECT e.emp_id,
+           e.emp_name,
+           e.manager_id,
+           t.level + 1
+    FROM employee e
+    JOIN employee_tree t ON e.manager_id = t.emp_id
+)
+SELECT emp_id, emp_name, manager_id, level
+FROM employee_tree
+ORDER BY level, emp_id;
+
+[Expected Output]
++--------+----------+------------+-------+
+| emp_id | emp_name | manager_id | level |
++--------+----------+------------+-------+
+| 1      | Alice    | NULL       | 1     |
+| 2      | Bob      | 1          | 2     |
+| 3      | Charlie  | 2          | 3     |
++--------+----------+------------+-------+
+
+--------------------------------------------------------------------------------
+
+12. Sessionization
+--------------------------------------------------------------------------------
+Problem: Bundle user tracking events into consolidated session buckets if timestamp 
+         inactivity steps fall within 30-minute intervals.
+
+[Sample Input: activity_log]
++---------+---------------------+
+| user_id | event_time          |
++---------+---------------------+
+| 1       | 2026-04-01 10:00:00 |
+| 1       | 2026-04-01 10:15:00 |
+| 1       | 2026-04-01 11:00:00 |
++---------+---------------------+
+
+WITH session_gaps AS (
+    SELECT user_id,
+           event_time,
+           CASE 
+               WHEN event_time - LAG(event_time) OVER(
+                   PARTITION BY user_id ORDER BY event_time
+               ) > INTERVAL '30 minutes' THEN 1 
+               ELSE 0 
+           END as is_new_session
+    FROM activity_log
+),
+session_ids AS (
+    SELECT user_id,
+           event_time,
+           SUM(is_new_session) OVER(
+               PARTITION BY user_id ORDER BY event_time
+           ) as session_num
+    FROM session_gaps
+)
+SELECT user_id, event_time, session_num + 1 as session_id
+FROM session_ids;
+
+[Expected Output]
++---------+---------------------+------------+
+| user_id | event_time          | session_id |
++---------+---------------------+------------+
+| 1       | 2026-04-01 10:00:00 | 1          |
+| 1       | 2026-04-01 10:15:00 | 1          |
+| 1       | 2026-04-01 11:00:00 | 2          |
++---------+---------------------+------------+
+
+--------------------------------------------------------------------------------
+
+13. Cohort Analysis
+--------------------------------------------------------------------------------
+Problem: Group active consumers based on acquisition cohorts and evaluate their retention 
+         profiles over monthly intervals.
+
+[Sample Input: transactions]
++-------------+-------------+---------------------+--------+
+| transaction | customer_id | order_date          | amount |
++-------------+-------------+---------------------+--------+
+| 1           | C1          | 2026-01-15 00:00:00 | 50     |
+| 2           | C1          | 2026-02-20 00:00:00 | 30     |
+| 3           | C2          | 2026-02-10 00:00:00 | 40     |
++-------------+-------------+---------------------+--------+
+
+WITH cohort_acquisition AS (
+    SELECT customer_id,
+           MIN(DATE_TRUNC('month', order_date)) as cohort_month
+    FROM transactions
+    GROUP BY customer_id
+),
+activity_months AS (
+    SELECT DISTINCT customer_id,
+           DATE_TRUNC('month', order_date) as activity_month
+    FROM transactions
+)
+SELECT c.cohort_month,
+       EXTRACT(MONTH FROM AGE(a.activity_month, c.cohort_month)) as month_number,
+       COUNT(DISTINCT a.customer_id) as active_customers
+FROM cohort_acquisition c
+JOIN activity_months a ON c.customer_id = a.customer_id
+GROUP BY c.cohort_month, month_number
+ORDER BY c.cohort_month, month_number;
+
+[Expected Output]
++---------------------+--------------+------------------+
+| cohort_month        | month_number | active_customers |
++---------------------+--------------+------------------+
+| 2026-01-01 00:00:00 | 0            | 1                |
+| 2026-01-01 00:00:00 | 1            | 1                |
+| 2026-02-01 00:00:00 | 0            | 1                |
++---------------------+--------------+------------------+
+
+--------------------------------------------------------------------------------
+
+14. Ranking Problems
+--------------------------------------------------------------------------------
+Problem: Evaluate functional row generation deviations separating RANK vs DENSE_RANK vs ROW_NUMBER.
+
+[Sample Input: employee]
++----------+--------+
+| emp_name | salary |
++----------+--------+
+| Alice    | 90000  |
+| Bob      | 80000  |
+| Charlie  | 80000  |
+| David    | 60000  |
++----------+--------+
+
+SELECT emp_name, salary,
+       RANK() OVER(ORDER BY salary DESC) as rank_val,
+       DENSE_RANK() OVER(ORDER BY salary DESC) as dense_rank_val,
+       ROW_NUMBER() OVER(ORDER BY salary DESC) as row_num_val
+FROM employee;
+
+[Expected Output]
++----------+--------+----------+----------------+-------------+
+| emp_name | salary | rank_val | dense_rank_val | row_num_val |
++----------+--------+----------+----------------+-------------+
+| Alice    | 90000  | 1        | 1              | 1           |
+| Bob      | 80000  | 2        | 2              | 2           |
+| Charlie  | 80000  | 2        | 2              | 3           |
+| David    | 60000  | 4        | 3              | 4           |
++----------+--------+----------+----------------+-------------+
+
+--------------------------------------------------------------------------------
+
+15. Window Function Scenarios
+--------------------------------------------------------------------------------
+Problem: Demonstrate positional boundary steps using LAG, LEAD, and window frames.
+
+[Sample Input: employee]
++----------+---------+--------+
+| emp_name | dept_id | salary |
++----------+---------+--------+
+| Alice    | D1      | 60000  |
+| Bob      | D1      | 80000  |
+| Charlie  | D1      | 90000  |
++----------+---------+--------+
+
+SELECT emp_name, dept_id, salary,
+       LAG(salary) OVER(ORDER BY salary) as lag_sal,
+       LEAD(salary) OVER(ORDER BY salary) as lead_sal,
+       SUM(salary) OVER(ORDER BY salary) as running_total,
+       AVG(salary) OVER(PARTITION BY dept_id) as dept_avg,
+       NTILE(2) OVER(ORDER BY salary DESC) as ntile_val
+FROM employee;
+
+[Expected Output]
++----------+---------+--------+---------+----------+---------------+----------+-----------+
+| emp_name | dept_id | salary | lag_sal | lead_sal | running_total | dept_avg | ntile_val |
++----------+---------+--------+---------+----------+---------------+----------+-----------+
+| Alice    | D1      | 60000  | NULL    | 80000    | 60000         | 76666.67 | 2         |
+| Bob      | D1      | 80000  | 60000   | 90000    | 140000        | 76666.67 | 1         |
+| Charlie  | D1      | 90000  | 80000   | NULL     | 230000        | 76666.67 | 1         |
++----------+---------+--------+---------+----------+---------------+----------+-----------+
+
+
+================================================================================
+TOP INTERVIEW QUESTIONS REFERENCE GUIDE
+================================================================================
+1. Second Highest Salary                  11. Sessionization
+2. Nth Highest Salary                     12. Cohort Analysis
+3. Duplicate Records                      13. RANK vs DENSE_RANK vs ROW_NUMBER
+4. Remove Duplicates                      14. LAG vs LEAD
+5. Top N Salary Per Department            15. Highest Salary Per Department
+6. Running Total                          16. Latest Record Per User
+7. Consecutive Records                    17. First Order Per Customer
+8. Gap Analysis                           18. Running Average
+9. Manager Hierarchy                      19. Moving Average
+10. Recursive CTE                         20. Window Functions
+
+================================================================================

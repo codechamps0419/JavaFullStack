@@ -1,0 +1,689 @@
+/* @Author: Dynamic Duo Learners */
+
+==================================================
+1. WHAT IS PERFORMANCE TUNING?
+==================================================
+
+Performance Tuning is the process of improving database performance by reducing query execution time, minimizing resource usage, and increasing throughput.
+
+Goals:
+1. Faster queries
+2. Lower CPU usage
+3. Lower memory usage
+4. Better concurrency
+5. Reduced response time
+6. Higher scalability
+
+Interview Answer:
+Performance tuning is the process of optimizing SQL queries, indexes, schema design, and database configuration to improve execution speed and resource utilization.
+
+==================================================
+2. WHY PERFORMANCE TUNING IS IMPORTANT?
+==================================================
+
+Without tuning:
+
+- Slow APIs
+- High database load
+- Timeouts
+- Lock contention
+- Poor user experience
+
+Real Examples:
+
+E-commerce:
+Product search takes 10 seconds.
+
+Banking:
+Balance inquiry becomes slow.
+
+Microservices:
+Database becomes bottleneck.
+
+==================================================
+3. QUERY EXECUTION FLOW
+==================================================
+
+SQL Query
+   |
+Parser
+   |
+Optimizer
+   |
+Execution Plan
+   |
+Execution Engine
+   |
+Result
+
+Interview Answer:
+
+The optimizer generates the most efficient execution plan, and the execution engine executes that plan.
+
+==================================================
+4. EXPLAIN
+==================================================
+
+Used to view execution plan.
+
+Example:
+
+EXPLAIN
+SELECT *
+FROM employee
+WHERE emp_id = 1;
+
+Shows:
+- Seq Scan
+- Index Scan
+- Join strategy
+- Sort operation
+
+==================================================
+5. EXPLAIN ANALYZE
+==================================================
+
+Most Important Tool
+
+Example:
+
+EXPLAIN ANALYZE
+SELECT *
+FROM employee
+WHERE emp_id = 1;
+
+Difference:
+
+EXPLAIN
+-> Shows estimated plan
+
+EXPLAIN ANALYZE
+-> Executes query and shows actual runtime
+
+Interview Answer:
+
+EXPLAIN ANALYZE is used to identify slow operations and compare estimated versus actual execution costs.
+
+==================================================
+6. SEQUENTIAL SCAN
+==================================================
+
+Database reads every row.
+
+Example:
+
+SELECT *
+FROM employee
+WHERE city='Pune';
+
+If city not indexed:
+
+Full table scan occurs.
+
+Good For:
+- Small tables
+
+Bad For:
+- Large tables
+
+==================================================
+7. INDEX SCAN
+==================================================
+
+Database uses index.
+
+Example:
+
+CREATE INDEX idx_email
+ON employee(email);
+
+Query:
+
+SELECT *
+FROM employee
+WHERE email='abc@gmail.com';
+
+Uses index scan.
+
+Faster than sequential scan.
+
+==================================================
+8. BITMAP INDEX SCAN
+==================================================
+
+Used when many rows match.
+
+Process:
+
+Index Lookup
+   ↓
+Bitmap Creation
+   ↓
+Fetch Rows
+
+Often used for medium selectivity queries.
+
+==================================================
+9. INDEX ONLY SCAN
+==================================================
+
+Fastest Scan Type
+
+All required columns exist in index.
+
+Example:
+
+CREATE INDEX idx_emp
+ON employee(emp_id,salary);
+
+Query:
+
+SELECT emp_id,salary
+FROM employee
+WHERE emp_id=1;
+
+No table access needed.
+
+==================================================
+10. QUERY OPTIMIZATION PRINCIPLES
+==================================================
+
+1. Retrieve only needed columns
+2. Use indexes
+3. Reduce joins
+4. Filter early
+5. Avoid unnecessary sorting
+6. Avoid large result sets
+
+==================================================
+11. AVOID SELECT *
+==================================================
+
+Bad:
+
+SELECT *
+FROM employee;
+
+Good:
+
+SELECT emp_id,
+       emp_name
+FROM employee;
+
+Benefits:
+- Less memory
+- Less network transfer
+- Better index usage
+
+==================================================
+12. FILTER EARLY
+==================================================
+
+Apply WHERE clause as early as possible.
+
+Bad:
+
+Join huge datasets first.
+
+Good:
+
+Filter before join.
+
+==================================================
+13. COMPOSITE INDEXES
+==================================================
+
+Query:
+
+WHERE customer_id=10
+AND status='PAID';
+
+Index:
+
+(customer_id,status)
+
+Order matters.
+
+==================================================
+14. LEFTMOST PREFIX RULE
+==================================================
+
+Index:
+
+(customer_id,status,created_at)
+
+Useful For:
+
+customer_id
+
+customer_id,status
+
+customer_id,status,created_at
+
+Not ideal for:
+
+status alone
+
+==================================================
+15. JOIN OPTIMIZATION
+==================================================
+
+Index join columns.
+
+Example:
+
+employee.dept_id
+department.dept_id
+
+Indexes reduce join cost.
+
+==================================================
+16. JOIN TYPES AND PERFORMANCE
+==================================================
+
+Nested Loop Join
+Hash Join
+Merge Join
+
+Interview Favorite.
+
+==================================================
+17. NESTED LOOP JOIN
+==================================================
+
+Works well for small datasets.
+
+Outer rows:
+For each row
+Search inner table.
+
+Good:
+Indexed lookups.
+
+Bad:
+Large datasets.
+
+==================================================
+18. HASH JOIN
+==================================================
+
+Build hash table on smaller dataset.
+
+Used for large joins.
+
+Generally faster for large datasets.
+
+==================================================
+19. MERGE JOIN
+==================================================
+
+Requires sorted data.
+
+Very efficient for sorted datasets.
+
+==================================================
+20. GROUP BY OPTIMIZATION
+==================================================
+
+Index grouping columns.
+
+Example:
+
+SELECT dept_id,
+       COUNT(*)
+FROM employee
+GROUP BY dept_id;
+
+Index:
+
+(dept_id)
+
+==================================================
+21. ORDER BY OPTIMIZATION
+==================================================
+
+Index sort column.
+
+Example:
+
+ORDER BY created_at DESC
+
+Index:
+
+(created_at DESC)
+
+Can avoid sorting operation.
+
+==================================================
+22. LIMIT OPTIMIZATION
+==================================================
+
+Always use LIMIT when possible.
+
+Example:
+
+SELECT *
+FROM employee
+LIMIT 10;
+
+Prevents unnecessary scanning.
+
+==================================================
+23. PAGINATION PROBLEM
+==================================================
+
+Bad:
+
+LIMIT 10 OFFSET 100000;
+
+Database scans many rows.
+
+Performance degrades.
+
+==================================================
+24. KEYSET PAGINATION
+==================================================
+
+Better:
+
+SELECT *
+FROM employee
+WHERE emp_id > 100000
+ORDER BY emp_id
+LIMIT 10;
+
+Much faster.
+
+==================================================
+25. FUNCTIONS IN WHERE CLAUSE
+==================================================
+
+Bad:
+
+WHERE LOWER(email)='abc@gmail.com'
+
+Normal index may not be used.
+
+Solution:
+
+Expression Index
+
+==================================================
+26. EXPRESSION INDEX
+==================================================
+
+CREATE INDEX idx_lower_email
+ON employee(LOWER(email));
+
+Now query can use index.
+
+==================================================
+27. AVOID UNNECESSARY DISTINCT
+==================================================
+
+DISTINCT requires sorting or hashing.
+
+Can be expensive.
+
+Use only when needed.
+
+==================================================
+28. SUBQUERY OPTIMIZATION
+==================================================
+
+Sometimes CTE or JOIN performs better.
+
+Compare execution plans.
+
+Always verify with EXPLAIN ANALYZE.
+
+==================================================
+29. CTE PERFORMANCE
+==================================================
+
+CTE improves readability.
+
+Not always faster.
+
+Check optimizer behavior.
+
+==================================================
+30. DATABASE STATISTICS
+==================================================
+
+Optimizer relies on statistics.
+
+Outdated statistics:
+Wrong plans.
+
+PostgreSQL:
+
+ANALYZE employee;
+
+==================================================
+31. VACUUM
+==================================================
+
+PostgreSQL MVCC creates dead tuples.
+
+VACUUM removes dead tuples.
+
+Benefits:
+- Better performance
+- Smaller tables
+
+==================================================
+32. AUTOVACUUM
+==================================================
+
+Automatically performs:
+- Vacuum
+- Analyze
+
+Essential for PostgreSQL.
+
+==================================================
+33. QUERY COST
+==================================================
+
+Execution plans show:
+
+cost=0.00..123.45
+
+Lower cost generally better.
+
+Used by optimizer.
+
+==================================================
+34. INDEX MAINTENANCE
+==================================================
+
+Too many indexes:
+
+Pros:
+Faster reads
+
+Cons:
+Slower writes
+
+Balance required.
+
+==================================================
+35. PARTITIONING
+==================================================
+
+Split large table into smaller partitions.
+
+Example:
+
+Orders table by year.
+
+Benefits:
+- Faster scans
+- Easier maintenance
+
+==================================================
+36. TABLE BLOAT
+==================================================
+
+Frequent updates/deletes create bloat.
+
+Symptoms:
+- Larger table size
+- Slower queries
+
+Solution:
+VACUUM
+REINDEX
+
+==================================================
+37. REINDEX
+==================================================
+
+Rebuilds indexes.
+
+Example:
+
+REINDEX INDEX idx_employee_email;
+
+Useful when indexes become bloated.
+
+==================================================
+38. SLOW QUERY ANALYSIS PROCESS
+==================================================
+
+Step 1:
+Identify slow query
+
+Step 2:
+Run EXPLAIN ANALYZE
+
+Step 3:
+Find bottleneck
+
+Step 4:
+Add index or rewrite query
+
+Step 5:
+Measure improvement
+
+==================================================
+39. REAL PROJECT EXAMPLE
+==================================================
+
+Problem:
+
+SELECT *
+FROM orders
+WHERE customer_id=101;
+
+Table:
+50 million rows.
+
+Issue:
+No index.
+
+Solution:
+
+CREATE INDEX idx_customer
+ON orders(customer_id);
+
+Execution reduced from seconds to milliseconds.
+
+==================================================
+40. COMMON MISTAKES
+==================================================
+
+1. SELECT *
+2. Missing indexes
+3. Too many indexes
+4. Large OFFSET pagination
+5. Functions on indexed columns
+6. Ignoring EXPLAIN ANALYZE
+7. Not updating statistics
+
+==================================================
+41. PERFORMANCE TUNING CHECKLIST
+==================================================
+
+✓ Use indexes
+✓ Avoid SELECT *
+✓ Analyze execution plan
+✓ Use LIMIT
+✓ Optimize joins
+✓ Update statistics
+✓ Monitor slow queries
+✓ Use keyset pagination
+✓ Remove unused indexes
+
+==================================================
+42. MOST ASKED INTERVIEW QUESTIONS
+==================================================
+
+1. What is performance tuning?
+2. What is EXPLAIN?
+3. EXPLAIN vs EXPLAIN ANALYZE?
+4. What is Sequential Scan?
+5. What is Index Scan?
+6. What is Bitmap Scan?
+7. What is Index Only Scan?
+8. How to optimize joins?
+9. How to optimize pagination?
+10. What is keyset pagination?
+11. Why avoid SELECT *?
+12. Why functions affect indexes?
+13. What is VACUUM?
+14. What is ANALYZE?
+15. What is table bloat?
+16. What is REINDEX?
+17. Why too many indexes are bad?
+18. How do you diagnose slow queries?
+19. Hash Join vs Nested Loop?
+20. What is partitioning?
+
+==================================================
+43. QUICK REVISION
+==================================================
+
+Performance Tuning
+ -> Improve speed
+
+EXPLAIN
+ -> Execution plan
+
+EXPLAIN ANALYZE
+ -> Actual runtime
+
+Seq Scan
+ -> Full table scan
+
+Index Scan
+ -> Uses index
+
+Bitmap Scan
+ -> Index + bitmap
+
+Index Only Scan
+ -> No table access
+
+Avoid
+ -> SELECT *
+ -> Large OFFSET
+ -> Functions on indexed columns
+
+Use
+ -> Proper indexes
+ -> LIMIT
+ -> Keyset pagination
+
+Maintenance
+ -> VACUUM
+ -> ANALYZE
+ -> REINDEX
+
+Most Important Interview Topics:
+ -> EXPLAIN ANALYZE
+ -> Index Scan vs Seq Scan
+ -> Pagination Optimization
+ -> Join Optimization
+ -> VACUUM and ANALYZE

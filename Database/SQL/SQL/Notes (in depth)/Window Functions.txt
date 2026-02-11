@@ -1,0 +1,1222 @@
+/* @Author: Dynamic Duo Learners */
+
+==================================================
+1. WHAT ARE WINDOW FUNCTIONS?
+==================================================
+
+Window Functions perform calculations across a set of rows related to the current row.
+
+Important point:
+
+Window functions do not collapse rows like GROUP BY.
+
+They allow us to calculate values such as:
+- Ranking
+- Running total
+- Department-wise average salary
+- Previous row value
+- Next row value
+- Top N records per group
+- Cumulative sum
+- Moving average
+
+Example:
+
+GROUP BY gives one row per group.
+
+Window Function keeps all rows and adds calculated value.
+
+Interview Answer:
+
+A Window Function performs calculation across a set of related rows while keeping individual rows in the result.
+
+==================================================
+2. WHY DO WE NEED WINDOW FUNCTIONS?
+==================================================
+
+Without window functions, many problems require:
+- Complex subqueries
+- Self joins
+- Temporary tables
+- Multiple steps
+
+Window functions make queries:
+- Cleaner
+- Faster in many cases
+- Easier to read
+- Powerful for analytics and reports
+
+Real project use cases:
+- Top 3 salaries department-wise
+- Rank products by sales
+- Running total of transactions
+- Previous order amount
+- Monthly revenue comparison
+- Detect consecutive records
+- Find duplicate rows
+- Pagination with row numbers
+
+==================================================
+3. SAMPLE EMPLOYEE TABLE
+==================================================
+
+EMPLOYEE
+
+| emp_id | emp_name | dept_id | salary |
+|--------|----------|---------|--------|
+| 101    | Amit     | 1       | 50000  |
+| 102    | Rahul    | 1       | 70000  |
+| 103    | Neha     | 1       | 70000  |
+| 104    | Pooja    | 2       | 60000  |
+| 105    | Ravi     | 2       | 90000  |
+| 106    | Suresh   | 2       | 80000  |
+| 107    | Kiran    | 3       | 40000  |
+
+DEPARTMENT
+
+| dept_id | dept_name |
+|---------|-----------|
+| 1       | IT        |
+| 2       | HR        |
+| 3       | Finance   |
+
+==================================================
+4. BASIC SYNTAX OF WINDOW FUNCTION
+==================================================
+
+General Syntax:
+
+window_function() OVER (
+    PARTITION BY column_name
+    ORDER BY column_name
+)
+
+Example:
+
+SELECT emp_name,
+       dept_id,
+       salary,
+       AVG(salary) OVER (PARTITION BY dept_id) AS dept_avg_salary
+FROM employee;
+
+Meaning:
+
+For each employee, calculate average salary of that employee's department.
+
+==================================================
+5. OVER() CLAUSE
+==================================================
+
+OVER() defines the window or group of rows used by the function.
+
+Example:
+
+SELECT emp_name,
+       salary,
+       AVG(salary) OVER () AS company_avg_salary
+FROM employee;
+
+Here:
+
+OVER() without PARTITION BY means entire table is one window.
+
+Output concept:
+
+| emp_name | salary | company_avg_salary |
+|----------|--------|--------------------|
+| Amit     | 50000  | 67142              |
+| Rahul    | 70000  | 67142              |
+| Neha     | 70000  | 67142              |
+
+All rows remain visible.
+
+==================================================
+6. PARTITION BY
+==================================================
+
+PARTITION BY divides rows into groups.
+
+It is similar to GROUP BY, but it does not collapse rows.
+
+Example:
+
+SELECT emp_name,
+       dept_id,
+       salary,
+       AVG(salary) OVER (PARTITION BY dept_id) AS dept_avg_salary
+FROM employee;
+
+Output concept:
+
+| emp_name | dept_id | salary | dept_avg_salary |
+|----------|---------|--------|-----------------|
+| Amit     | 1       | 50000  | 63333           |
+| Rahul    | 1       | 70000  | 63333           |
+| Neha     | 1       | 70000  | 63333           |
+| Pooja    | 2       | 60000  | 76666           |
+| Ravi     | 2       | 90000  | 76666           |
+
+Interview Answer:
+
+PARTITION BY divides data into logical groups for window calculation without reducing rows.
+
+==================================================
+7. ORDER BY INSIDE OVER()
+==================================================
+
+ORDER BY inside OVER() defines the sequence of rows inside each window.
+
+Example:
+
+SELECT emp_name,
+       salary,
+       ROW_NUMBER() OVER (ORDER BY salary DESC) AS row_num
+FROM employee;
+
+This assigns row numbers based on salary from highest to lowest.
+
+Important:
+
+ORDER BY inside OVER() is different from final ORDER BY.
+
+- ORDER BY inside OVER(): used for window calculation
+- ORDER BY outside query: used for final result sorting
+
+==================================================
+8. GROUP BY VS WINDOW FUNCTIONS
+==================================================
+
+GROUP BY:
+
+SELECT dept_id,
+       AVG(salary)
+FROM employee
+GROUP BY dept_id;
+
+Output:
+
+| dept_id | avg_salary |
+|---------|------------|
+| 1       | 63333      |
+| 2       | 76666      |
+
+Rows are collapsed.
+
+------------------------------------------
+
+Window Function:
+
+SELECT emp_name,
+       dept_id,
+       salary,
+       AVG(salary) OVER (PARTITION BY dept_id) AS avg_salary
+FROM employee;
+
+Output:
+
+Each employee row remains visible with department average salary.
+
+Interview Answer:
+
+GROUP BY summarizes rows and reduces output rows. Window functions calculate over groups but keep individual rows.
+
+==================================================
+9. ROW_NUMBER()
+==================================================
+
+ROW_NUMBER() gives a unique sequential number to each row.
+
+Example:
+
+SELECT emp_name,
+       salary,
+       ROW_NUMBER() OVER (ORDER BY salary DESC) AS row_num
+FROM employee;
+
+Output concept:
+
+| emp_name | salary | row_num |
+|----------|--------|---------|
+| Ravi     | 90000  | 1       |
+| Suresh   | 80000  | 2       |
+| Rahul    | 70000  | 3       |
+| Neha     | 70000  | 4       |
+
+Important:
+
+Even if salary is same, ROW_NUMBER gives different numbers.
+
+Interview Use:
+- Remove duplicates
+- Pagination
+- Top N records
+- Latest record per group
+
+==================================================
+10. RANK()
+==================================================
+
+RANK() assigns rank with gaps when ties exist.
+
+Example:
+
+SELECT emp_name,
+       salary,
+       RANK() OVER (ORDER BY salary DESC) AS rank_no
+FROM employee;
+
+Output concept:
+
+| emp_name | salary | rank_no |
+|----------|--------|---------|
+| Ravi     | 90000  | 1       |
+| Suresh   | 80000  | 2       |
+| Rahul    | 70000  | 3       |
+| Neha     | 70000  | 3       |
+| Pooja    | 60000  | 5       |
+
+Notice:
+
+Rahul and Neha both rank 3.
+Next rank is 5.
+Rank 4 is skipped.
+
+==================================================
+11. DENSE_RANK()
+==================================================
+
+DENSE_RANK() assigns rank without gaps.
+
+Example:
+
+SELECT emp_name,
+       salary,
+       DENSE_RANK() OVER (ORDER BY salary DESC) AS dense_rank_no
+FROM employee;
+
+Output concept:
+
+| emp_name | salary | dense_rank_no |
+|----------|--------|---------------|
+| Ravi     | 90000  | 1             |
+| Suresh   | 80000  | 2             |
+| Rahul    | 70000  | 3             |
+| Neha     | 70000  | 3             |
+| Pooja    | 60000  | 4             |
+
+Notice:
+
+No rank is skipped.
+
+==================================================
+12. ROW_NUMBER VS RANK VS DENSE_RANK
+==================================================
+
+ROW_NUMBER:
+- Always unique sequence
+- No duplicate numbers
+- Ties still get different numbers
+
+RANK:
+- Same rank for ties
+- Skips next rank
+
+DENSE_RANK:
+- Same rank for ties
+- Does not skip rank
+
+Example with salaries:
+
+90000, 80000, 70000, 70000, 60000
+
+ROW_NUMBER:
+1, 2, 3, 4, 5
+
+RANK:
+1, 2, 3, 3, 5
+
+DENSE_RANK:
+1, 2, 3, 3, 4
+
+Most Asked Interview Answer:
+
+ROW_NUMBER gives unique number to every row.
+RANK gives same rank for ties but leaves gaps.
+DENSE_RANK gives same rank for ties without gaps.
+
+==================================================
+13. TOP SALARY PER DEPARTMENT
+==================================================
+
+Question:
+
+Find highest salary employee from each department.
+
+Using ROW_NUMBER:
+
+SELECT *
+FROM (
+    SELECT emp_name,
+           dept_id,
+           salary,
+           ROW_NUMBER() OVER (
+               PARTITION BY dept_id
+               ORDER BY salary DESC
+           ) AS rn
+    FROM employee
+) ranked
+WHERE rn = 1;
+
+Output:
+
+One highest salary employee from each department.
+
+Important:
+
+If two employees have same highest salary, ROW_NUMBER returns only one of them.
+
+==================================================
+14. HIGHEST SALARY WITH TIES PER DEPARTMENT
+==================================================
+
+If we want all employees having highest salary in each department, use RANK or DENSE_RANK.
+
+Query:
+
+SELECT *
+FROM (
+    SELECT emp_name,
+           dept_id,
+           salary,
+           DENSE_RANK() OVER (
+               PARTITION BY dept_id
+               ORDER BY salary DESC
+           ) AS rnk
+    FROM employee
+) ranked
+WHERE rnk = 1;
+
+Output:
+
+Returns all employees tied at highest salary.
+
+Interview Point:
+
+Use ROW_NUMBER when you need exactly one row.
+Use RANK/DENSE_RANK when ties should be included.
+
+==================================================
+15. TOP 3 SALARIES PER DEPARTMENT
+==================================================
+
+Question:
+
+Find top 3 highest salaries from each department.
+
+Query:
+
+SELECT *
+FROM (
+    SELECT emp_name,
+           dept_id,
+           salary,
+           DENSE_RANK() OVER (
+               PARTITION BY dept_id
+               ORDER BY salary DESC
+           ) AS rnk
+    FROM employee
+) ranked
+WHERE rnk <= 3;
+
+This is one of the most asked SQL interview questions.
+
+==================================================
+16. NTH HIGHEST SALARY
+==================================================
+
+Question:
+
+Find 2nd highest salary.
+
+Using DENSE_RANK:
+
+SELECT *
+FROM (
+    SELECT emp_name,
+           salary,
+           DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+    FROM employee
+) ranked
+WHERE rnk = 2;
+
+Why DENSE_RANK?
+
+Because if duplicate highest salaries exist, DENSE_RANK handles it properly.
+
+==================================================
+17. NTILE()
+==================================================
+
+NTILE(n) divides rows into n groups.
+
+Example:
+
+Divide employees into 4 salary groups.
+
+SELECT emp_name,
+       salary,
+       NTILE(4) OVER (ORDER BY salary DESC) AS salary_bucket
+FROM employee;
+
+Use cases:
+- Divide customers into segments
+- Salary percentile groups
+- Performance ranking
+- Quartile analysis
+
+Interview Answer:
+
+NTILE divides ordered rows into a specified number of nearly equal groups.
+
+==================================================
+18. LAG()
+==================================================
+
+LAG() fetches value from previous row.
+
+Example:
+
+Transaction table:
+
+| txn_id | txn_date   | amount |
+|--------|------------|--------|
+| 1      | 2026-01-01 | 1000   |
+| 2      | 2026-01-02 | 1500   |
+| 3      | 2026-01-03 | 1200   |
+
+Query:
+
+SELECT txn_id,
+       txn_date,
+       amount,
+       LAG(amount) OVER (ORDER BY txn_date) AS previous_amount
+FROM transaction;
+
+Output concept:
+
+| txn_id | amount | previous_amount |
+|--------|--------|-----------------|
+| 1      | 1000   | NULL            |
+| 2      | 1500   | 1000            |
+| 3      | 1200   | 1500            |
+
+Use cases:
+- Compare current month with previous month
+- Compare current order with previous order
+- Detect changes
+- Find gaps
+
+==================================================
+19. LEAD()
+==================================================
+
+LEAD() fetches value from next row.
+
+Query:
+
+SELECT txn_id,
+       txn_date,
+       amount,
+       LEAD(amount) OVER (ORDER BY txn_date) AS next_amount
+FROM transaction;
+
+Output concept:
+
+| txn_id | amount | next_amount |
+|--------|--------|-------------|
+| 1      | 1000   | 1500        |
+| 2      | 1500   | 1200        |
+| 3      | 1200   | NULL        |
+
+Use cases:
+- Compare current row with next row
+- Identify future changes
+- Validate sequence gaps
+
+==================================================
+20. LAG VS LEAD
+==================================================
+
+LAG:
+- Looks backward
+- Previous row value
+
+LEAD:
+- Looks forward
+- Next row value
+
+Interview Answer:
+
+LAG gets previous row data, while LEAD gets next row data based on ordering.
+
+==================================================
+21. FIRST_VALUE()
+==================================================
+
+FIRST_VALUE() returns first value from the window.
+
+Example:
+
+SELECT emp_name,
+       dept_id,
+       salary,
+       FIRST_VALUE(emp_name) OVER (
+           PARTITION BY dept_id
+           ORDER BY salary DESC
+       ) AS highest_paid_employee
+FROM employee;
+
+For each department, it shows highest paid employee name.
+
+==================================================
+22. LAST_VALUE()
+==================================================
+
+LAST_VALUE() returns last value from the window.
+
+Important:
+
+LAST_VALUE can be tricky because of default window frame.
+
+Safer query:
+
+SELECT emp_name,
+       dept_id,
+       salary,
+       LAST_VALUE(emp_name) OVER (
+           PARTITION BY dept_id
+           ORDER BY salary DESC
+           ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+       ) AS lowest_paid_employee
+FROM employee;
+
+Interview Point:
+
+LAST_VALUE often needs explicit frame definition to work as expected.
+
+==================================================
+23. WINDOW FRAME
+==================================================
+
+Window frame defines which rows around the current row are included.
+
+Common frame:
+
+ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+
+Meaning:
+
+From first row of partition up to current row.
+
+Used for running total.
+
+Another frame:
+
+ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+
+Meaning:
+
+All rows in partition.
+
+Used for FIRST_VALUE / LAST_VALUE style calculations.
+
+==================================================
+24. RUNNING TOTAL
+==================================================
+
+Question:
+
+Calculate running total of transactions.
+
+Transaction table:
+
+| txn_date   | amount |
+|------------|--------|
+| 2026-01-01 | 1000   |
+| 2026-01-02 | 1500   |
+| 2026-01-03 | 1200   |
+
+Query:
+
+SELECT txn_date,
+       amount,
+       SUM(amount) OVER (
+           ORDER BY txn_date
+           ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+       ) AS running_total
+FROM transaction;
+
+Output:
+
+| txn_date   | amount | running_total |
+|------------|--------|---------------|
+| 2026-01-01 | 1000   | 1000          |
+| 2026-01-02 | 1500   | 2500          |
+| 2026-01-03 | 1200   | 3700          |
+
+Interview:
+
+Running total is a very common window function problem.
+
+==================================================
+25. RUNNING TOTAL PER CUSTOMER
+==================================================
+
+Query:
+
+SELECT customer_id,
+       txn_date,
+       amount,
+       SUM(amount) OVER (
+           PARTITION BY customer_id
+           ORDER BY txn_date
+           ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+       ) AS customer_running_total
+FROM transaction;
+
+Meaning:
+
+Running total resets for each customer.
+
+==================================================
+26. MOVING AVERAGE
+==================================================
+
+Question:
+
+Calculate moving average of current row and previous 2 rows.
+
+Query:
+
+SELECT txn_date,
+       amount,
+       AVG(amount) OVER (
+           ORDER BY txn_date
+           ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+       ) AS moving_avg
+FROM transaction;
+
+Use cases:
+- Sales trend
+- Stock price trend
+- Daily active users trend
+- Performance monitoring
+
+==================================================
+27. COUNT() AS WINDOW FUNCTION
+==================================================
+
+Example:
+
+Show employee count per department without collapsing rows.
+
+SELECT emp_name,
+       dept_id,
+       COUNT(*) OVER (PARTITION BY dept_id) AS dept_employee_count
+FROM employee;
+
+Output:
+
+Each employee row shows department employee count.
+
+==================================================
+28. SUM() AS WINDOW FUNCTION
+==================================================
+
+Example:
+
+Show total salary per department for each employee.
+
+SELECT emp_name,
+       dept_id,
+       salary,
+       SUM(salary) OVER (PARTITION BY dept_id) AS dept_total_salary
+FROM employee;
+
+==================================================
+29. AVG() AS WINDOW FUNCTION
+==================================================
+
+Example:
+
+Show salary comparison with department average.
+
+SELECT emp_name,
+       dept_id,
+       salary,
+       AVG(salary) OVER (PARTITION BY dept_id) AS dept_avg_salary
+FROM employee;
+
+This helps answer:
+
+Is employee earning above or below department average?
+
+==================================================
+30. WINDOW FUNCTION WITH CASE WHEN
+==================================================
+
+Example:
+
+Mark employees as ABOVE_AVG or BELOW_AVG within department.
+
+SELECT emp_name,
+       dept_id,
+       salary,
+       CASE
+           WHEN salary > AVG(salary) OVER (PARTITION BY dept_id)
+           THEN 'ABOVE_AVG'
+           ELSE 'BELOW_OR_EQUAL_AVG'
+       END AS salary_status
+FROM employee;
+
+Real project use:
+- Reports
+- Dashboards
+- Employee analytics
+- Sales comparison
+
+==================================================
+31. DUPLICATE REMOVAL USING ROW_NUMBER
+==================================================
+
+Table:
+
+USER_LOGIN
+
+| user_id | login_time          |
+|---------|---------------------|
+| 1       | 2026-01-01 10:00:00 |
+| 1       | 2026-01-02 10:00:00 |
+| 2       | 2026-01-01 12:00:00 |
+
+Question:
+
+Find latest login per user.
+
+Query:
+
+SELECT *
+FROM (
+    SELECT user_id,
+           login_time,
+           ROW_NUMBER() OVER (
+               PARTITION BY user_id
+               ORDER BY login_time DESC
+           ) AS rn
+    FROM user_login
+) x
+WHERE rn = 1;
+
+This is very common in backend/reporting queries.
+
+==================================================
+32. PAGINATION USING ROW_NUMBER
+==================================================
+
+Example:
+
+Fetch rows 11 to 20.
+
+SELECT *
+FROM (
+    SELECT emp_id,
+           emp_name,
+           salary,
+           ROW_NUMBER() OVER (ORDER BY emp_id) AS rn
+    FROM employee
+) x
+WHERE rn BETWEEN 11 AND 20;
+
+Useful in databases or old versions where LIMIT/OFFSET is not preferred.
+
+==================================================
+33. WINDOW FUNCTIONS EXECUTION ORDER
+==================================================
+
+Logical SQL execution:
+
+1. FROM
+2. WHERE
+3. GROUP BY
+4. HAVING
+5. SELECT
+6. WINDOW FUNCTIONS
+7. ORDER BY
+8. LIMIT
+
+Important:
+
+Window functions are calculated after WHERE/GROUP BY/HAVING.
+
+That means:
+
+You cannot directly use window function alias in WHERE.
+
+Wrong:
+
+SELECT emp_name,
+       ROW_NUMBER() OVER (ORDER BY salary DESC) AS rn
+FROM employee
+WHERE rn = 1;
+
+Correct:
+
+SELECT *
+FROM (
+    SELECT emp_name,
+           ROW_NUMBER() OVER (ORDER BY salary DESC) AS rn
+    FROM employee
+) x
+WHERE rn = 1;
+
+==================================================
+34. WHY WINDOW FUNCTION CANNOT BE USED DIRECTLY IN WHERE
+==================================================
+
+WHERE executes before SELECT.
+
+Window function alias is created in SELECT.
+
+So WHERE cannot see that alias.
+
+Solution:
+- Use subquery
+- Use CTE
+- Use QUALIFY if database supports it
+
+PostgreSQL does not support QUALIFY directly.
+Some databases like Snowflake and BigQuery support QUALIFY.
+
+==================================================
+35. WINDOW FUNCTIONS VS AGGREGATE FUNCTIONS
+==================================================
+
+Aggregate Function with GROUP BY:
+
+SELECT dept_id,
+       AVG(salary)
+FROM employee
+GROUP BY dept_id;
+
+Returns one row per department.
+
+------------------------------------------
+
+Window Function:
+
+SELECT emp_name,
+       dept_id,
+       salary,
+       AVG(salary) OVER (PARTITION BY dept_id)
+FROM employee;
+
+Returns all employee rows with department average.
+
+Interview Answer:
+
+Aggregate functions with GROUP BY reduce rows. Window functions calculate aggregate values while preserving rows.
+
+==================================================
+36. IMPORTANT INTERVIEW PROBLEM 1
+==================================================
+
+Find second highest salary.
+
+SELECT *
+FROM (
+    SELECT emp_name,
+           salary,
+           DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+    FROM employee
+) x
+WHERE rnk = 2;
+
+Why DENSE_RANK?
+
+Because it handles duplicate salaries correctly.
+
+==================================================
+37. IMPORTANT INTERVIEW PROBLEM 2
+==================================================
+
+Find top 2 salaries from each department.
+
+SELECT *
+FROM (
+    SELECT emp_name,
+           dept_id,
+           salary,
+           DENSE_RANK() OVER (
+               PARTITION BY dept_id
+               ORDER BY salary DESC
+           ) AS rnk
+    FROM employee
+) x
+WHERE rnk <= 2;
+
+==================================================
+38. IMPORTANT INTERVIEW PROBLEM 3
+==================================================
+
+Find latest order for each customer.
+
+SELECT *
+FROM (
+    SELECT order_id,
+           customer_id,
+           order_date,
+           ROW_NUMBER() OVER (
+               PARTITION BY customer_id
+               ORDER BY order_date DESC
+           ) AS rn
+    FROM orders
+) x
+WHERE rn = 1;
+
+==================================================
+39. IMPORTANT INTERVIEW PROBLEM 4
+==================================================
+
+Compare current month revenue with previous month.
+
+SELECT month,
+       revenue,
+       LAG(revenue) OVER (ORDER BY month) AS previous_month_revenue,
+       revenue - LAG(revenue) OVER (ORDER BY month) AS difference
+FROM monthly_revenue;
+
+==================================================
+40. IMPORTANT INTERVIEW PROBLEM 5
+==================================================
+
+Calculate cumulative revenue.
+
+SELECT order_date,
+       amount,
+       SUM(amount) OVER (
+           ORDER BY order_date
+           ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+       ) AS cumulative_revenue
+FROM orders;
+
+==================================================
+41. COMMON MISTAKES
+==================================================
+
+Mistake 1:
+
+Using window function directly in WHERE.
+
+Solution:
+Use subquery or CTE.
+
+------------------------------------------
+
+Mistake 2:
+
+Confusing GROUP BY with PARTITION BY.
+
+GROUP BY collapses rows.
+PARTITION BY does not collapse rows.
+
+------------------------------------------
+
+Mistake 3:
+
+Using ROW_NUMBER when ties should be included.
+
+Use RANK or DENSE_RANK for ties.
+
+------------------------------------------
+
+Mistake 4:
+
+Using LAST_VALUE without proper window frame.
+
+Use:
+
+ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+
+------------------------------------------
+
+Mistake 5:
+
+Not using ORDER BY where order matters.
+
+Ranking functions require proper ORDER BY.
+
+==================================================
+42. PERFORMANCE TIPS
+==================================================
+
+Window functions may become slow when:
+- Huge datasets
+- Large partitions
+- Complex ORDER BY
+- Missing indexes
+- Too many window functions in same query
+
+Tips:
+- Index columns used in PARTITION BY and ORDER BY
+- Filter unnecessary rows before applying window functions
+- Avoid SELECT *
+- Use CTE/subquery for readability
+- Check execution plan using EXPLAIN ANALYZE
+
+==================================================
+43. MOST ASKED INTERVIEW QUESTIONS
+==================================================
+
+1. What is Window Function?
+2. Why use Window Functions?
+3. What is OVER()?
+4. What is PARTITION BY?
+5. GROUP BY vs PARTITION BY?
+6. ROW_NUMBER vs RANK vs DENSE_RANK?
+7. How to find second highest salary?
+8. How to find top 3 salaries per department?
+9. How to find latest record per user?
+10. What is LAG?
+11. What is LEAD?
+12. LAG vs LEAD?
+13. What is running total?
+14. What is moving average?
+15. Why window function cannot be used in WHERE?
+16. What is NTILE?
+17. What is FIRST_VALUE?
+18. Why LAST_VALUE is tricky?
+19. Aggregate function vs Window function?
+20. How to optimize window function queries?
+
+==================================================
+44. INTERVIEW ANSWERS
+==================================================
+
+Q1. What is Window Function?
+
+A Window Function performs calculation across a set of related rows while keeping individual rows in the output.
+
+------------------------------------------
+
+Q2. GROUP BY vs Window Function?
+
+GROUP BY reduces rows and returns summary data.
+
+Window Function calculates summary data but keeps all original rows.
+
+------------------------------------------
+
+Q3. ROW_NUMBER vs RANK vs DENSE_RANK?
+
+ROW_NUMBER gives unique number to every row.
+
+RANK gives same rank for ties but skips next rank.
+
+DENSE_RANK gives same rank for ties without skipping rank.
+
+------------------------------------------
+
+Q4. What is PARTITION BY?
+
+PARTITION BY divides rows into logical groups for window calculation.
+
+------------------------------------------
+
+Q5. What is LAG?
+
+LAG returns value from previous row based on ordering.
+
+------------------------------------------
+
+Q6. What is LEAD?
+
+LEAD returns value from next row based on ordering.
+
+------------------------------------------
+
+Q7. Why window function cannot be used in WHERE?
+
+Because WHERE executes before SELECT, and window function result is created in SELECT phase.
+
+------------------------------------------
+
+Q8. How to find top salary per department?
+
+Use ROW_NUMBER or DENSE_RANK with PARTITION BY department and ORDER BY salary DESC.
+
+------------------------------------------
+
+Q9. What is running total?
+
+Running total is cumulative sum from first row up to current row.
+
+------------------------------------------
+
+Q10. Why LAST_VALUE can give unexpected result?
+
+Because default window frame may end at current row. To get actual last value, define frame as UNBOUNDED PRECEDING to UNBOUNDED FOLLOWING.
+
+==================================================
+45. QUICK REVISION
+==================================================
+
+Window Function
+    -> Calculates across related rows
+    -> Does not collapse rows
+
+OVER()
+    -> Defines window
+
+PARTITION BY
+    -> Divides rows into groups
+
+ORDER BY inside OVER
+    -> Defines order for calculation
+
+ROW_NUMBER()
+    -> Unique sequence
+
+RANK()
+    -> Same rank for ties, skips rank
+
+DENSE_RANK()
+    -> Same rank for ties, no skipping
+
+NTILE()
+    -> Divides rows into buckets
+
+LAG()
+    -> Previous row value
+
+LEAD()
+    -> Next row value
+
+FIRST_VALUE()
+    -> First value in window
+
+LAST_VALUE()
+    -> Last value in window
+
+Running Total
+    -> SUM() OVER with frame
+
+Moving Average
+    -> AVG() OVER with frame
+
+Most Important Interview Problems:
+    -> Second highest salary
+    -> Top N per department
+    -> Latest record per user
+    -> Running total
+    -> Previous month comparison
+    -> GROUP BY vs Window Function

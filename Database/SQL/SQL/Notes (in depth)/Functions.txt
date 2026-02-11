@@ -1,0 +1,364 @@
+
+/* @Author: Dynamic Duo Learners */
+
+==================================================
+1. WHAT ARE SQL FUNCTIONS?
+==================================================
+
+SQL Functions are built-in methods provided by the database to perform operations on data.
+
+Examples:
+- Convert text to uppercase
+- Calculate average salary
+- Extract year from date
+- Handle NULL values
+
+Benefits:
+- Reduce code complexity
+- Improve readability
+- Perform calculations directly in database
+
+==================================================
+2. STRING FUNCTIONS
+==================================================
+
+Sample Table:
+
+| name         |
+|--------------|
+| hrushikesh   |
+| Amit         |
+
+------------------------------------------
+UPPER()
+------------------------------------------
+
+Converts text to uppercase.
+
+SELECT UPPER(name)
+FROM employee;
+
+Result:
+
+HRUSHIKESH
+AMIT
+
+------------------------------------------
+LOWER()
+------------------------------------------
+
+Converts text to lowercase.
+
+SELECT LOWER(name)
+FROM employee;
+
+------------------------------------------
+LENGTH()
+------------------------------------------
+
+Returns character count.
+
+SELECT LENGTH('Hrushikesh');
+
+Result:
+
+10
+
+------------------------------------------
+TRIM()
+------------------------------------------
+
+Removes leading and trailing spaces.
+
+SELECT TRIM('   SQL   ');
+
+Result:
+
+SQL
+
+------------------------------------------
+SUBSTRING()
+------------------------------------------
+
+Extract part of string.
+
+SELECT SUBSTRING('DATABASE',1,4);
+
+Result:
+
+DATA
+
+------------------------------------------
+CONCAT()
+------------------------------------------
+
+Combines strings.
+
+SELECT CONCAT('Java',' ','Developer');
+
+Result:
+
+Java Developer
+
+==================================================
+3. NUMERIC FUNCTIONS
+==================================================
+
+------------------------------------------
+ROUND()
+------------------------------------------
+
+Rounds value.
+
+SELECT ROUND(12.567,2);
+
+Result:
+
+12.57
+
+------------------------------------------
+CEIL()
+------------------------------------------
+
+Rounds up.
+
+SELECT CEIL(12.1);
+
+Result:
+
+13
+
+------------------------------------------
+FLOOR()
+------------------------------------------
+
+Rounds down.
+
+SELECT FLOOR(12.9);
+
+Result:
+
+12
+
+------------------------------------------
+ABS()
+------------------------------------------
+
+Absolute value.
+
+SELECT ABS(-100);
+
+Result:
+
+100
+
+==================================================
+4. DATE FUNCTIONS
+==================================================
+
+------------------------------------------
+CURRENT_DATE
+------------------------------------------
+
+Returns current date.
+
+SELECT CURRENT_DATE;
+
+------------------------------------------
+NOW()
+------------------------------------------
+
+Returns current timestamp.
+
+SELECT NOW();
+
+------------------------------------------
+EXTRACT()
+------------------------------------------
+
+Extract year, month, day.
+
+SELECT EXTRACT(YEAR FROM NOW());
+
+------------------------------------------
+AGE() (PostgreSQL)
+------------------------------------------
+
+Calculates difference.
+
+SELECT AGE('2026-01-01','2020-01-01');
+
+==================================================
+5. NULL HANDLING FUNCTIONS
+==================================================
+
+NULL means unknown or missing value.
+
+------------------------------------------
+COALESCE()
+------------------------------------------
+
+Returns first non-null value.
+
+SELECT COALESCE(NULL,NULL,'Java');
+
+Result:
+
+Java
+
+Interview:
+
+Very frequently used in production queries.
+
+------------------------------------------
+NULLIF()
+------------------------------------------
+
+Returns NULL if values match.
+
+SELECT NULLIF(100,100);
+
+Result:
+
+NULL
+
+Useful to avoid divide-by-zero errors.
+
+==================================================
+6. CASE WHEN
+==================================================
+
+SQL equivalent of if-else.
+
+Example:
+
+SELECT name,
+CASE
+    WHEN salary > 70000 THEN 'HIGH'
+    WHEN salary > 50000 THEN 'MEDIUM'
+    ELSE 'LOW'
+END
+FROM employee;
+
+Result:
+
+Employee categorized based on salary.
+
+Interview:
+
+CASE WHEN is heavily used in reports and dashboards.
+
+==================================================
+7. CAST()
+==================================================
+
+Converts one datatype into another.
+
+SELECT CAST('100' AS INTEGER);
+
+Result:
+
+100
+
+Examples:
+String -> Integer
+Integer -> String
+Date conversions
+
+==================================================
+8. PRACTICAL REAL PROJECT EXAMPLES
+==================================================
+
+Display employee names in uppercase
+
+SELECT UPPER(name)
+FROM employee;
+
+------------------------------------------
+
+Replace null salary with 0
+
+SELECT COALESCE(salary,0)
+FROM employee;
+
+------------------------------------------
+
+Show employee category
+
+CASE WHEN salary > 50000
+
+------------------------------------------
+
+Extract joining year
+
+SELECT EXTRACT(YEAR FROM joining_date);
+
+==================================================
+INTERVIEW QUESTIONS
+==================================================
+
+1. What are SQL Functions?
+2. Difference between UPPER and LOWER?
+3. What is COALESCE?
+4. Why use NULLIF?
+5. What is CASE WHEN?
+6. What is CAST?
+7. Difference between CURRENT_DATE and NOW()?
+8. How to calculate age in PostgreSQL?
+9. How to handle NULL values?
+10. Most commonly used SQL functions in projects?
+
+==================================================
+QUICK REVISION
+==================================================
+
+UPPER()
+    -> Uppercase
+
+LOWER()
+    -> Lowercase
+
+LENGTH()
+    -> Character count
+
+TRIM()
+    -> Remove spaces
+
+SUBSTRING()
+    -> Extract text
+
+CONCAT()
+    -> Combine strings
+
+ROUND()
+    -> Round value
+
+CEIL()
+    -> Round up
+
+FLOOR()
+    -> Round down
+
+ABS()
+    -> Absolute value
+
+CURRENT_DATE
+    -> Current date
+
+NOW()
+    -> Current timestamp
+
+EXTRACT()
+    -> Get year/month/day
+
+COALESCE()
+    -> First non-null value
+
+NULLIF()
+    -> Return NULL if equal
+
+CASE WHEN
+    -> IF-ELSE in SQL
+
+CAST()
+    -> Type conversion

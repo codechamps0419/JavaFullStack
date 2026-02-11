@@ -1,0 +1,838 @@
+/* @Author: Dynamic Duo Learners */
+
+==================================================
+1. WHAT ARE SET OPERATORS?
+==================================================
+
+Set Operators are used to combine results from multiple SELECT statements.
+
+Instead of joining tables horizontally (columns),
+Set Operators combine results vertically (rows).
+
+Example:
+
+Table A:
+
+| id |
+|----|
+| 1  |
+| 2  |
+
+Table B:
+
+| id |
+|----|
+| 2  |
+| 3  |
+
+Set operators help combine these result sets.
+
+Interview Answer:
+
+Set Operators combine results of multiple SELECT queries into a single result set.
+
+==================================================
+2. TYPES OF SET OPERATORS
+==================================================
+
+1. UNION
+2. UNION ALL
+3. INTERSECT
+4. EXCEPT
+
+Oracle uses:
+
+MINUS
+
+instead of EXCEPT.
+
+==================================================
+3. RULES FOR SET OPERATORS
+==================================================
+
+Both SELECT statements must have:
+
+1. Same number of columns
+2. Compatible data types
+3. Similar meaning of columns
+
+Valid:
+
+SELECT emp_id, emp_name
+FROM employee
+
+UNION
+
+SELECT customer_id, customer_name
+FROM customer;
+
+Both return:
+INT + VARCHAR
+
+------------------------------------------
+
+Invalid:
+
+SELECT emp_id, emp_name
+FROM employee
+
+UNION
+
+SELECT customer_id
+FROM customer;
+
+Different column count.
+
+Interview Question:
+
+What are the requirements for UNION?
+
+Answer:
+
+Same column count and compatible data types.
+
+==================================================
+4. UNION
+==================================================
+
+UNION combines results and removes duplicates.
+
+Table A:
+
+| id |
+|----|
+| 1  |
+| 2  |
+| 3  |
+
+Table B:
+
+| id |
+|----|
+| 2  |
+| 3  |
+| 4  |
+
+Query:
+
+SELECT id FROM table_a
+
+UNION
+
+SELECT id FROM table_b;
+
+Result:
+
+| id |
+|----|
+| 1  |
+| 2  |
+| 3  |
+| 4  |
+
+Duplicate rows removed.
+
+==================================================
+5. HOW UNION WORKS INTERNALLY
+==================================================
+
+Step 1:
+
+Fetch rows from Query 1
+
+Step 2:
+
+Fetch rows from Query 2
+
+Step 3:
+
+Combine all rows
+
+Step 4:
+
+Sort/Hash internally
+
+Step 5:
+
+Remove duplicates
+
+Result returned.
+
+Interview:
+
+UNION removes duplicates,
+therefore extra work is required.
+
+==================================================
+6. UNION ALL
+==================================================
+
+UNION ALL combines results
+without removing duplicates.
+
+Query:
+
+SELECT id FROM table_a
+
+UNION ALL
+
+SELECT id FROM table_b;
+
+Result:
+
+| id |
+|----|
+| 1  |
+| 2  |
+| 3  |
+| 2  |
+| 3  |
+| 4  |
+
+Duplicates remain.
+
+==================================================
+7. UNION VS UNION ALL
+==================================================
+
+UNION
+
+- Removes duplicates
+- Slower
+- Extra processing
+
+------------------------------------------
+
+UNION ALL
+
+- Keeps duplicates
+- Faster
+- No duplicate checking
+
+Interview Answer:
+
+UNION ALL is generally faster because it skips duplicate elimination.
+
+==================================================
+8. WHEN TO USE UNION?
+==================================================
+
+Use UNION when duplicates are unwanted.
+
+Example:
+
+Customer records from multiple sources.
+
+Need unique customers.
+
+SELECT customer_id
+FROM system_a
+
+UNION
+
+SELECT customer_id
+FROM system_b;
+
+==================================================
+9. WHEN TO USE UNION ALL?
+==================================================
+
+Use UNION ALL when duplicates matter.
+
+Example:
+
+Sales transactions from two branches.
+
+SELECT amount
+FROM branch_a_sales
+
+UNION ALL
+
+SELECT amount
+FROM branch_b_sales;
+
+All transactions must remain.
+
+==================================================
+10. INTERSECT
+==================================================
+
+Returns only common records.
+
+Table A:
+
+| id |
+|----|
+| 1  |
+| 2  |
+| 3  |
+
+Table B:
+
+| id |
+|----|
+| 2  |
+| 3  |
+| 4  |
+
+Query:
+
+SELECT id
+FROM table_a
+
+INTERSECT
+
+SELECT id
+FROM table_b;
+
+Result:
+
+| id |
+|----|
+| 2  |
+| 3  |
+
+Interview Answer:
+
+INTERSECT returns rows present in both result sets.
+
+==================================================
+11. HOW INTERSECT WORKS
+==================================================
+
+Find records from Query 1.
+
+Find records from Query 2.
+
+Return only common rows.
+
+Similar to mathematical intersection.
+
+A ∩ B
+
+==================================================
+12. INTERSECT REAL PROJECT EXAMPLE
+==================================================
+
+Find customers who purchased from both websites.
+
+SELECT customer_id
+FROM website_a
+
+INTERSECT
+
+SELECT customer_id
+FROM website_b;
+
+Result:
+
+Customers common to both websites.
+
+==================================================
+13. EXCEPT
+==================================================
+
+Returns rows present in first query
+but not in second query.
+
+Table A:
+
+| id |
+|----|
+| 1  |
+| 2  |
+| 3  |
+
+Table B:
+
+| id |
+|----|
+| 2  |
+| 3  |
+| 4  |
+
+Query:
+
+SELECT id
+FROM table_a
+
+EXCEPT
+
+SELECT id
+FROM table_b;
+
+Result:
+
+| id |
+|----|
+| 1  |
+
+Interview Answer:
+
+EXCEPT returns records from first query that are absent in second query.
+
+==================================================
+14. EXCEPT REAL PROJECT EXAMPLE
+==================================================
+
+Find customers who registered
+but never placed orders.
+
+SELECT customer_id
+FROM customers
+
+EXCEPT
+
+SELECT customer_id
+FROM orders;
+
+Result:
+
+Customers without orders.
+
+==================================================
+15. EXCEPT VS NOT EXISTS
+==================================================
+
+Both can solve similar problems.
+
+EXCEPT:
+
+SELECT customer_id
+FROM customers
+
+EXCEPT
+
+SELECT customer_id
+FROM orders;
+
+------------------------------------------
+
+NOT EXISTS:
+
+SELECT customer_id
+FROM customers c
+WHERE NOT EXISTS
+(
+    SELECT 1
+    FROM orders o
+    WHERE o.customer_id = c.customer_id
+);
+
+Interview:
+
+NOT EXISTS is generally more flexible.
+
+==================================================
+16. MINUS (ORACLE)
+==================================================
+
+Oracle uses:
+
+MINUS
+
+instead of:
+
+EXCEPT
+
+Example:
+
+SELECT id FROM A
+
+MINUS
+
+SELECT id FROM B;
+
+Same result as EXCEPT.
+
+==================================================
+17. ORDER BY WITH UNION
+==================================================
+
+Wrong:
+
+SELECT id
+FROM table_a
+ORDER BY id
+
+UNION
+
+SELECT id
+FROM table_b;
+
+------------------------------------------
+
+Correct:
+
+SELECT id
+FROM table_a
+
+UNION
+
+SELECT id
+FROM table_b
+
+ORDER BY id;
+
+ORDER BY applies to final result set.
+
+==================================================
+18. COLUMN NAMES IN UNION
+==================================================
+
+Column names come from first SELECT.
+
+Example:
+
+SELECT emp_id AS id
+FROM employee
+
+UNION
+
+SELECT customer_id
+FROM customer;
+
+Final column name:
+
+id
+
+==================================================
+19. UNION WITH DIFFERENT TABLES
+==================================================
+
+Example:
+
+Current Employees
+
+| id | name |
+|----|------|
+| 1  | Amit |
+
+Former Employees
+
+| id | name |
+|----|------|
+| 2  | Rahul |
+
+Query:
+
+SELECT id,name
+FROM current_employee
+
+UNION ALL
+
+SELECT id,name
+FROM former_employee;
+
+Useful for historical reporting.
+
+==================================================
+20. PERFORMANCE COMPARISON
+==================================================
+
+Fastest:
+
+UNION ALL
+
+Because:
+
+No duplicate checking.
+
+------------------------------------------
+
+Slower:
+
+UNION
+
+Because:
+
+Database must remove duplicates.
+
+------------------------------------------
+
+INTERSECT
+
+Needs comparison between result sets.
+
+------------------------------------------
+
+EXCEPT
+
+Needs comparison between result sets.
+
+==================================================
+21. INTERNAL EXECUTION
+==================================================
+
+UNION
+
+Combine
+→ Sort/Hash
+→ Remove duplicates
+
+------------------------------------------
+
+UNION ALL
+
+Combine
+→ Return
+
+------------------------------------------
+
+INTERSECT
+
+Compare both sets
+→ Return common rows
+
+------------------------------------------
+
+EXCEPT
+
+Compare both sets
+→ Return unmatched rows
+
+==================================================
+22. COMMON INTERVIEW QUESTION
+==================================================
+
+Q. Why UNION ALL is faster than UNION?
+
+Answer:
+
+UNION removes duplicates,
+which requires sorting or hashing.
+
+UNION ALL simply appends results.
+
+==================================================
+23. COMMON INTERVIEW QUESTION
+==================================================
+
+Q. Difference between JOIN and UNION?
+
+JOIN:
+
+Combines columns.
+
+Example:
+
+Employee + Department.
+
+------------------------------------------
+
+UNION:
+
+Combines rows.
+
+Example:
+
+Current Employees + Former Employees.
+
+==================================================
+24. JOIN VS UNION EXAMPLE
+==================================================
+
+JOIN
+
+EMPLOYEE
+
+| emp_id | dept_id |
+
+DEPARTMENT
+
+| dept_id | dept_name |
+
+Output:
+
+Employee with department.
+
+------------------------------------------
+
+UNION
+
+CURRENT_EMPLOYEE
+
+FORMER_EMPLOYEE
+
+Output:
+
+Single list of employees.
+
+==================================================
+25. REAL PROJECT USE CASES
+==================================================
+
+1. Merge customer data
+2. Historical employee reports
+3. Multi-branch sales reports
+4. User activity reports
+5. Data migration validation
+6. Comparing systems
+7. Finding common users
+8. Finding missing records
+
+==================================================
+26. INTERVIEW PROBLEM 1
+==================================================
+
+Find common customers
+between two applications.
+
+SELECT customer_id
+FROM app1_users
+
+INTERSECT
+
+SELECT customer_id
+FROM app2_users;
+
+==================================================
+27. INTERVIEW PROBLEM 2
+==================================================
+
+Find users who signed up
+but never logged in.
+
+SELECT user_id
+FROM users
+
+EXCEPT
+
+SELECT user_id
+FROM login_history;
+
+==================================================
+28. INTERVIEW PROBLEM 3
+==================================================
+
+Combine current and archived orders.
+
+SELECT *
+FROM active_orders
+
+UNION ALL
+
+SELECT *
+FROM archived_orders;
+
+==================================================
+29. COMMON MISTAKES
+==================================================
+
+Mistake 1
+
+Different column count.
+
+------------------------------------------
+
+Mistake 2
+
+Incompatible datatypes.
+
+------------------------------------------
+
+Mistake 3
+
+Using UNION when UNION ALL is enough.
+
+Causes unnecessary performance overhead.
+
+------------------------------------------
+
+Mistake 4
+
+ORDER BY in wrong location.
+
+==================================================
+30. MOST ASKED INTERVIEW QUESTIONS
+==================================================
+
+1. What are Set Operators?
+2. UNION vs UNION ALL?
+3. Why is UNION slower?
+4. INTERSECT use case?
+5. EXCEPT use case?
+6. MINUS vs EXCEPT?
+7. JOIN vs UNION?
+8. Requirements for UNION?
+9. Why UNION ALL is faster?
+10. Can ORDER BY be used with UNION?
+11. Which column names appear in UNION result?
+12. How does UNION work internally?
+13. How does INTERSECT work internally?
+14. How does EXCEPT work internally?
+15. Real project use cases?
+
+==================================================
+31. INTERVIEW ANSWERS
+==================================================
+
+Q. UNION vs UNION ALL?
+
+UNION removes duplicates.
+
+UNION ALL keeps duplicates.
+
+UNION ALL is faster.
+
+------------------------------------------
+
+Q. JOIN vs UNION?
+
+JOIN combines columns.
+
+UNION combines rows.
+
+------------------------------------------
+
+Q. Why UNION slower?
+
+Because duplicate removal requires sorting or hashing.
+
+------------------------------------------
+
+Q. INTERSECT?
+
+Returns common rows.
+
+------------------------------------------
+
+Q. EXCEPT?
+
+Returns rows from first query that do not exist in second query.
+
+==================================================
+32. QUICK REVISION
+==================================================
+
+UNION
+    -> Combines rows
+    -> Removes duplicates
+
+UNION ALL
+    -> Combines rows
+    -> Keeps duplicates
+
+INTERSECT
+    -> Common rows
+
+EXCEPT
+    -> First query minus second query
+
+MINUS
+    -> Oracle equivalent of EXCEPT
+
+Fastest
+    -> UNION ALL
+
+JOIN
+    -> Combines columns
+
+UNION
+    -> Combines rows
+
+Most Asked:
+    -> UNION vs UNION ALL
+    -> JOIN vs UNION
+    -> INTERSECT
+    -> EXCEPT

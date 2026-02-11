@@ -1,0 +1,1010 @@
+/* @Author: Dynamic Duo Learners */
+
+==================================================
+1. WHAT IS CTE?
+==================================================
+
+CTE stands for Common Table Expression.
+
+A CTE is a temporary named result set that we can use inside a SQL query.
+
+It is created using the WITH keyword.
+
+Basic Syntax:
+
+WITH cte_name AS (
+    SELECT columns
+    FROM table_name
+)
+SELECT *
+FROM cte_name;
+
+Interview Answer:
+
+A CTE is a temporary named result set created using WITH clause and used within the execution of a single SQL statement.
+
+==================================================
+2. WHY DO WE NEED CTE?
+==================================================
+
+CTE helps to:
+
+1. Improve query readability
+2. Break complex queries into smaller parts
+3. Avoid repeating the same subquery
+4. Make debugging easier
+5. Write recursive queries
+6. Solve hierarchy problems
+7. Solve interview problems like top salary per department
+
+Without CTE, complex queries become difficult to read.
+With CTE, we can divide the query into logical blocks.
+
+==================================================
+3. SIMPLE CTE EXAMPLE
+==================================================
+
+EMPLOYEE table:
+
+| emp_id | emp_name | dept_id | salary |
+|--------|----------|---------|--------|
+| 101    | Amit     | 1       | 50000  |
+| 102    | Rahul    | 1       | 70000  |
+| 103    | Neha     | 2       | 80000  |
+| 104    | Pooja    | 2       | 40000  |
+
+Question:
+
+Find employees having salary greater than 60000.
+
+Query:
+
+WITH high_salary_employees AS (
+    SELECT emp_id,
+           emp_name,
+           salary
+    FROM employee
+    WHERE salary > 60000
+)
+SELECT *
+FROM high_salary_employees;
+
+Output:
+
+| emp_id | emp_name | salary |
+|--------|----------|--------|
+| 102    | Rahul    | 70000  |
+| 103    | Neha     | 80000  |
+
+==================================================
+4. CTE SCOPE
+==================================================
+
+A CTE exists only for one SQL statement.
+
+Example:
+
+WITH emp_cte AS (
+    SELECT *
+    FROM employee
+)
+SELECT *
+FROM emp_cte;
+
+After this query completes, emp_cte no longer exists.
+
+Important:
+
+CTE is not permanently stored in the database.
+
+Interview Answer:
+
+A CTE is temporary and available only during the execution of the query where it is defined.
+
+==================================================
+5. CTE VS SUBQUERY
+==================================================
+
+Subquery:
+
+SELECT *
+FROM (
+    SELECT emp_id,
+           emp_name,
+           salary
+    FROM employee
+    WHERE salary > 60000
+) x;
+
+CTE:
+
+WITH high_salary_employees AS (
+    SELECT emp_id,
+           emp_name,
+           salary
+    FROM employee
+    WHERE salary > 60000
+)
+SELECT *
+FROM high_salary_employees;
+
+Difference:
+
+CTE improves readability and can be referenced multiple times in the same query.
+
+Subquery is written inline and can become difficult to read when nested.
+
+Interview Answer:
+
+CTE and subquery can often solve the same problem, but CTE improves readability and is better for complex queries.
+
+==================================================
+6. CTE VS TEMP TABLE
+==================================================
+
+CTE:
+- Exists only for one query
+- Usually not physically stored as a table
+- Better for readability
+- Cannot be reused in another separate query
+
+Temporary Table:
+- Created temporarily in database session
+- Can be reused in multiple queries
+- Can have indexes
+- Useful for large intermediate data
+
+Interview Answer:
+
+CTE is query-scoped, while temporary table is session-scoped and can be reused across multiple statements.
+
+==================================================
+7. CTE VS VIEW
+==================================================
+
+CTE:
+- Temporary
+- Exists only for one query
+- Defined inside query
+
+View:
+- Stored database object
+- Can be reused
+- Acts like saved SQL query
+
+Interview Answer:
+
+CTE is temporary and query-scoped, while view is stored in database and reusable.
+
+==================================================
+8. MULTIPLE CTEs
+==================================================
+
+We can define multiple CTEs in one WITH clause.
+
+Syntax:
+
+WITH cte1 AS (
+    SELECT ...
+),
+cte2 AS (
+    SELECT ...
+)
+SELECT *
+FROM cte1
+JOIN cte2
+ON ...;
+
+Example:
+
+WITH dept_avg AS (
+    SELECT dept_id,
+           AVG(salary) AS avg_salary
+    FROM employee
+    GROUP BY dept_id
+),
+high_salary AS (
+    SELECT emp_id,
+           emp_name,
+           dept_id,
+           salary
+    FROM employee
+    WHERE salary > 60000
+)
+SELECT h.emp_name,
+       h.salary,
+       d.avg_salary
+FROM high_salary h
+JOIN dept_avg d
+ON h.dept_id = d.dept_id;
+
+==================================================
+9. CTE WITH AGGREGATE FUNCTIONS
+==================================================
+
+Question:
+
+Find departments where average salary is greater than 60000.
+
+Query:
+
+WITH dept_salary AS (
+    SELECT dept_id,
+           AVG(salary) AS avg_salary
+    FROM employee
+    GROUP BY dept_id
+)
+SELECT dept_id,
+       avg_salary
+FROM dept_salary
+WHERE avg_salary > 60000;
+
+Explanation:
+
+Step 1:
+CTE calculates department-wise average salary.
+
+Step 2:
+Outer query filters only departments having avg_salary > 60000.
+
+==================================================
+10. CTE WITH JOIN
+==================================================
+
+Question:
+
+Find department-wise employee count with department name.
+
+Query:
+
+WITH emp_count AS (
+    SELECT dept_id,
+           COUNT(*) AS total_employees
+    FROM employee
+    GROUP BY dept_id
+)
+SELECT d.dept_name,
+       e.total_employees
+FROM emp_count e
+JOIN department d
+ON e.dept_id = d.dept_id;
+
+==================================================
+11. CTE WITH WINDOW FUNCTION
+==================================================
+
+Very Important Interview Use Case
+
+Question:
+
+Find highest salary employee from each department.
+
+Query:
+
+WITH ranked_employees AS (
+    SELECT emp_id,
+           emp_name,
+           dept_id,
+           salary,
+           ROW_NUMBER() OVER (
+               PARTITION BY dept_id
+               ORDER BY salary DESC
+           ) AS rn
+    FROM employee
+)
+SELECT emp_id,
+       emp_name,
+       dept_id,
+       salary
+FROM ranked_employees
+WHERE rn = 1;
+
+Why CTE is needed?
+
+Window function result rn cannot be directly used in WHERE clause.
+So we calculate rn inside CTE and filter in outer query.
+
+==================================================
+12. TOP 3 SALARY PER DEPARTMENT USING CTE
+==================================================
+
+Question:
+
+Find top 3 salary employees from each department.
+
+Query:
+
+WITH ranked_employees AS (
+    SELECT emp_id,
+           emp_name,
+           dept_id,
+           salary,
+           DENSE_RANK() OVER (
+               PARTITION BY dept_id
+               ORDER BY salary DESC
+           ) AS salary_rank
+    FROM employee
+)
+SELECT emp_id,
+       emp_name,
+       dept_id,
+       salary
+FROM ranked_employees
+WHERE salary_rank <= 3;
+
+Interview Point:
+
+This is one of the most common CTE + Window Function interview problems.
+
+==================================================
+13. CTE WITH INSERT
+==================================================
+
+CTE can be used with INSERT.
+
+Example:
+
+Insert high salary employees into audit table.
+
+WITH high_salary_employees AS (
+    SELECT emp_id,
+           emp_name,
+           salary
+    FROM employee
+    WHERE salary > 80000
+)
+INSERT INTO employee_audit(emp_id, emp_name, salary)
+SELECT emp_id,
+       emp_name,
+       salary
+FROM high_salary_employees;
+
+==================================================
+14. CTE WITH UPDATE
+==================================================
+
+Example:
+
+Increase salary by 10% for employees whose department average is less than 50000.
+
+WITH low_avg_dept AS (
+    SELECT dept_id
+    FROM employee
+    GROUP BY dept_id
+    HAVING AVG(salary) < 50000
+)
+UPDATE employee
+SET salary = salary * 1.10
+WHERE dept_id IN (
+    SELECT dept_id
+    FROM low_avg_dept
+);
+
+==================================================
+15. CTE WITH DELETE
+==================================================
+
+Example:
+
+Delete duplicate rows while keeping one record.
+
+Assume employee table has duplicate email records.
+
+WITH duplicate_employees AS (
+    SELECT emp_id,
+           email,
+           ROW_NUMBER() OVER (
+               PARTITION BY email
+               ORDER BY emp_id
+           ) AS rn
+    FROM employee
+)
+DELETE FROM employee
+WHERE emp_id IN (
+    SELECT emp_id
+    FROM duplicate_employees
+    WHERE rn > 1
+);
+
+Interview Point:
+
+CTE with ROW_NUMBER is commonly used for duplicate cleanup.
+
+==================================================
+16. MATERIALIZED OR INLINE CTE
+==================================================
+
+How database treats CTE internally depends on database and version.
+
+Sometimes CTE is:
+- Inlined like subquery
+- Materialized as intermediate result
+
+PostgreSQL older versions often materialized CTE.
+PostgreSQL newer versions can inline CTE when possible.
+
+Interview Answer:
+
+CTE is mainly used for readability. Performance depends on database optimizer and query structure.
+
+==================================================
+17. RECURSIVE CTE
+==================================================
+
+Recursive CTE is used when a query needs to refer to itself.
+
+It is mainly used for hierarchical or tree-structured data.
+
+Examples:
+- Employee-manager hierarchy
+- Organization chart
+- Category-subcategory tree
+- Folder structure
+- Parent-child comments
+- Menu navigation
+
+Syntax:
+
+WITH RECURSIVE cte_name AS (
+    -- Anchor query
+    SELECT ...
+
+    UNION ALL
+
+    -- Recursive query
+    SELECT ...
+    FROM table_name t
+    JOIN cte_name c
+    ON ...
+)
+SELECT *
+FROM cte_name;
+
+==================================================
+18. PARTS OF RECURSIVE CTE
+==================================================
+
+Recursive CTE has two parts:
+
+1. Anchor Query
+2. Recursive Query
+
+Anchor Query:
+- Starting point
+- Executes first
+- Example: top-level manager
+
+Recursive Query:
+- Refers to the CTE itself
+- Executes repeatedly
+- Finds next level records
+
+UNION ALL combines anchor result and recursive result.
+
+==================================================
+19. EMPLOYEE HIERARCHY EXAMPLE
+==================================================
+
+EMPLOYEE table:
+
+| emp_id | emp_name | manager_id |
+|--------|----------|------------|
+| 1      | Amit     | NULL       |
+| 2      | Rahul    | 1          |
+| 3      | Neha     | 1          |
+| 4      | Pooja    | 2          |
+| 5      | Ravi     | 2          |
+| 6      | Suresh   | 3          |
+
+Hierarchy:
+
+Amit
+  Rahul
+    Pooja
+    Ravi
+  Neha
+    Suresh
+
+Question:
+
+Find all employees under Amit.
+
+Query:
+
+WITH RECURSIVE employee_hierarchy AS (
+    SELECT emp_id,
+           emp_name,
+           manager_id,
+           1 AS level
+    FROM employee
+    WHERE emp_id = 1
+
+    UNION ALL
+
+    SELECT e.emp_id,
+           e.emp_name,
+           e.manager_id,
+           eh.level + 1
+    FROM employee e
+    JOIN employee_hierarchy eh
+    ON e.manager_id = eh.emp_id
+)
+SELECT *
+FROM employee_hierarchy;
+
+Output concept:
+
+| emp_id | emp_name | manager_id | level |
+|--------|----------|------------|-------|
+| 1      | Amit     | NULL       | 1     |
+| 2      | Rahul    | 1          | 2     |
+| 3      | Neha     | 1          | 2     |
+| 4      | Pooja    | 2          | 3     |
+| 5      | Ravi     | 2          | 3     |
+| 6      | Suresh   | 3          | 3     |
+
+==================================================
+20. HOW RECURSIVE CTE WORKS STEP BY STEP
+==================================================
+
+Step 1:
+
+Anchor query runs.
+
+Returns:
+Amit
+
+Step 2:
+
+Recursive query finds employees whose manager_id = Amit's emp_id.
+
+Returns:
+Rahul, Neha
+
+Step 3:
+
+Recursive query finds employees whose manager_id is Rahul or Neha.
+
+Returns:
+Pooja, Ravi, Suresh
+
+Step 4:
+
+No more matching employees.
+
+Recursion stops.
+
+==================================================
+21. CATEGORY TREE EXAMPLE
+==================================================
+
+CATEGORY table:
+
+| category_id | category_name | parent_id |
+|-------------|---------------|-----------|
+| 1           | Electronics   | NULL      |
+| 2           | Mobiles       | 1         |
+| 3           | Laptops       | 1         |
+| 4           | Android       | 2         |
+| 5           | iPhone        | 2         |
+
+Question:
+
+Find full category tree under Electronics.
+
+Query:
+
+WITH RECURSIVE category_tree AS (
+    SELECT category_id,
+           category_name,
+           parent_id,
+           1 AS level
+    FROM category
+    WHERE category_id = 1
+
+    UNION ALL
+
+    SELECT c.category_id,
+           c.category_name,
+           c.parent_id,
+           ct.level + 1
+    FROM category c
+    JOIN category_tree ct
+    ON c.parent_id = ct.category_id
+)
+SELECT *
+FROM category_tree;
+
+==================================================
+22. GENERATE NUMBERS USING RECURSIVE CTE
+==================================================
+
+Question:
+
+Generate numbers from 1 to 10.
+
+Query:
+
+WITH RECURSIVE numbers AS (
+    SELECT 1 AS n
+
+    UNION ALL
+
+    SELECT n + 1
+    FROM numbers
+    WHERE n < 10
+)
+SELECT *
+FROM numbers;
+
+Output:
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+
+==================================================
+23. STOP CONDITION
+==================================================
+
+Recursive CTE must have a stop condition.
+
+Example:
+
+WHERE n < 10
+
+Without stop condition, recursion may run forever or until database recursion limit is reached.
+
+Interview Answer:
+
+Recursive CTE must have a termination condition to avoid infinite recursion.
+
+==================================================
+24. UNION VS UNION ALL IN RECURSIVE CTE
+==================================================
+
+Usually UNION ALL is used in recursive CTE.
+
+Why?
+
+UNION removes duplicates and has extra overhead.
+UNION ALL is faster.
+
+But if duplicate paths can cause infinite recursion, UNION may help remove duplicates.
+
+Interview Answer:
+
+UNION ALL is commonly used in recursive CTE because it is faster and does not remove duplicates.
+
+==================================================
+25. RECURSIVE CTE USE CASES
+==================================================
+
+1. Employee-manager hierarchy
+2. Folder and file structure
+3. Product category tree
+4. Organization chart
+5. Menu navigation
+6. Parent-child comments
+7. Graph traversal
+8. Bill of materials
+9. Generate date series
+10. Generate number series
+
+==================================================
+26. COMMON MISTAKES
+==================================================
+
+Mistake 1:
+
+Thinking CTE is stored permanently.
+
+Wrong.
+
+CTE exists only for one query.
+
+------------------------------------------
+
+Mistake 2:
+
+Using CTE expecting automatic performance improvement.
+
+Wrong.
+
+CTE improves readability. Performance depends on optimizer.
+
+------------------------------------------
+
+Mistake 3:
+
+Recursive CTE without stop condition.
+
+Can cause infinite recursion.
+
+------------------------------------------
+
+Mistake 4:
+
+Using UNION instead of UNION ALL unnecessarily.
+
+UNION has duplicate removal overhead.
+
+------------------------------------------
+
+Mistake 5:
+
+Trying to reuse CTE in another separate SQL statement.
+
+CTE is available only in the statement where it is defined.
+
+==================================================
+27. IMPORTANT INTERVIEW PROBLEM 1
+==================================================
+
+Find second highest salary using CTE.
+
+WITH ranked_salary AS (
+    SELECT emp_name,
+           salary,
+           DENSE_RANK() OVER (
+               ORDER BY salary DESC
+           ) AS rnk
+    FROM employee
+)
+SELECT emp_name,
+       salary
+FROM ranked_salary
+WHERE rnk = 2;
+
+==================================================
+28. IMPORTANT INTERVIEW PROBLEM 2
+==================================================
+
+Find top salary employee per department.
+
+WITH ranked_employees AS (
+    SELECT emp_name,
+           dept_id,
+           salary,
+           ROW_NUMBER() OVER (
+               PARTITION BY dept_id
+               ORDER BY salary DESC
+           ) AS rn
+    FROM employee
+)
+SELECT emp_name,
+       dept_id,
+       salary
+FROM ranked_employees
+WHERE rn = 1;
+
+==================================================
+29. IMPORTANT INTERVIEW PROBLEM 3
+==================================================
+
+Find duplicate emails.
+
+WITH duplicate_email AS (
+    SELECT email,
+           COUNT(*) AS total
+    FROM employee
+    GROUP BY email
+)
+SELECT email
+FROM duplicate_email
+WHERE total > 1;
+
+==================================================
+30. IMPORTANT INTERVIEW PROBLEM 4
+==================================================
+
+Delete duplicate emails but keep one.
+
+WITH duplicates AS (
+    SELECT emp_id,
+           email,
+           ROW_NUMBER() OVER (
+               PARTITION BY email
+               ORDER BY emp_id
+           ) AS rn
+    FROM employee
+)
+DELETE FROM employee
+WHERE emp_id IN (
+    SELECT emp_id
+    FROM duplicates
+    WHERE rn > 1
+);
+
+==================================================
+31. IMPORTANT INTERVIEW PROBLEM 5
+==================================================
+
+Find complete manager hierarchy.
+
+WITH RECURSIVE hierarchy AS (
+    SELECT emp_id,
+           emp_name,
+           manager_id,
+           1 AS level
+    FROM employee
+    WHERE manager_id IS NULL
+
+    UNION ALL
+
+    SELECT e.emp_id,
+           e.emp_name,
+           e.manager_id,
+           h.level + 1
+    FROM employee e
+    JOIN hierarchy h
+    ON e.manager_id = h.emp_id
+)
+SELECT *
+FROM hierarchy
+ORDER BY level;
+
+==================================================
+32. PERFORMANCE TIPS
+==================================================
+
+CTE can improve readability but not always performance.
+
+Tips:
+
+1. Do not assume CTE is faster than subquery.
+2. Check execution plan.
+3. Avoid unnecessary CTEs.
+4. Use indexes on columns used in joins/filtering.
+5. Avoid selecting extra columns.
+6. For large reusable data, temp table may be better.
+7. For recursion, always add stop condition.
+
+==================================================
+33. MOST ASKED INTERVIEW QUESTIONS
+==================================================
+
+1. What is CTE?
+2. Why use CTE?
+3. What is WITH clause?
+4. CTE vs Subquery?
+5. CTE vs Temp Table?
+6. CTE vs View?
+7. What is Recursive CTE?
+8. Parts of Recursive CTE?
+9. What is Anchor Query?
+10. What is Recursive Query?
+11. Why stop condition is important?
+12. UNION vs UNION ALL in Recursive CTE?
+13. Can CTE be used with INSERT/UPDATE/DELETE?
+14. Can CTE improve performance?
+15. How to find hierarchy using Recursive CTE?
+16. How to delete duplicates using CTE?
+17. How to get top salary per department using CTE?
+18. Can we reuse CTE in multiple statements?
+19. What is Derived Table?
+20. When should we use Temp Table instead of CTE?
+
+==================================================
+34. INTERVIEW ANSWERS
+==================================================
+
+Q1. What is CTE?
+
+A CTE is a temporary named result set defined using WITH clause and used within a single SQL statement.
+
+------------------------------------------
+
+Q2. Why use CTE?
+
+CTE improves readability, breaks complex queries into smaller parts, avoids repeated subqueries, and supports recursive queries.
+
+------------------------------------------
+
+Q3. CTE vs Subquery?
+
+Both can solve similar problems. CTE is more readable and can be referenced multiple times within the same query. Subquery is inline and can become difficult to read when nested.
+
+------------------------------------------
+
+Q4. CTE vs Temp Table?
+
+CTE exists only for one query. Temp table exists for session or transaction and can be reused in multiple queries.
+
+------------------------------------------
+
+Q5. What is Recursive CTE?
+
+Recursive CTE is a CTE that refers to itself and is used for hierarchical data like employee-manager tree.
+
+------------------------------------------
+
+Q6. What are two parts of Recursive CTE?
+
+1. Anchor Query
+2. Recursive Query
+
+------------------------------------------
+
+Q7. Why stop condition is important?
+
+Without stop condition, recursion may continue indefinitely or until database recursion limit is reached.
+
+------------------------------------------
+
+Q8. Does CTE improve performance?
+
+Not always. CTE mainly improves readability. Performance depends on database optimizer and query plan.
+
+------------------------------------------
+
+Q9. Can CTE be used with UPDATE and DELETE?
+
+Yes. CTE can be used with SELECT, INSERT, UPDATE, and DELETE.
+
+------------------------------------------
+
+Q10. What is Anchor Query?
+
+Anchor query is the starting point of recursive CTE. It runs first.
+
+==================================================
+35. QUICK REVISION
+==================================================
+
+CTE
+    -> Common Table Expression
+    -> Temporary named result set
+    -> Created using WITH
+
+Scope
+    -> Only one SQL statement
+
+Benefits
+    -> Readability
+    -> Avoid repeated subquery
+    -> Better structure
+    -> Supports recursion
+
+WITH
+    -> Keyword used to define CTE
+
+Multiple CTE
+    -> Multiple named blocks in one query
+
+Recursive CTE
+    -> CTE that refers to itself
+
+Anchor Query
+    -> Starting query
+
+Recursive Query
+    -> Query that repeatedly refers to CTE
+
+Stop Condition
+    -> Prevents infinite recursion
+
+CTE vs Subquery
+    -> CTE is more readable
+
+CTE vs Temp Table
+    -> CTE query-scoped
+    -> Temp table session-scoped
+
+CTE vs View
+    -> CTE temporary
+    -> View stored database object
+
+Most Important Interview Problems:
+    -> Top salary per department
+    -> Second highest salary
+    -> Delete duplicates
+    -> Employee hierarchy
+    -> Category tree

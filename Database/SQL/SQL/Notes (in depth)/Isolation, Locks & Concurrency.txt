@@ -1,0 +1,1576 @@
+
+/* @Author: Dynamic Duo Learners */
+
+==================================================
+1. WHAT IS CONCURRENCY IN DATABASE?
+==================================================
+
+Concurrency means multiple transactions are running at the same time.
+
+Example:
+
+Transaction 1:
+User A transfers money.
+
+Transaction 2:
+User B checks balance.
+
+Transaction 3:
+System deducts EMI.
+
+All these operations may happen at the same time.
+
+Database must handle them safely.
+
+Interview Answer:
+
+Concurrency means multiple transactions execute simultaneously, and the database must maintain consistency while allowing parallel access.
+
+==================================================
+2. WHY CONCURRENCY CONTROL IS NEEDED?
+==================================================
+
+Concurrency control is needed because simultaneous transactions can cause data issues.
+
+Problems:
+1. Dirty Read
+2. Non-Repeatable Read
+3. Phantom Read
+4. Lost Update
+5. Deadlock
+6. Inconsistent Read
+
+Without concurrency control:
+- Bank balance can become wrong
+- Inventory can go negative
+- Same seat can be booked twice
+- Same coupon can be used multiple times
+
+==================================================
+3. SAMPLE ACCOUNT TABLE
+==================================================
+
+ACCOUNT table:
+
+| account_id | customer_name | balance |
+|------------|---------------|---------|
+| 1          | Amit          | 5000    |
+| 2          | Rahul         | 3000    |
+
+We will use this table for many examples.
+
+==================================================
+4. DIRTY READ
+==================================================
+
+Dirty Read happens when one transaction reads uncommitted data from another transaction.
+
+Example:
+
+Transaction A:
+
+BEGIN;
+
+UPDATE account
+SET balance = 1000
+WHERE account_id = 1;
+
+But Transaction A has not committed yet.
+
+Transaction B:
+
+SELECT balance
+FROM account
+WHERE account_id = 1;
+
+Transaction B reads 1000.
+
+Now Transaction A does:
+
+ROLLBACK;
+
+Actual balance becomes 5000 again.
+
+Problem:
+
+Transaction B read wrong temporary data.
+
+Interview Answer:
+
+Dirty Read occurs when a transaction reads data that has been modified by another transaction but not yet committed.
+
+==================================================
+5. WHY DIRTY READ IS DANGEROUS?
+==================================================
+
+Dirty read is dangerous because data may later rollback.
+
+Real example:
+
+Payment transaction updates status to SUCCESS but has not committed.
+
+Another service reads SUCCESS and ships product.
+
+Then payment transaction rolls back.
+
+Product shipped without payment.
+
+==================================================
+6. NON-REPEATABLE READ
+==================================================
+
+Non-Repeatable Read happens when a transaction reads the same row twice and gets different values because another transaction updated and committed that row in between.
+
+Example:
+
+Initial balance:
+
+Account 1 = 5000
+
+Transaction A:
+
+BEGIN;
+
+SELECT balance
+FROM account
+WHERE account_id = 1;
+
+Result:
+
+5000
+
+Transaction B:
+
+BEGIN;
+
+UPDATE account
+SET balance = 7000
+WHERE account_id = 1;
+
+COMMIT;
+
+Transaction A again:
+
+SELECT balance
+FROM account
+WHERE account_id = 1;
+
+Result:
+
+7000
+
+Problem:
+
+Same transaction got different values for same row.
+
+Interview Answer:
+
+Non-repeatable read happens when the same row is read twice in one transaction and returns different values due to another committed transaction.
+
+==================================================
+7. PHANTOM READ
+==================================================
+
+Phantom Read happens when same query returns different number of rows because another transaction inserted or deleted rows and committed.
+
+Example:
+
+Transaction A:
+
+BEGIN;
+
+SELECT COUNT(*)
+FROM orders
+WHERE amount > 1000;
+
+Result:
+
+5
+
+Transaction B:
+
+BEGIN;
+
+INSERT INTO orders(order_id, amount)
+VALUES(101, 2000);
+
+COMMIT;
+
+Transaction A again:
+
+SELECT COUNT(*)
+FROM orders
+WHERE amount > 1000;
+
+Result:
+
+6
+
+Problem:
+
+A new row appeared like a phantom.
+
+Interview Answer:
+
+Phantom Read happens when repeated execution of same query returns different set of rows due to insert/delete by another committed transaction.
+
+==================================================
+8. LOST UPDATE
+==================================================
+
+Lost Update happens when two transactions read same value and update it, and one update overwrites the other.
+
+Example:
+
+Initial balance:
+
+Account 1 = 5000
+
+Transaction A reads balance = 5000
+Transaction B reads balance = 5000
+
+Transaction A adds 1000:
+balance = 6000
+
+Transaction B adds 500:
+balance = 5500
+
+If B commits after A, final balance becomes 5500.
+
+A's update is lost.
+
+Correct balance should be 6500.
+
+Interview Answer:
+
+Lost Update occurs when two transactions update same data and one transaction overwrites the changes of another.
+
+==================================================
+9. WRITE SKEW ADVANCED
+==================================================
+
+Write Skew is an advanced concurrency anomaly.
+
+It happens when two transactions read overlapping data and update different rows, but together they violate business rule.
+
+Example:
+
+Rule:
+At least one doctor must be on duty.
+
+Doctor table:
+
+| doctor_id | name | on_duty |
+|-----------|------|---------|
+| 1         | A    | true    |
+| 2         | B    | true    |
+
+Transaction A:
+Checks both doctors.
+Sees doctor B is on duty.
+Sets doctor A off duty.
+
+Transaction B:
+Checks both doctors.
+Sees doctor A is on duty.
+Sets doctor B off duty.
+
+Both commit.
+
+Final result:
+No doctor on duty.
+
+Business rule violated.
+
+This can happen under some isolation levels.
+
+==================================================
+10. ISOLATION LEVELS
+==================================================
+
+Isolation levels define how much one transaction is isolated from other concurrent transactions.
+
+Main isolation levels:
+
+1. Read Uncommitted
+2. Read Committed
+3. Repeatable Read
+4. Serializable
+
+Higher isolation:
+- More consistency
+- Less concurrency
+- More locking/conflict
+
+Lower isolation:
+- More concurrency
+- More anomalies possible
+
+==================================================
+11. READ UNCOMMITTED
+==================================================
+
+Read Uncommitted is the lowest isolation level.
+
+It allows reading uncommitted data.
+
+Possible problems:
+- Dirty Read
+- Non-Repeatable Read
+- Phantom Read
+- Lost Update
+
+Usually not recommended.
+
+Interview Answer:
+
+Read Uncommitted allows dirty reads and provides the weakest isolation.
+
+FYI - PostgreSQL Note:
+
+PostgreSQL does not truly support dirty reads.
+In PostgreSQL, READ UNCOMMITTED behaves like READ COMMITTED.
+
+==================================================
+12. READ COMMITTED
+==================================================
+
+Read Committed means a transaction can read only committed data.
+
+It prevents:
+- Dirty Read
+
+It can still allow:
+- Non-Repeatable Read
+- Phantom Read
+
+PostgreSQL default isolation level: (Learn it in PostgreSQL)
+READ COMMITTED
+
+Example:
+
+Transaction A updates balance but does not commit.
+
+Transaction B tries to read balance.
+
+Transaction B will see old committed value, not uncommitted value.
+
+Interview Answer:
+
+Read Committed prevents dirty reads by allowing only committed data to be read, but non-repeatable reads and phantom reads may still occur.
+
+==================================================
+13. READ COMMITTED EXAMPLE
+==================================================
+
+Initial balance = 5000
+
+Transaction A:
+
+BEGIN;
+
+UPDATE account
+SET balance = 7000
+WHERE account_id = 1;
+
+Not committed yet.
+
+Transaction B:
+
+SELECT balance
+FROM account
+WHERE account_id = 1;
+
+Result:
+
+5000
+
+Transaction B sees last committed value.
+
+Now Transaction A commits.
+
+Transaction B runs same select again:
+
+SELECT balance
+FROM account
+WHERE account_id = 1;
+
+Result:
+
+7000
+
+So non-repeatable read can happen.
+
+==================================================
+14. REPEATABLE READ
+==================================================
+
+Repeatable Read means if a transaction reads a row once, repeated reads of same row return same value during that transaction.
+
+It prevents:
+- Dirty Read
+- Non-Repeatable Read
+
+It may allow:
+- Phantom Read depending on database
+
+PostgreSQL Note: (Learn it in PostgreSQL)
+
+PostgreSQL Repeatable Read also prevents phantom reads using MVCC snapshot behavior.
+
+Interview Answer:
+
+Repeatable Read ensures that repeated reads of same row within a transaction return same result.
+
+==================================================
+15. REPEATABLE READ EXAMPLE
+==================================================
+
+Initial balance = 5000
+
+Transaction A:
+
+BEGIN ISOLATION LEVEL REPEATABLE READ;
+
+SELECT balance
+FROM account
+WHERE account_id = 1;
+
+Result:
+
+5000
+
+Transaction B:
+
+BEGIN;
+
+UPDATE account
+SET balance = 7000
+WHERE account_id = 1;
+
+COMMIT;
+
+Transaction A again:
+
+SELECT balance
+FROM account
+WHERE account_id = 1;
+
+Result:
+
+5000
+
+Transaction A still sees same snapshot.
+
+==================================================
+16. SERIALIZABLE
+==================================================
+
+Serializable is the strongest isolation level.
+
+It makes concurrent transactions behave as if they were executed one after another.
+
+It prevents:
+- Dirty Read
+- Non-Repeatable Read
+- Phantom Read
+- Many serialization anomalies
+
+Downside:
+- Lower concurrency
+- More conflicts
+- May require transaction retry
+
+Interview Answer:
+
+Serializable is the highest isolation level where transactions execute as if they were serial, preventing most concurrency anomalies.
+
+==================================================
+17. ISOLATION LEVEL COMPARISON
+==================================================
+
+Read Uncommitted:
+- Dirty Read: Possible
+- Non-Repeatable Read: Possible
+- Phantom Read: Possible
+
+Read Committed:
+- Dirty Read: Prevented
+- Non-Repeatable Read: Possible
+- Phantom Read: Possible
+
+Repeatable Read:
+- Dirty Read: Prevented
+- Non-Repeatable Read: Prevented
+- Phantom Read: Depends on database
+- PostgreSQL prevents phantoms under Repeatable Read (Learn it in PostgreSQL)
+
+Serializable:
+- Dirty Read: Prevented
+- Non-Repeatable Read: Prevented
+- Phantom Read: Prevented
+
+==================================================
+18. POSTGRESQL DEFAULT ISOLATION LEVEL (Learn it in PostgreSQL)
+==================================================
+
+PostgreSQL default isolation level is:
+
+READ COMMITTED
+
+Meaning:
+
+Each SQL statement sees a snapshot of committed data as of the start of that statement.
+
+Interview Answer:
+
+PostgreSQL default isolation level is Read Committed.
+
+==================================================
+19. HOW TO SET ISOLATION LEVEL (Learn it in PostgreSQL)
+==================================================
+
+PostgreSQL:
+
+BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;
+
+BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+
+BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+
+Example:
+
+BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+
+SELECT *
+FROM account;
+
+COMMIT;
+
+==================================================
+20. LOCKING FUNDAMENTALS
+==================================================
+
+Locks are used to control concurrent access to data.
+
+Locks prevent multiple transactions from modifying same data in unsafe ways.
+
+Common lock types:
+1. Shared Lock
+2. Exclusive Lock
+3. Row Lock
+4. Table Lock
+5. Intent Lock
+6. Advisory Lock
+
+==================================================
+21. SHARED LOCK
+==================================================
+
+Shared Lock is used for reading.
+
+Multiple transactions can hold shared locks on same data.
+
+But exclusive lock cannot be acquired while shared locks exist.
+
+Simple meaning:
+
+Many users can read same row at same time.
+
+Interview Answer:
+
+Shared lock allows multiple transactions to read the same data but prevents modification while lock is held.
+
+==================================================
+22. EXCLUSIVE LOCK
+==================================================
+
+Exclusive Lock is used for writing.
+
+Only one transaction can hold exclusive lock on a row.
+
+Other transactions cannot update/delete the same row until lock is released.
+
+Example:
+
+UPDATE account
+SET balance = balance - 1000
+WHERE account_id = 1;
+
+This takes exclusive lock on that row.
+
+Interview Answer:
+
+Exclusive lock allows one transaction to modify data and blocks other conflicting operations.
+
+==================================================
+23. ROW LEVEL LOCKING
+==================================================
+
+Row-level lock locks only selected rows.
+
+Example:
+
+UPDATE account
+SET balance = balance - 1000
+WHERE account_id = 1;
+
+Only account_id = 1 row is locked.
+
+Other account rows can still be updated.
+
+Advantage:
+- Better concurrency
+- Less blocking
+
+Interview Answer:
+
+Row-level locking locks only affected rows, allowing other rows in the table to be accessed concurrently.
+
+==================================================
+24. TABLE LEVEL LOCKING
+==================================================
+
+Table-level lock locks entire table.
+
+It may happen during:
+- DDL operations
+- ALTER TABLE
+- DROP TABLE
+- TRUNCATE
+- Some bulk operations
+
+Problem:
+- Blocks many users
+- Reduces concurrency
+
+Interview Answer:
+
+Table-level lock locks the entire table and can block other operations, so it should be used carefully.
+
+==================================================
+25. SELECT FOR UPDATE
+==================================================
+
+SELECT FOR UPDATE is used to lock selected rows for update.
+
+Example:
+
+BEGIN;
+
+SELECT *
+FROM account
+WHERE account_id = 1
+FOR UPDATE;
+
+UPDATE account
+SET balance = balance - 1000
+WHERE account_id = 1;
+
+COMMIT;
+
+While transaction is open, another transaction cannot update same row.
+
+Interview Answer:
+
+SELECT FOR UPDATE locks selected rows so other transactions cannot update or delete them until the current transaction completes.
+
+==================================================
+26. BANKING EXAMPLE WITH SELECT FOR UPDATE
+==================================================
+
+Problem:
+
+Two withdrawals happen at same time.
+
+Balance = 5000
+
+Transaction A wants to withdraw 4000.
+Transaction B wants to withdraw 3000.
+
+Without locking:
+Both may read 5000 and allow withdrawal.
+Final balance can become wrong.
+
+With SELECT FOR UPDATE:
+
+Transaction A locks account row.
+
+Transaction B waits.
+
+Transaction A updates balance and commits.
+
+Transaction B then reads updated balance and decides if withdrawal is allowed.
+
+==================================================
+27. NOWAIT (Learn it in PostgreSQL)
+==================================================
+
+NOWAIT means do not wait if row is locked.
+
+Example:
+
+SELECT *
+FROM account
+WHERE account_id = 1
+FOR UPDATE NOWAIT;
+
+If row is already locked, database immediately throws error.
+
+Use case:
+- Avoid waiting
+- Fail fast
+- Retry later
+
+==================================================
+28. SKIP LOCKED (Learn it in PostgreSQL)
+==================================================
+
+SKIP LOCKED skips rows that are already locked.
+
+Example:
+
+SELECT *
+FROM jobs
+WHERE status = 'PENDING'
+FOR UPDATE SKIP LOCKED
+LIMIT 10;
+
+Use case:
+- Job queues
+- Multiple workers processing tasks
+- Avoiding duplicate processing
+
+Interview Answer:
+
+SKIP LOCKED allows concurrent workers to skip locked rows and process other available rows.
+
+==================================================
+29. OPTIMISTIC LOCKING
+==================================================
+
+Optimistic Locking assumes conflicts are rare.
+
+It does not lock row while reading.
+
+Instead, it checks version during update.
+
+Example table:
+
+| product_id | stock | version |
+|------------|-------|---------|
+| 1          | 10    | 1       |
+
+Transaction A reads stock=10, version=1.
+Transaction B reads stock=10, version=1.
+
+Transaction A updates:
+
+UPDATE product
+SET stock = 9,
+    version = version + 1
+WHERE product_id = 1
+AND version = 1;
+
+Success.
+
+Transaction B tries:
+
+UPDATE product
+SET stock = 8,
+    version = version + 1
+WHERE product_id = 1
+AND version = 1;
+
+Fails because version is now 2.
+
+Interview Answer:
+
+Optimistic locking uses a version column to detect concurrent updates without locking rows during read.
+
+==================================================
+30. OPTIMISTIC LOCKING IN JPA
+==================================================
+
+JPA Example:
+
+@Version
+private Long version;
+
+Entity:
+
+@Entity
+public class Product {
+
+    @Id
+    private Long id;
+
+    private Integer stock;
+
+    @Version
+    private Long version;
+}
+
+If two transactions update same entity, JPA checks version.
+
+If version changed, JPA throws OptimisticLockException.
+
+==================================================
+31. WHEN TO USE OPTIMISTIC LOCKING
+==================================================
+
+Use Optimistic Locking when:
+
+1. Conflicts are rare
+2. Read operations are high
+3. Write conflicts are low
+4. You want better concurrency
+5. You do not want long locks
+
+Examples:
+- Product details update
+- User profile update
+- CMS content edit
+- Configuration updates
+
+==================================================
+32. PESSIMISTIC LOCKING
+==================================================
+
+Pessimistic Locking assumes conflicts are likely.
+
+It locks data before update.
+
+Example:
+
+SELECT *
+FROM product
+WHERE product_id = 1
+FOR UPDATE;
+
+Other transactions must wait.
+
+Interview Answer:
+
+Pessimistic locking locks data before modification to prevent concurrent updates.
+
+==================================================
+33. PESSIMISTIC LOCKING IN JPA
+==================================================
+
+JPA Example:
+
+@Lock(LockModeType.PESSIMISTIC_WRITE)
+@Query("SELECT p FROM Product p WHERE p.id = :id")
+Product findProductForUpdate(@Param("id") Long id);
+
+Lock modes:
+
+PESSIMISTIC_READ
+PESSIMISTIC_WRITE
+PESSIMISTIC_FORCE_INCREMENT
+
+==================================================
+34. OPTIMISTIC VS PESSIMISTIC LOCKING
+==================================================
+
+Optimistic Locking:
+- No lock during read
+- Uses version check
+- Better concurrency
+- Good when conflicts are rare
+- Conflict detected at commit/update time
+
+Pessimistic Locking:
+- Locks row immediately
+- Other transactions wait
+- Good when conflicts are frequent
+- Can cause blocking/deadlocks
+- Prevents conflict before update
+
+Interview Answer:
+
+Optimistic locking detects conflicts using versioning, while pessimistic locking prevents conflicts by locking data.
+
+==================================================
+35. LOST UPDATE PREVENTION
+==================================================
+
+Lost update can be prevented by:
+
+1. Row locks
+2. SELECT FOR UPDATE
+3. Optimistic locking with version column
+4. Serializable isolation
+5. Atomic update queries
+
+Example atomic update:
+
+UPDATE product
+SET stock = stock - 1
+WHERE product_id = 1
+AND stock > 0;
+
+This is safer than read-then-update.
+
+==================================================
+36. DEADLOCK
+==================================================
+
+Deadlock happens when two or more transactions wait for each other forever.
+
+Example:
+
+Transaction A:
+Locks account 1.
+Wants account 2.
+
+Transaction B:
+Locks account 2.
+Wants account 1.
+
+Both wait.
+
+Database detects deadlock and aborts one transaction.
+
+Interview Answer:
+
+Deadlock occurs when two transactions hold locks and wait for each other's locks, causing circular waiting.
+
+==================================================
+37. DEADLOCK STEP BY STEP
+==================================================
+
+Transaction A:
+
+BEGIN;
+
+UPDATE account
+SET balance = balance - 100
+WHERE account_id = 1;
+
+Now A locks account 1.
+
+Transaction B:
+
+BEGIN;
+
+UPDATE account
+SET balance = balance - 100
+WHERE account_id = 2;
+
+Now B locks account 2.
+
+Transaction A:
+
+UPDATE account
+SET balance = balance + 100
+WHERE account_id = 2;
+
+A waits for B.
+
+Transaction B:
+
+UPDATE account
+SET balance = balance + 100
+WHERE account_id = 1;
+
+B waits for A.
+
+Deadlock.
+
+==================================================
+38. HOW TO AVOID DEADLOCK
+==================================================
+
+1. Access tables/rows in same order
+2. Keep transactions short
+3. Avoid user interaction inside transaction
+4. Use proper indexes
+5. Retry transaction on deadlock
+6. Lock only necessary rows
+7. Avoid long-running transactions
+
+Example:
+
+Always update lower account_id first.
+
+If transferring between accounts 1 and 2:
+Lock account 1 first, then account 2.
+
+All transactions follow same order.
+
+==================================================
+39. MVCC (Learn it in PostgreSQL - Section 39-47)
+==================================================
+
+MVCC stands for Multi-Version Concurrency Control.
+
+PostgreSQL uses MVCC.
+
+Simple meaning:
+
+Instead of blocking readers when writers update data,
+database keeps multiple versions of rows.
+
+Readers see a consistent snapshot.
+
+Writers create new row versions.
+
+Benefits:
+- Readers do not block writers
+- Writers do not block readers
+- Better concurrency
+
+Interview Answer:
+
+MVCC allows multiple versions of data so transactions can read consistent snapshots without blocking writers.
+
+==================================================
+40. MVCC SIMPLE EXAMPLE 
+==================================================
+
+Initial row:
+
+account_id = 1
+balance = 5000
+
+Transaction A updates balance to 7000 but not committed.
+
+PostgreSQL creates a new row version.
+
+Old version:
+balance = 5000
+
+New version:
+balance = 7000
+
+Transaction B reads.
+
+Since A has not committed, B sees old committed version:
+
+5000
+
+==================================================
+41. XMIN AND XMAX BASICS
+==================================================
+
+PostgreSQL internally tracks row visibility using transaction IDs.
+
+xmin:
+Transaction ID that created the row version.
+
+xmax:
+Transaction ID that deleted or replaced the row version.
+
+Basic idea:
+
+A row version is visible to a transaction only if it is valid according to that transaction's snapshot.
+
+Interview Level Answer:
+
+xmin and xmax are PostgreSQL internal transaction IDs used by MVCC to determine row version visibility.
+
+==================================================
+42. SNAPSHOT IN POSTGRESQL
+==================================================
+
+A snapshot defines what data a transaction can see.
+
+In READ COMMITTED:
+
+Each statement gets a new snapshot.
+
+In REPEATABLE READ:
+
+Entire transaction uses same snapshot.
+
+Interview Answer:
+
+Snapshot is a view of committed data visible to a transaction at a specific time.
+
+==================================================
+43. READ COMMITTED IN POSTGRESQL
+==================================================
+
+In PostgreSQL READ COMMITTED:
+
+Each SQL statement sees data committed before that statement started.
+
+Example:
+
+Transaction A reads balance.
+Transaction B updates and commits.
+Transaction A reads again.
+
+Second read can see new value.
+
+So non-repeatable read can happen.
+
+==================================================
+44. REPEATABLE READ IN POSTGRESQL
+==================================================
+
+In PostgreSQL REPEATABLE READ:
+
+Transaction sees same snapshot for entire transaction.
+
+If another transaction commits changes after this transaction started, those changes are not visible.
+
+This prevents:
+- Non-repeatable reads
+- Phantom reads in PostgreSQL
+
+==================================================
+45. SERIALIZABLE IN POSTGRESQL
+==================================================
+
+Serializable provides strongest isolation.
+
+PostgreSQL uses Serializable Snapshot Isolation.
+
+If PostgreSQL detects unsafe concurrent pattern, it may throw serialization failure.
+
+Application should retry transaction.
+
+Common error:
+
+could not serialize access due to concurrent update
+
+Interview Answer:
+
+In Serializable isolation, PostgreSQL may abort one transaction with serialization failure, and application should retry.
+
+==================================================
+46. SPRING @TRANSACTIONAL ISOLATION
+==================================================
+
+In Spring:
+
+@Transactional(isolation = Isolation.READ_COMMITTED)
+public void processPayment() {
+    // business logic
+}
+
+Common isolation values:
+
+Isolation.DEFAULT
+Isolation.READ_UNCOMMITTED
+Isolation.READ_COMMITTED
+Isolation.REPEATABLE_READ
+Isolation.SERIALIZABLE
+
+Important:
+
+Isolation.DEFAULT means use database default.
+
+For PostgreSQL:
+DEFAULT = READ COMMITTED
+
+==================================================
+47. SPRING ISOLATION NOTES
+==================================================
+
+READ_UNCOMMITTED:
+PostgreSQL treats it like READ_COMMITTED.
+
+READ_COMMITTED:
+Default in PostgreSQL.
+
+REPEATABLE_READ:
+Same snapshot during transaction.
+
+SERIALIZABLE:
+Strongest but may require retries.
+
+==================================================
+48. REAL PROJECT SCENARIO - INVENTORY
+==================================================
+
+Problem:
+
+Product stock = 1
+
+Two users buy same product at same time.
+
+Without locking:
+Both orders may succeed.
+Stock becomes negative.
+
+Solution 1:
+
+Atomic update:
+
+UPDATE product
+SET stock = stock - 1
+WHERE product_id = 1
+AND stock > 0;
+
+Check affected rows.
+
+If affected rows = 1:
+Order can continue.
+
+If affected rows = 0:
+Out of stock.
+
+Solution 2:
+
+SELECT FOR UPDATE:
+
+BEGIN;
+
+SELECT stock
+FROM product
+WHERE product_id = 1
+FOR UPDATE;
+
+Then update stock safely.
+
+COMMIT;
+
+==================================================
+49. REAL PROJECT SCENARIO - SEAT BOOKING
+==================================================
+
+Problem:
+
+Two users book same seat.
+
+Solution:
+
+Use unique constraint:
+
+UNIQUE(show_id, seat_no)
+
+And transaction.
+
+Even if both try:
+Only one insert succeeds.
+
+Example:
+
+INSERT INTO booking(show_id, seat_no, user_id)
+VALUES(1, 'A1', 101);
+
+If another user tries same seat:
+Unique constraint fails.
+
+Interview Point:
+
+Database constraints are very important for concurrency safety.
+
+==================================================
+50. REAL PROJECT SCENARIO - COUPON USAGE
+==================================================
+
+Problem:
+
+Same coupon should be used only once by one user.
+
+Solution:
+
+Use unique constraint:
+
+UNIQUE(user_id, coupon_id)
+
+Or lock coupon row while usage update.
+
+Atomic update:
+
+UPDATE coupon
+SET used_count = used_count + 1
+WHERE coupon_id = 1
+AND used_count < max_usage;
+
+==================================================
+51. COMMON MISTAKES
+==================================================
+
+Mistake 1:
+
+Thinking transaction alone prevents all concurrency problems.
+
+Wrong.
+
+Isolation level and locking strategy also matter.
+
+------------------------------------------
+
+Mistake 2:
+
+Using high isolation everywhere.
+
+Problem:
+Reduces performance and increases conflicts.
+
+------------------------------------------
+
+Mistake 3:
+
+Not handling serialization failures.
+
+Serializable isolation may require retry.
+
+------------------------------------------
+
+Mistake 4:
+
+Doing read-then-update without lock/version.
+
+Can cause lost update.
+
+------------------------------------------
+
+Mistake 5:
+
+Keeping transaction open during external API call.
+
+Example:
+Payment API call inside DB transaction.
+
+This can hold locks for long time.
+
+------------------------------------------
+
+Mistake 6:
+
+Not using unique constraints.
+
+Application-level checks alone are not enough for concurrency safety.
+
+==================================================
+52. BEST PRACTICES
+==================================================
+
+1. Keep transactions short
+2. Choose correct isolation level
+3. Use row-level locks only when needed
+4. Use optimistic locking for low conflict systems
+5. Use pessimistic locking for high conflict systems
+6. Use atomic update queries
+7. Use unique constraints for business rules
+8. Avoid external API calls inside transactions
+9. Handle deadlock retries
+10. Handle serialization failure retries
+11. Use indexes to reduce lock time
+12. Always test concurrent scenarios
+
+==================================================
+53. MOST ASKED INTERVIEW QUESTIONS
+==================================================
+
+1. What is concurrency?
+2. What is Dirty Read?
+3. What is Non-Repeatable Read?
+4. What is Phantom Read?
+5. What is Lost Update?
+6. Explain isolation levels.
+7. Read Committed vs Repeatable Read?
+8. Repeatable Read vs Serializable?
+9. What is PostgreSQL default isolation level? (Learn it in PostgreSQL)
+10. Does PostgreSQL support Dirty Read? (Learn it in PostgreSQL)
+11. What is Shared Lock?
+12. What is Exclusive Lock?
+13. Row lock vs Table lock?
+14. What is SELECT FOR UPDATE?
+15. What is NOWAIT?
+16. What is SKIP LOCKED?
+17. What is Optimistic Locking?
+18. What is Pessimistic Locking?
+19. Optimistic vs Pessimistic Locking?
+20. What is @Version in JPA?
+21. What is Deadlock?
+22. How to avoid Deadlock?
+23. What is MVCC?
+24. Why PostgreSQL uses MVCC? (Learn it in PostgreSQL)
+25. What is Snapshot?
+26. What are xmin and xmax? (Learn it in PostgreSQL)
+27. What happens in Serializable isolation?
+28. Why retry is needed in Serializable isolation?
+29. How to prevent double booking?
+30. How to prevent negative stock?
+
+==================================================
+54. INTERVIEW ANSWERS
+==================================================
+
+Q1. What is Dirty Read?
+
+Dirty Read happens when a transaction reads uncommitted data from another transaction.
+
+------------------------------------------
+
+Q2. What is Non-Repeatable Read?
+
+It happens when the same row is read twice in one transaction and returns different values because another transaction updated and committed it.
+
+------------------------------------------
+
+Q3. What is Phantom Read?
+
+It happens when the same query returns different number of rows due to insert/delete by another committed transaction.
+
+------------------------------------------
+
+Q4. What is Lost Update?
+
+Lost Update occurs when two transactions update same data and one update overwrites the other.
+
+------------------------------------------
+
+Q5. What is Read Committed?
+
+Read Committed allows reading only committed data. It prevents dirty reads but may allow non-repeatable reads and phantom reads.
+
+------------------------------------------
+
+Q6. What is Repeatable Read?
+
+Repeatable Read ensures repeated reads of same row return same value within transaction.
+
+------------------------------------------
+
+Q7. What is Serializable?
+
+Serializable is the strongest isolation level where transactions behave as if executed one after another.
+
+------------------------------------------
+
+Q8. PostgreSQL default isolation level? (Learn it in PostgreSQL)
+
+PostgreSQL default isolation level is Read Committed.
+
+------------------------------------------
+
+Q9. What is SELECT FOR UPDATE?
+
+SELECT FOR UPDATE locks selected rows so other transactions cannot update/delete them until current transaction ends.
+
+------------------------------------------
+
+Q10. Optimistic vs Pessimistic Locking?
+
+Optimistic locking uses version column to detect conflicts.
+Pessimistic locking locks rows to prevent conflicts.
+
+------------------------------------------
+
+Q11. What is Deadlock?
+
+Deadlock occurs when transactions hold locks and wait for each other's locks in a circular manner.
+
+------------------------------------------
+
+Q12. How to avoid Deadlock?
+
+Keep transactions short, access rows in consistent order, use indexes, and retry on deadlock.
+
+------------------------------------------
+
+Q13. What is MVCC?
+
+MVCC allows multiple row versions so readers can see consistent snapshots without blocking writers.
+
+------------------------------------------
+
+Q14. What is Snapshot?
+
+Snapshot is a consistent view of committed data visible to a transaction at a specific time.
+
+------------------------------------------
+
+Q15. How to prevent double booking?
+
+Use transactions with unique constraints and/or row-level locks.
+
+==================================================
+55. QUICK REVISION
+==================================================
+
+Concurrency
+    -> Multiple transactions at same time
+
+Dirty Read
+    -> Read uncommitted data
+
+Non-Repeatable Read
+    -> Same row gives different values
+
+Phantom Read
+    -> Same query gives different row count
+
+Lost Update
+    -> One update overwrites another
+
+Isolation Levels
+    -> Read Uncommitted
+    -> Read Committed
+    -> Repeatable Read
+    -> Serializable
+
+PostgreSQL Default (Learn it in PostgreSQL)
+    -> Read Committed
+
+Read Uncommitted
+    -> Weakest isolation
+    -> PostgreSQL treats like Read Committed (Learn it in PostgreSQL)
+
+Read Committed
+    -> Prevents Dirty Read
+
+Repeatable Read
+    -> Prevents Non-Repeatable Read
+    -> PostgreSQL also prevents Phantom Read (Learn it in PostgreSQL)
+
+Serializable
+    -> Strongest isolation
+    -> May need retry
+
+Shared Lock
+    -> Read lock
+
+Exclusive Lock
+    -> Write lock
+
+Row Lock
+    -> Locks selected rows
+
+Table Lock
+    -> Locks full table
+
+SELECT FOR UPDATE
+    -> Locks selected rows for update
+
+NOWAIT
+    -> Fail immediately if locked
+
+SKIP LOCKED
+    -> Skip locked rows
+
+Optimistic Locking
+    -> Version column
+    -> Good for low conflict
+
+Pessimistic Locking
+    -> Locks row
+    -> Good for high conflict
+
+Deadlock
+    -> Circular waiting
+
+MVCC
+    -> Multi-Version Concurrency Control
+
+Snapshot
+    -> Consistent view of data
+
+Most Important Interview Topics:
+    -> Dirty Read / Non-Repeatable Read / Phantom Read
+    -> Isolation Levels
+    -> SELECT FOR UPDATE
+    -> Optimistic vs Pessimistic Locking
+    -> Deadlock
+    -> MVCC
+    -> PostgreSQL Read Committed (Learn it in PostgreSQL)
+    -> Inventory and Seat Booking examples

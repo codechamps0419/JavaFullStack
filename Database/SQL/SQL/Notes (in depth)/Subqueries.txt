@@ -1,0 +1,1317 @@
+/* @Author: Dynamic Duo Learners */
+
+==================================================
+1. WHAT IS A SUBQUERY?
+==================================================
+
+A Subquery is a query written inside another SQL query.
+
+It is also called:
+- Nested Query
+- Inner Query
+
+The main query is called:
+- Outer Query
+
+General Syntax:
+
+SELECT column_name
+FROM table_name
+WHERE column_name = (
+    SELECT column_name
+    FROM another_table
+);
+
+The inner query gives a result.
+That result is used by the outer query.
+
+Simple meaning:
+
+A subquery is used when one query depends on the result of another query.
+
+==================================================
+2. WHY DO WE NEED SUBQUERIES?
+==================================================
+
+Subqueries are useful when we need to:
+
+1. Compare data with calculated result
+2. Filter data based on another table
+3. Find records above average
+4. Find records that exist in another table
+5. Find records that do not exist in another table
+6. Use query result as temporary table
+7. Write cleaner logic for interview problems
+
+Real examples:
+- Find employees earning more than average salary
+- Find employees working in IT department
+- Find customers who placed orders
+- Find customers who never placed orders
+- Find products never purchased
+- Find departments having employees
+- Find top salary employees
+
+Interview Answer:
+
+A subquery is used when the output of one query is required as input for another query.
+
+==================================================
+3. SAMPLE TABLES
+==================================================
+
+EMPLOYEE table:
+
+| emp_id | emp_name | dept_id | salary |
+|--------|----------|---------|--------|
+| 101    | Amit     | 1       | 50000  |
+| 102    | Rahul    | 1       | 60000  |
+| 103    | Neha     | 2       | 70000  |
+| 104    | Pooja    | 2       | 40000  |
+| 105    | Ravi     | 3       | 90000  |
+| 106    | Suresh   | NULL    | 30000  |
+
+DEPARTMENT table:
+
+| dept_id | dept_name |
+|---------|-----------|
+| 1       | IT        |
+| 2       | HR        |
+| 3       | Finance   |
+| 4       | Admin     |
+
+CUSTOMER table:
+
+| customer_id | customer_name |
+|-------------|---------------|
+| 1           | Amit          |
+| 2           | Rahul         |
+| 3           | Neha          |
+
+ORDERS table:
+
+| order_id | customer_id | amount |
+|----------|-------------|--------|
+| 101      | 1           | 5000   |
+| 102      | 1           | 7000   |
+| 103      | 2           | 3000   |
+
+==================================================
+4. TYPES OF SUBQUERIES
+==================================================
+
+Main types:
+
+1. Single Row Subquery
+2. Multi Row Subquery
+3. Multiple Column Subquery
+4. Correlated Subquery
+5. Non-Correlated Subquery
+6. Subquery in WHERE clause
+7. Subquery in SELECT clause
+8. Subquery in FROM clause
+9. Nested Subquery
+
+==================================================
+5. SINGLE ROW SUBQUERY
+==================================================
+
+A Single Row Subquery returns only one value.
+
+Example:
+
+Find employees earning more than average salary.
+
+Query:
+
+SELECT emp_name,
+       salary
+FROM employee
+WHERE salary > (
+    SELECT AVG(salary)
+    FROM employee
+);
+
+Step 1:
+
+Inner query runs first:
+
+SELECT AVG(salary)
+FROM employee;
+
+Assume average salary = 56666
+
+Step 2:
+
+Outer query becomes:
+
+SELECT emp_name,
+       salary
+FROM employee
+WHERE salary > 56666;
+
+Output:
+
+| emp_name | salary |
+|----------|--------|
+| Rahul    | 60000  |
+| Neha     | 70000  |
+| Ravi     | 90000  |
+
+Interview Answer:
+
+A single row subquery returns one value and is commonly used with operators like =, >, <, >=, <=.
+
+==================================================
+6. SINGLE ROW SUBQUERY OPERATORS
+==================================================
+
+Single row subqueries can use:
+
+= 
+>
+<
+>=
+<=
+<>
+
+Example:
+
+Find employee having highest salary.
+
+SELECT emp_name,
+       salary
+FROM employee
+WHERE salary = (
+    SELECT MAX(salary)
+    FROM employee
+);
+
+Output:
+
+| emp_name | salary |
+|----------|--------|
+| Ravi     | 90000  |
+
+==================================================
+7. COMMON ERROR IN SINGLE ROW SUBQUERY
+==================================================
+
+Wrong query:
+
+SELECT emp_name
+FROM employee
+WHERE dept_id = (
+    SELECT dept_id
+    FROM department
+);
+
+Problem:
+
+Inner query returns multiple dept_id values.
+
+But = expects only one value.
+
+Error usually means:
+
+Subquery returned more than one row.
+
+Correct query:
+
+SELECT emp_name
+FROM employee
+WHERE dept_id IN (
+    SELECT dept_id
+    FROM department
+);
+
+Interview Point:
+
+Use = when subquery returns one value.
+Use IN when subquery returns multiple values.
+
+==================================================
+8. MULTI ROW SUBQUERY
+==================================================
+
+A Multi Row Subquery returns multiple rows.
+
+It is commonly used with:
+
+- IN
+- NOT IN
+- ANY
+- ALL
+- EXISTS
+
+Example:
+
+Find employees who belong to departments available in department table.
+
+SELECT emp_name,
+       dept_id
+FROM employee
+WHERE dept_id IN (
+    SELECT dept_id
+    FROM department
+);
+
+Output:
+
+Employees having matching dept_id.
+
+Suresh is not returned because dept_id is NULL.
+
+==================================================
+9. IN OPERATOR WITH SUBQUERY
+==================================================
+
+IN checks whether a value is present in the list returned by the subquery.
+
+Example:
+
+Find employees working in IT or HR department.
+
+SELECT emp_name,
+       dept_id
+FROM employee
+WHERE dept_id IN (
+    SELECT dept_id
+    FROM department
+    WHERE dept_name IN ('IT', 'HR')
+);
+
+Inner query returns:
+
+1, 2
+
+Outer query fetches employees where dept_id is 1 or 2.
+
+Output:
+
+| emp_name | dept_id |
+|----------|---------|
+| Amit     | 1       |
+| Rahul    | 1       |
+| Neha     | 2       |
+| Pooja    | 2       |
+
+Interview Answer:
+
+IN is used when subquery returns multiple values and we need to match any one of them.
+
+==================================================
+10. NOT IN OPERATOR WITH SUBQUERY
+==================================================
+
+NOT IN returns records that are not present in subquery result.
+
+Example:
+
+Find employees whose department is not available in IT and HR.
+
+SELECT emp_name,
+       dept_id
+FROM employee
+WHERE dept_id NOT IN (
+    SELECT dept_id
+    FROM department
+    WHERE dept_name IN ('IT', 'HR')
+);
+
+Important Warning:
+
+NOT IN behaves unexpectedly when subquery returns NULL.
+
+Example:
+
+WHERE dept_id NOT IN (1, 2, NULL)
+
+This can return no rows because NULL means unknown.
+
+Interview Point:
+
+Be careful with NOT IN if subquery can return NULL.
+NOT EXISTS is safer in many cases.
+
+==================================================
+11. EXISTS SUBQUERY
+==================================================
+
+EXISTS checks whether the subquery returns at least one row.
+
+It returns:
+- TRUE if subquery returns rows
+- FALSE if subquery returns no rows
+
+Example:
+
+Find departments that have employees.
+
+SELECT d.dept_name
+FROM department d
+WHERE EXISTS (
+    SELECT 1
+    FROM employee e
+    WHERE e.dept_id = d.dept_id
+);
+
+Output:
+
+| dept_name |
+|-----------|
+| IT        |
+| HR        |
+| Finance   |
+
+Admin is not returned because no employee belongs to Admin.
+
+Important:
+
+SELECT 1 is used because we do not need actual data.
+We only check whether row exists.
+
+Interview Answer:
+
+EXISTS is used to check whether related records exist. It stops checking after finding the first matching row.
+
+==================================================
+12. NOT EXISTS SUBQUERY
+==================================================
+
+NOT EXISTS checks records that do not have matching rows.
+
+Example:
+
+Find departments without employees.
+
+SELECT d.dept_name
+FROM department d
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM employee e
+    WHERE e.dept_id = d.dept_id
+);
+
+Output:
+
+| dept_name |
+|-----------|
+| Admin     |
+
+Real project examples:
+- Customers without orders
+- Products never sold
+- Departments without employees
+- Users without roles
+
+==================================================
+13. CUSTOMER WITHOUT ORDERS - IMPORTANT EXAMPLE
+==================================================
+
+Question:
+
+Find customers who never placed any order.
+
+Using NOT EXISTS:
+
+SELECT c.customer_id,
+       c.customer_name
+FROM customer c
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM orders o
+    WHERE o.customer_id = c.customer_id
+);
+
+Output:
+
+| customer_id | customer_name |
+|-------------|---------------|
+| 3           | Neha          |
+
+Interview:
+
+This is a very common SQL interview problem.
+
+==================================================
+14. EXISTS VS IN
+==================================================
+
+IN:
+- Compares a value with a list of values
+- Good when subquery returns small result
+- Can have issues with NULL when using NOT IN
+
+EXISTS:
+- Checks whether related row exists
+- Good for large datasets
+- Stops after finding first match
+- Usually safer with NULL cases
+
+Example using IN:
+
+SELECT emp_name
+FROM employee
+WHERE dept_id IN (
+    SELECT dept_id
+    FROM department
+);
+
+Example using EXISTS:
+
+SELECT e.emp_name
+FROM employee e
+WHERE EXISTS (
+    SELECT 1
+    FROM department d
+    WHERE d.dept_id = e.dept_id
+);
+
+Interview Answer:
+
+IN compares values, while EXISTS checks for existence of rows. EXISTS is often preferred for large datasets and correlated checks.
+
+==================================================
+15. NOT EXISTS VS NOT IN
+==================================================
+
+NOT IN can fail logically if subquery returns NULL.
+
+Example:
+
+SELECT customer_name
+FROM customer
+WHERE customer_id NOT IN (
+    SELECT customer_id
+    FROM orders
+);
+
+If orders.customer_id contains NULL, result may become unexpected.
+
+Safer query:
+
+SELECT c.customer_name
+FROM customer c
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM orders o
+    WHERE o.customer_id = c.customer_id
+);
+
+Interview Answer:
+
+NOT EXISTS is generally safer than NOT IN because NOT IN can behave unexpectedly when NULL values are present.
+
+==================================================
+16. ANY OPERATOR
+==================================================
+
+ANY compares a value with any value returned by subquery.
+
+Condition becomes true if it matches at least one value.
+
+Example:
+
+Find employees whose salary is greater than any employee from dept_id 1.
+
+SELECT emp_name,
+       salary
+FROM employee
+WHERE salary > ANY (
+    SELECT salary
+    FROM employee
+    WHERE dept_id = 1
+);
+
+Dept 1 salaries:
+
+50000, 60000
+
+salary > ANY means:
+
+salary > 50000 OR salary > 60000
+
+So employees having salary greater than 50000 will match.
+
+Interview Answer:
+
+ANY means the condition should be true for at least one value returned by the subquery.
+
+==================================================
+17. ALL OPERATOR
+==================================================
+
+ALL compares a value with all values returned by subquery.
+
+Condition becomes true only if it satisfies every value.
+
+Example:
+
+Find employees whose salary is greater than all employees from dept_id 1.
+
+SELECT emp_name,
+       salary
+FROM employee
+WHERE salary > ALL (
+    SELECT salary
+    FROM employee
+    WHERE dept_id = 1
+);
+
+Dept 1 salaries:
+
+50000, 60000
+
+salary > ALL means:
+
+salary > 50000 AND salary > 60000
+
+So employees having salary greater than 60000 will match.
+
+Output:
+
+| emp_name | salary |
+|----------|--------|
+| Neha     | 70000  |
+| Ravi     | 90000  |
+
+Interview Answer:
+
+ALL means the condition should be true for every value returned by the subquery.
+
+==================================================
+18. ANY VS ALL
+==================================================
+
+ANY:
+- At least one condition should match
+- Less strict
+
+ALL:
+- All conditions should match
+- More strict
+
+Example:
+
+salary > ANY (50000, 60000)
+Means salary should be greater than at least one value.
+
+salary > ALL (50000, 60000)
+Means salary should be greater than every value.
+
+==================================================
+19. CORRELATED SUBQUERY
+==================================================
+
+Very Important Interview Topic
+
+A Correlated Subquery depends on the outer query.
+
+It uses a value from the outer query inside the inner query.
+
+It runs once for each row of the outer query.
+
+Example:
+
+Find employees earning more than their department average salary.
+
+SELECT e1.emp_name,
+       e1.dept_id,
+       e1.salary
+FROM employee e1
+WHERE e1.salary > (
+    SELECT AVG(e2.salary)
+    FROM employee e2
+    WHERE e2.dept_id = e1.dept_id
+);
+
+Explanation:
+
+For each employee:
+1. Take employee dept_id
+2. Calculate average salary of that department
+3. Compare employee salary with department average
+
+Output:
+
+| emp_name | dept_id | salary |
+|----------|---------|--------|
+| Rahul    | 1       | 60000  |
+| Neha     | 2       | 70000  |
+
+Department 1:
+Amit = 50000
+Rahul = 60000
+Average = 55000
+Rahul is above average.
+
+Department 2:
+Neha = 70000
+Pooja = 40000
+Average = 55000
+Neha is above average.
+
+Interview Answer:
+
+A correlated subquery is a subquery that depends on the outer query and executes once for each row of the outer query.
+
+==================================================
+20. CORRELATED SUBQUERY FLOW
+==================================================
+
+Query:
+
+SELECT e1.emp_name
+FROM employee e1
+WHERE e1.salary > (
+    SELECT AVG(e2.salary)
+    FROM employee e2
+    WHERE e2.dept_id = e1.dept_id
+);
+
+Flow:
+
+Outer row 1:
+Amit, dept_id = 1
+Inner query calculates average salary for dept_id 1.
+Amit salary compared with dept average.
+
+Outer row 2:
+Rahul, dept_id = 1
+Inner query calculates average salary for dept_id 1.
+Rahul salary compared with dept average.
+
+Outer row 3:
+Neha, dept_id = 2
+Inner query calculates average salary for dept_id 2.
+Neha salary compared with dept average.
+
+This continues for each outer row.
+
+==================================================
+21. NON-CORRELATED SUBQUERY
+==================================================
+
+A Non-Correlated Subquery does not depend on the outer query.
+
+It can execute independently.
+
+Example:
+
+SELECT emp_name,
+       salary
+FROM employee
+WHERE salary > (
+    SELECT AVG(salary)
+    FROM employee
+);
+
+Inner query:
+
+SELECT AVG(salary)
+FROM employee;
+
+This query does not need any value from outer query.
+
+Interview Answer:
+
+A non-correlated subquery is independent and usually executes once.
+
+==================================================
+22. CORRELATED VS NON-CORRELATED SUBQUERY
+==================================================
+
+Correlated Subquery:
+- Depends on outer query
+- Executes for every outer row
+- Can be slower
+- Used for row-wise comparison
+
+Non-Correlated Subquery:
+- Independent query
+- Executes once
+- Usually faster
+- Used for fixed comparison
+
+Example Non-Correlated:
+
+Find employees above company average salary.
+
+Example Correlated:
+
+Find employees above department average salary.
+
+==================================================
+23. SUBQUERY IN WHERE CLAUSE
+==================================================
+
+Most common use.
+
+Example:
+
+Find employees from IT department.
+
+SELECT emp_name
+FROM employee
+WHERE dept_id = (
+    SELECT dept_id
+    FROM department
+    WHERE dept_name = 'IT'
+);
+
+Works only if IT returns one dept_id.
+
+If multiple rows possible, use IN.
+
+==================================================
+24. SUBQUERY IN SELECT CLAUSE
+==================================================
+
+A subquery can be used in SELECT to show calculated values.
+
+Example:
+
+Show each employee with company average salary.
+
+SELECT emp_name,
+       salary,
+       (
+           SELECT AVG(salary)
+           FROM employee
+       ) AS company_avg_salary
+FROM employee;
+
+Output:
+
+| emp_name | salary | company_avg_salary |
+|----------|--------|--------------------|
+| Amit     | 50000  | 56666              |
+| Rahul    | 60000  | 56666              |
+
+Use case:
+- Show total count beside each row
+- Show average comparison
+- Report calculations
+
+Interview Point:
+
+Subquery in SELECT should usually return one value per outer row.
+
+==================================================
+25. SUBQUERY IN FROM CLAUSE
+==================================================
+
+Subquery in FROM clause creates a temporary result set.
+
+It is also called:
+- Derived Table
+- Inline View
+
+Example:
+
+Find departments where average salary is greater than 50000.
+
+SELECT dept_id,
+       avg_salary
+FROM (
+    SELECT dept_id,
+           AVG(salary) AS avg_salary
+    FROM employee
+    GROUP BY dept_id
+) dept_avg
+WHERE avg_salary > 50000;
+
+Inner query result:
+
+| dept_id | avg_salary |
+|---------|------------|
+| 1       | 55000      |
+| 2       | 55000      |
+| 3       | 90000      |
+
+Outer query filters avg_salary > 50000.
+
+Interview Answer:
+
+A subquery in FROM clause acts like a temporary table for the outer query.
+
+==================================================
+26. MULTIPLE COLUMN SUBQUERY
+==================================================
+
+A Multiple Column Subquery returns more than one column.
+
+Example:
+
+Find employees who have highest salary in each department.
+
+SELECT emp_name,
+       dept_id,
+       salary
+FROM employee
+WHERE (dept_id, salary) IN (
+    SELECT dept_id,
+           MAX(salary)
+    FROM employee
+    GROUP BY dept_id
+);
+
+Output:
+
+| emp_name | dept_id | salary |
+|----------|---------|--------|
+| Rahul    | 1       | 60000  |
+| Neha     | 2       | 70000  |
+| Ravi     | 3       | 90000  |
+
+Interview:
+
+This type is commonly used for group-wise maximum problems.
+
+==================================================
+27. NESTED SUBQUERY
+==================================================
+
+Nested Subquery means subquery inside another subquery.
+
+Example:
+
+Find employees who work in the department managed by Amit.
+
+Assume department has manager_id.
+
+SELECT emp_name
+FROM employee
+WHERE dept_id = (
+    SELECT dept_id
+    FROM department
+    WHERE manager_id = (
+        SELECT emp_id
+        FROM employee
+        WHERE emp_name = 'Amit'
+    )
+);
+
+Interview Point:
+
+Nested subqueries are valid but too much nesting reduces readability.
+
+==================================================
+28. SUBQUERY WITH UPDATE
+==================================================
+
+Subqueries can be used with UPDATE.
+
+Example:
+
+Increase salary by 10% for employees working in IT department.
+
+UPDATE employee
+SET salary = salary * 1.10
+WHERE dept_id = (
+    SELECT dept_id
+    FROM department
+    WHERE dept_name = 'IT'
+);
+
+Interview:
+
+Subqueries are not only used with SELECT.
+They can also be used with UPDATE and DELETE.
+
+==================================================
+29. SUBQUERY WITH DELETE
+==================================================
+
+Example:
+
+Delete employees who belong to inactive departments.
+
+DELETE FROM employee
+WHERE dept_id IN (
+    SELECT dept_id
+    FROM department
+    WHERE status = 'INACTIVE'
+);
+
+Real project usage:
+- Cleanup data
+- Delete orphan records
+- Archive old records
+
+==================================================
+30. SUBQUERY VS JOIN
+==================================================
+
+Both can sometimes solve the same problem.
+
+Example:
+
+Find employees working in IT.
+
+Using Subquery:
+
+SELECT emp_name
+FROM employee
+WHERE dept_id = (
+    SELECT dept_id
+    FROM department
+    WHERE dept_name = 'IT'
+);
+
+Using JOIN:
+
+SELECT e.emp_name
+FROM employee e
+JOIN department d
+ON e.dept_id = d.dept_id
+WHERE d.dept_name = 'IT';
+
+When to use JOIN:
+- Need columns from multiple tables
+- Combining related data
+- Better readability in many cases
+
+When to use Subquery:
+- Need filtering based on another query
+- Need comparison with aggregate result
+- Need EXISTS / NOT EXISTS logic
+
+Interview Answer:
+
+JOIN is generally used to combine data from multiple tables, while subquery is used when one query result is needed for filtering or comparison.
+
+==================================================
+31. SUBQUERY PERFORMANCE
+==================================================
+
+Subqueries can become slow when:
+
+1. Correlated subquery runs for many rows
+2. Inner query scans large table repeatedly
+3. Filtering columns are not indexed
+4. Too many nested subqueries are used
+5. Subquery returns huge result set
+
+Optimization Tips:
+
+1. Use indexes on filtering columns
+2. Replace correlated subquery with JOIN when possible
+3. Use EXISTS instead of IN for large datasets
+4. Avoid SELECT *
+5. Use EXPLAIN / EXPLAIN ANALYZE
+6. Avoid unnecessary nesting
+
+==================================================
+32. IMPORTANT INTERVIEW PROBLEM 1
+==================================================
+
+Find second highest salary.
+
+Method 1:
+
+SELECT MAX(salary)
+FROM employee
+WHERE salary < (
+    SELECT MAX(salary)
+    FROM employee
+);
+
+Explanation:
+
+Inner query finds highest salary.
+Outer query finds highest salary below the maximum.
+
+==================================================
+33. IMPORTANT INTERVIEW PROBLEM 2
+==================================================
+
+Find employees earning more than average salary.
+
+SELECT emp_name,
+       salary
+FROM employee
+WHERE salary > (
+    SELECT AVG(salary)
+    FROM employee
+);
+
+==================================================
+34. IMPORTANT INTERVIEW PROBLEM 3
+==================================================
+
+Find employees earning more than department average.
+
+SELECT e1.emp_name,
+       e1.dept_id,
+       e1.salary
+FROM employee e1
+WHERE e1.salary > (
+    SELECT AVG(e2.salary)
+    FROM employee e2
+    WHERE e2.dept_id = e1.dept_id
+);
+
+This is a correlated subquery.
+
+==================================================
+35. IMPORTANT INTERVIEW PROBLEM 4
+==================================================
+
+Find customers who placed at least one order.
+
+SELECT c.customer_id,
+       c.customer_name
+FROM customer c
+WHERE EXISTS (
+    SELECT 1
+    FROM orders o
+    WHERE o.customer_id = c.customer_id
+);
+
+==================================================
+36. IMPORTANT INTERVIEW PROBLEM 5
+==================================================
+
+Find customers who never placed an order.
+
+SELECT c.customer_id,
+       c.customer_name
+FROM customer c
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM orders o
+    WHERE o.customer_id = c.customer_id
+);
+
+==================================================
+37. IMPORTANT INTERVIEW PROBLEM 6
+==================================================
+
+Find highest salary employee in each department.
+
+SELECT emp_name,
+       dept_id,
+       salary
+FROM employee
+WHERE (dept_id, salary) IN (
+    SELECT dept_id,
+           MAX(salary)
+    FROM employee
+    GROUP BY dept_id
+);
+
+Alternative solution can be done using window functions.
+
+==================================================
+38. COMMON MISTAKES IN SUBQUERIES
+==================================================
+
+Mistake 1:
+
+Using = when subquery returns multiple rows.
+
+Wrong:
+
+WHERE dept_id = (
+    SELECT dept_id
+    FROM department
+);
+
+Correct:
+
+WHERE dept_id IN (
+    SELECT dept_id
+    FROM department
+);
+
+------------------------------------------
+
+Mistake 2:
+
+Using NOT IN when subquery can return NULL.
+
+Better:
+
+Use NOT EXISTS.
+
+------------------------------------------
+
+Mistake 3:
+
+Writing correlated subquery unnecessarily.
+
+Sometimes JOIN or window function is better.
+
+------------------------------------------
+
+Mistake 4:
+
+Subquery in SELECT returning multiple rows.
+
+A scalar subquery should return only one value.
+
+==================================================
+39. MOST ASKED INTERVIEW QUESTIONS
+==================================================
+
+1. What is Subquery?
+2. Why do we use Subquery?
+3. What are types of Subqueries?
+4. What is Single Row Subquery?
+5. What is Multi Row Subquery?
+6. What is Correlated Subquery?
+7. What is Non-Correlated Subquery?
+8. Correlated vs Non-Correlated Subquery?
+9. EXISTS vs IN?
+10. NOT EXISTS vs NOT IN?
+11. ANY vs ALL?
+12. Subquery vs JOIN?
+13. Can we use Subquery in SELECT?
+14. Can we use Subquery in FROM?
+15. What is Derived Table?
+16. How to find second highest salary?
+17. How to find employees above average salary?
+18. How to find customers without orders?
+19. Why correlated subquery can be slow?
+20. How to optimize subqueries?
+
+==================================================
+40. INTERVIEW ANSWERS
+==================================================
+
+Q1. What is Subquery?
+
+A Subquery is a query written inside another query. It is used when the output of one query is required by another query.
+
+------------------------------------------
+
+Q2. What is Correlated Subquery?
+
+A correlated subquery depends on the outer query and executes once for each row of the outer query.
+
+------------------------------------------
+
+Q3. Correlated vs Non-Correlated Subquery?
+
+Correlated subquery depends on outer query and runs repeatedly.
+
+Non-correlated subquery is independent and usually runs once.
+
+------------------------------------------
+
+Q4. EXISTS vs IN?
+
+IN compares a value with a list of values returned by subquery.
+
+EXISTS checks whether the subquery returns at least one row.
+
+EXISTS is usually better for large datasets and existence checks.
+
+------------------------------------------
+
+Q5. NOT EXISTS vs NOT IN?
+
+NOT EXISTS is safer when NULL values are possible.
+
+NOT IN can return unexpected results if the subquery returns NULL.
+
+------------------------------------------
+
+Q6. ANY vs ALL?
+
+ANY means condition should be true for at least one value.
+
+ALL means condition should be true for every value.
+
+------------------------------------------
+
+Q7. Subquery vs JOIN?
+
+JOIN is used to combine data from multiple tables.
+
+Subquery is used when one query result is needed for filtering or comparison.
+
+------------------------------------------
+
+Q8. Why correlated subquery is slower?
+
+Because it may execute once for each row of the outer query.
+
+------------------------------------------
+
+Q9. What is Derived Table?
+
+A derived table is a subquery written in the FROM clause and used like a temporary table.
+
+------------------------------------------
+
+Q10. How to optimize subqueries?
+
+Use indexes, avoid unnecessary correlated subqueries, use JOIN where suitable, use EXISTS for existence checks, and analyze query plan.
+
+==================================================
+41. QUICK REVISION
+==================================================
+
+Subquery
+    -> Query inside another query
+
+Outer Query
+    -> Main query
+
+Inner Query
+    -> Subquery
+
+Single Row Subquery
+    -> Returns one value
+
+Multi Row Subquery
+    -> Returns multiple rows
+
+IN
+    -> Match with multiple values
+
+NOT IN
+    -> Not matching values, but risky with NULL
+
+EXISTS
+    -> Checks if row exists
+
+NOT EXISTS
+    -> Checks if row does not exist
+
+ANY
+    -> At least one value should satisfy condition
+
+ALL
+    -> All values should satisfy condition
+
+Correlated Subquery
+    -> Depends on outer query
+    -> Runs for every outer row
+
+Non-Correlated Subquery
+    -> Independent
+    -> Runs once
+
+Subquery in SELECT
+    -> Used for calculated value
+
+Subquery in FROM
+    -> Derived table
+
+Subquery in WHERE
+    -> Filtering
+
+Subquery vs JOIN
+    -> Subquery filters/compares
+    -> JOIN combines data
+
+Most Important Interview Examples:
+    -> Second highest salary
+    -> Employees above average salary
+    -> Employees above department average salary
+    -> Customers without orders
+    -> Highest salary in each department

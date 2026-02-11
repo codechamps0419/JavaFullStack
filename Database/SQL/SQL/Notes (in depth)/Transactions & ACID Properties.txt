@@ -1,0 +1,926 @@
+
+/* @Author: Dynamic Duo Learners */
+
+==================================================
+1. WHAT IS A TRANSACTION?
+==================================================
+
+A Transaction is a group of one or more SQL statements that are executed as a single logical unit of work.
+
+Simple Meaning:
+
+Either all operations succeed,
+or all operations fail.
+
+There should be no partial execution.
+
+Example:
+
+Bank Transfer
+
+Step 1:
+Deduct 1000 from Account A
+
+Step 2:
+Add 1000 to Account B
+
+Both operations must succeed.
+
+If one fails,
+entire transaction must fail.
+
+Interview Answer:
+
+A transaction is a sequence of SQL operations executed as a single unit of work that follows ACID properties.
+
+==================================================
+2. WHY DO WE NEED TRANSACTIONS?
+==================================================
+
+Transactions are needed to:
+
+1. Maintain data consistency
+2. Prevent partial updates
+3. Ensure reliability
+4. Handle failures safely
+5. Protect business data
+6. Support concurrent users
+
+Real examples:
+
+- Bank transfer
+- Order placement
+- Payment processing
+- Ticket booking
+- Inventory updates
+- Wallet recharge
+
+==================================================
+3. TRANSACTION EXAMPLE
+==================================================
+
+ACCOUNT table:
+
+| account_id | balance |
+|------------|---------|
+| 1          | 5000    |
+| 2          | 3000    |
+
+Transfer 1000 from Account 1 to Account 2.
+
+BEGIN;
+
+UPDATE account
+SET balance = balance - 1000
+WHERE account_id = 1;
+
+UPDATE account
+SET balance = balance + 1000
+WHERE account_id = 2;
+
+COMMIT;
+
+Result:
+
+Account 1 = 4000
+Account 2 = 4000
+
+==================================================
+4. WHAT IF FAILURE OCCURS?
+==================================================
+
+Suppose:
+
+Step 1 succeeds:
+
+Account 1 = 4000
+
+Step 2 fails:
+
+Money not added to Account 2.
+
+Without transaction:
+
+Money disappears.
+
+This is data corruption.
+
+With transaction:
+
+Database rolls back.
+
+Account 1 returns to 5000.
+
+Account 2 remains 3000.
+
+Data stays correct.
+
+==================================================
+5. TRANSACTION STATES
+==================================================
+
+Transaction goes through states:
+
+1. Active
+2. Partially Committed
+3. Committed
+4. Failed
+5. Aborted
+
+Flow:
+
+Active
+   ↓
+Partially Committed
+   ↓
+Committed
+
+OR
+
+Active
+   ↓
+Failed
+   ↓
+Aborted (Rollback)
+
+==================================================
+6. BEGIN TRANSACTION
+==================================================
+
+Starts a transaction.
+
+PostgreSQL:
+
+BEGIN;
+
+Example:
+
+BEGIN;
+
+UPDATE employee
+SET salary = salary + 5000
+WHERE emp_id = 101;
+
+COMMIT;
+
+==================================================
+7. COMMIT
+==================================================
+
+COMMIT permanently saves changes.
+
+Example:
+
+BEGIN;
+
+UPDATE employee
+SET salary = 60000
+WHERE emp_id = 101;
+
+COMMIT;
+
+After COMMIT:
+
+Changes are permanent.
+
+Interview Answer:
+
+COMMIT makes all transaction changes permanent in the database.
+
+==================================================
+8. ROLLBACK
+==================================================
+
+ROLLBACK cancels changes made in transaction.
+
+Example:
+
+BEGIN;
+
+UPDATE employee
+SET salary = 60000
+WHERE emp_id = 101;
+
+ROLLBACK;
+
+Result:
+
+Salary returns to original value.
+
+Interview Answer:
+
+ROLLBACK undoes all uncommitted changes in the current transaction.
+
+==================================================
+9. SAVEPOINT
+==================================================
+
+Savepoint creates a checkpoint inside transaction.
+
+Example:
+
+BEGIN;
+
+UPDATE account
+SET balance = balance - 1000
+WHERE account_id = 1;
+
+SAVEPOINT transfer_point;
+
+UPDATE account
+SET balance = balance + 1000
+WHERE account_id = 2;
+
+ROLLBACK TO transfer_point;
+
+COMMIT;
+
+Only operations after savepoint are rolled back.
+
+Interview Answer:
+
+SAVEPOINT allows partial rollback within a transaction.
+
+==================================================
+10. RELEASE SAVEPOINT
+==================================================
+
+Removes savepoint.
+
+Syntax:
+
+RELEASE SAVEPOINT savepoint_name;
+
+Example:
+
+RELEASE SAVEPOINT transfer_point;
+
+==================================================
+11. ACID PROPERTIES
+==================================================
+
+Most Important Interview Topic
+
+ACID stands for:
+
+A → Atomicity
+C → Consistency
+I → Isolation
+D → Durability
+
+Every reliable relational database follows ACID principles.
+
+Interview Answer:
+
+ACID properties ensure reliable, consistent, and safe transaction processing.
+
+==================================================
+12. ATOMICITY
+==================================================
+
+Atomicity means:
+
+All or Nothing.
+
+Either entire transaction succeeds,
+or entire transaction fails.
+
+Example:
+
+Bank transfer:
+
+Deduct money
+Add money
+
+Both must succeed.
+
+Partial success is not allowed.
+
+Interview Answer:
+
+Atomicity guarantees that a transaction is treated as a single indivisible unit.
+
+==================================================
+13. ATOMICITY EXAMPLE
+==================================================
+
+BEGIN;
+
+UPDATE account
+SET balance = balance - 1000
+WHERE account_id = 1;
+
+UPDATE account
+SET balance = balance + 1000
+WHERE account_id = 2;
+
+COMMIT;
+
+If second update fails:
+
+ROLLBACK happens.
+
+No money is lost.
+
+==================================================
+14. CONSISTENCY
+==================================================
+
+Consistency means:
+
+Database moves from one valid state to another valid state.
+
+Rules must never be violated.
+
+Example:
+
+Account balances cannot become negative.
+
+Total money should remain correct.
+
+Before transaction:
+
+A = 5000
+B = 3000
+
+Total = 8000
+
+After transfer:
+
+A = 4000
+B = 4000
+
+Total = 8000
+
+Consistency maintained.
+
+Interview Answer:
+
+Consistency ensures that all integrity constraints and business rules remain valid before and after a transaction.
+
+==================================================
+15. CONSISTENCY EXAMPLE
+==================================================
+
+Constraint:
+
+salary > 0
+
+Bad query:
+
+UPDATE employee
+SET salary = -1000;
+
+Database rejects operation.
+
+Consistency is preserved.
+
+==================================================
+16. ISOLATION
+==================================================
+
+Isolation means:
+
+Concurrent transactions should not interfere with each other.
+
+Example:
+
+Two users updating same account simultaneously.
+
+Each transaction should behave as if it is running alone.
+
+Interview Answer:
+
+Isolation ensures concurrent transactions do not affect each other's intermediate states.
+
+==================================================
+17. DURABILITY
+==================================================
+
+Durability means:
+
+Once transaction commits,
+changes survive system crash.
+
+Example:
+
+COMMIT executed.
+
+Power failure occurs.
+
+After database restart:
+
+Changes still exist.
+
+Interview Answer:
+
+Durability guarantees that committed data is permanently stored even after crashes.
+
+==================================================
+18. HOW DURABILITY IS ACHIEVED?
+==================================================
+
+Database uses:
+
+- WAL (Write Ahead Logging)
+- Redo Logs
+- Transaction Logs
+- Checkpoints
+
+PostgreSQL uses WAL.
+
+Before data page is written,
+log is written first.
+
+This enables recovery after crash.
+
+==================================================
+19. ACID QUICK SUMMARY
+==================================================
+
+Atomicity
+    -> All or Nothing
+
+Consistency
+    -> Valid State
+
+Isolation
+    -> Concurrent Safety
+
+Durability
+    -> Permanent Storage
+
+==================================================
+20. REAL PROJECT EXAMPLE
+==================================================
+
+Order Placement:
+
+Step 1:
+Create Order
+
+Step 2:
+Reserve Inventory
+
+Step 3:
+Create Payment Record
+
+Step 4:
+Create Shipment
+
+All should succeed.
+
+If shipment creation fails:
+
+Entire transaction rolls back.
+
+==================================================
+21. AUTOCOMMIT
+==================================================
+
+Most databases use Auto Commit mode.
+
+Every SQL statement becomes its own transaction.
+
+Example:
+
+UPDATE employee
+SET salary = 50000
+WHERE emp_id = 1;
+
+Database automatically commits.
+
+Interview Answer:
+
+Autocommit automatically commits each SQL statement as an individual transaction.
+
+==================================================
+22. AUTOCOMMIT VS MANUAL TRANSACTION
+==================================================
+
+Autocommit:
+
+Statement executes
+→ Commit automatically
+
+Manual:
+
+BEGIN
+→ SQL Statements
+→ COMMIT / ROLLBACK
+
+Manual transaction is preferred for business operations involving multiple steps.
+
+==================================================
+23. TRANSACTION IN SPRING BOOT
+==================================================
+
+Very Important for Java Developers
+
+Example:
+
+@Transactional
+public void transferMoney() {
+
+    debitAccount();
+
+    creditAccount();
+}
+
+If any exception occurs:
+
+Spring performs rollback.
+
+Interview Answer:
+
+@Transactional in Spring manages database transactions automatically and rolls back on failure.
+
+==================================================
+24. TRANSACTION PROPAGATION (SPRING)
+==================================================
+
+Common Types:
+
+REQUIRED
+REQUIRES_NEW
+SUPPORTS
+MANDATORY
+NOT_SUPPORTED
+NEVER
+NESTED
+
+Most Asked:
+
+REQUIRED
+REQUIRES_NEW
+
+REQUIRED:
+Use existing transaction or create new one.
+
+REQUIRES_NEW:
+Always create a new transaction.
+
+==================================================
+25. TRANSACTION MANAGER
+==================================================
+
+Transaction Manager controls:
+
+- Begin
+- Commit
+- Rollback
+
+Spring uses:
+
+PlatformTransactionManager
+
+==================================================
+26. DATABASE CONSTRAINTS AND CONSISTENCY
+==================================================
+
+Consistency is enforced using:
+
+1. Primary Key
+2. Foreign Key
+3. Unique Key
+4. Check Constraint
+5. Not Null Constraint
+
+Example:
+
+salary > 0
+
+Database prevents invalid data.
+
+==================================================
+27. WHAT HAPPENS DURING COMMIT?
+==================================================
+
+1. Transaction executes
+2. WAL written
+3. Commit record written
+4. Changes become visible
+5. Locks released
+
+==================================================
+28. WHAT HAPPENS DURING ROLLBACK?
+==================================================
+
+1. Undo uncommitted changes
+2. Restore previous state
+3. Release locks
+
+Result:
+
+Database returns to consistent state.
+
+==================================================
+29. LONG RUNNING TRANSACTIONS
+==================================================
+
+Long transactions can cause:
+
+1. Lock contention
+2. Blocking
+3. High memory usage
+4. WAL growth
+5. Vacuum issues
+
+Best Practice:
+
+Keep transactions short.
+
+Interview Answer:
+
+Long-running transactions increase locking and resource usage, reducing database performance.
+
+==================================================
+30. TRANSACTION LOG
+==================================================
+
+Transaction log stores:
+
+- Changes
+- Commit information
+- Recovery information
+
+Used for:
+
+- Crash recovery
+- Rollback
+- Replication
+
+PostgreSQL:
+WAL
+
+SQL Server:
+Transaction Log
+
+Oracle:
+Redo Log
+
+==================================================
+31. TRANSACTION FAILURE TYPES
+==================================================
+
+1. System Failure
+2. Power Failure
+3. Network Failure
+4. Application Failure
+5. Hardware Failure
+6. Deadlock
+
+ACID properties help recover safely.
+
+==================================================
+32. DEADLOCK OVERVIEW
+==================================================
+
+Transaction A:
+
+Locks row X
+Needs row Y
+
+Transaction B:
+
+Locks row Y
+Needs row X
+
+Both wait forever.
+
+Database detects deadlock.
+
+One transaction is killed.
+
+Detailed locking covered in Phase 13.
+
+==================================================
+33. MONEY TRANSFER INTERVIEW EXAMPLE
+==================================================
+
+Question:
+
+Transfer 1000 from Account A to Account B.
+
+Answer:
+
+BEGIN;
+
+UPDATE account
+SET balance = balance - 1000
+WHERE account_id = 1;
+
+UPDATE account
+SET balance = balance + 1000
+WHERE account_id = 2;
+
+COMMIT;
+
+If any failure:
+
+ROLLBACK;
+
+ACID ensures correctness.
+
+==================================================
+34. COMMON MISTAKES
+==================================================
+
+Mistake 1:
+
+Forgetting COMMIT.
+
+Changes remain uncommitted.
+
+------------------------------------------
+
+Mistake 2:
+
+Keeping transaction open too long.
+
+Causes blocking.
+
+------------------------------------------
+
+Mistake 3:
+
+Using transaction for read-only operations unnecessarily.
+
+------------------------------------------
+
+Mistake 4:
+
+Catching exceptions in Spring without rollback handling.
+
+------------------------------------------
+
+Mistake 5:
+
+Performing network calls inside transaction.
+
+Can increase transaction duration.
+
+==================================================
+35. BEST PRACTICES
+==================================================
+
+1. Keep transactions short
+2. Commit quickly
+3. Rollback on failure
+4. Avoid unnecessary locks
+5. Use proper indexes
+6. Avoid external API calls inside transaction
+7. Monitor long-running transactions
+8. Use @Transactional carefully
+
+==================================================
+36. REAL WORLD USE CASES
+==================================================
+
+1. Banking Transfer
+2. Order Placement
+3. Payment Processing
+4. Wallet Recharge
+5. Inventory Reservation
+6. Flight Booking
+7. Ticket Booking
+8. Salary Processing
+9. Refund Processing
+10. Subscription Renewal
+
+==================================================
+37. MOST ASKED INTERVIEW QUESTIONS
+==================================================
+
+1. What is Transaction?
+2. Why use Transactions?
+3. What is COMMIT?
+4. What is ROLLBACK?
+5. What is SAVEPOINT?
+6. What is ACID?
+7. Explain Atomicity.
+8. Explain Consistency.
+9. Explain Isolation.
+10. Explain Durability.
+11. How is durability achieved?
+12. What is WAL?
+13. What is Auto Commit?
+14. Auto Commit vs Manual Transaction?
+15. What is @Transactional?
+16. What is Transaction Manager?
+17. Why keep transactions short?
+18. What happens during COMMIT?
+19. What happens during ROLLBACK?
+20. What is Deadlock?
+
+==================================================
+38. INTERVIEW ANSWERS
+==================================================
+
+Q1. What is Transaction?
+
+A transaction is a group of SQL operations executed as a single logical unit that follows ACID properties.
+
+------------------------------------------
+
+Q2. What is ACID?
+
+ACID stands for Atomicity, Consistency, Isolation, and Durability.
+
+------------------------------------------
+
+Q3. Explain Atomicity.
+
+Atomicity ensures all operations in a transaction succeed or all fail.
+
+------------------------------------------
+
+Q4. Explain Consistency.
+
+Consistency ensures database rules and constraints remain valid.
+
+------------------------------------------
+
+Q5. Explain Isolation.
+
+Isolation ensures concurrent transactions do not interfere with each other.
+
+------------------------------------------
+
+Q6. Explain Durability.
+
+Durability ensures committed changes survive system crashes.
+
+------------------------------------------
+
+Q7. What is COMMIT?
+
+COMMIT permanently saves transaction changes.
+
+------------------------------------------
+
+Q8. What is ROLLBACK?
+
+ROLLBACK undoes uncommitted transaction changes.
+
+------------------------------------------
+
+Q9. What is SAVEPOINT?
+
+SAVEPOINT creates a checkpoint for partial rollback.
+
+------------------------------------------
+
+Q10. Why keep transactions short?
+
+Short transactions reduce locking, blocking, and resource consumption.
+
+==================================================
+39. QUICK REVISION
+==================================================
+
+Transaction
+    -> Logical unit of work
+
+BEGIN
+    -> Start transaction
+
+COMMIT
+    -> Save changes permanently
+
+ROLLBACK
+    -> Undo changes
+
+SAVEPOINT
+    -> Partial rollback point
+
+ACID
+
+Atomicity
+    -> All or Nothing
+
+Consistency
+    -> Valid State
+
+Isolation
+    -> Concurrent Safety
+
+Durability
+    -> Permanent Storage
+
+WAL
+    -> Write Ahead Log
+
+Autocommit
+    -> Automatic commit per statement
+
+@Transactional
+    -> Spring transaction management
+
+Most Important Interview Topics:
+    -> ACID
+    -> COMMIT vs ROLLBACK
+    -> SAVEPOINT
+    -> WAL
+    -> Money Transfer Example
+    -> @Transactional

@@ -1,0 +1,1140 @@
+/* @Author: Dynamic Duo Learners */
+
+==================================================
+1. WHAT IS JOIN IN SQL?
+==================================================
+
+JOIN is used to combine data from two or more tables based on a related column.
+
+In real projects, data is not stored in one big table.
+Data is divided into multiple tables to avoid duplication and maintain proper relationships.
+
+Example:
+
+Instead of storing department name repeatedly in employee table:
+
+| emp_id | emp_name | dept_name |
+|--------|----------|-----------|
+| 101    | Amit     | IT        |
+| 102    | Rahul    | IT        |
+| 103    | Neha     | HR        |
+
+Better design:
+
+EMPLOYEE table:
+
+| emp_id | emp_name | dept_id |
+|--------|----------|---------|
+| 101    | Amit     | 1       |
+| 102    | Rahul    | 1       |
+| 103    | Neha     | 2       |
+
+DEPARTMENT table:
+
+| dept_id | dept_name |
+|---------|-----------|
+| 1       | IT        |
+| 2       | HR        |
+
+Now JOIN helps us fetch employee name along with department name.
+
+==================================================
+2. WHY DO WE NEED JOINS?
+==================================================
+
+Joins are needed because relational databases store data in multiple related tables.
+
+Benefits:
+- Avoid duplicate data
+- Maintain consistency
+- Improve database design
+- Support normalization
+- Fetch meaningful combined data
+
+Real-world examples:
+- Employee with Department
+- Customer with Orders
+- Orders with Payments
+- Product with Category
+- Student with Course
+- User with Roles
+
+Interview Answer:
+
+JOIN is used to combine rows from two or more tables based on a related column between them.
+
+==================================================
+3. SAMPLE TABLES USED IN THIS FILE
+==================================================
+
+EMPLOYEE table:
+
+| emp_id | emp_name | dept_id | salary |
+|--------|----------|---------|--------|
+| 101    | Amit     | 1       | 50000  |
+| 102    | Rahul    | 1       | 60000  |
+| 103    | Neha     | 2       | 55000  |
+| 104    | Pooja    | 3       | 70000  |
+| 105    | Suresh   | NULL    | 40000  |
+
+DEPARTMENT table:
+
+| dept_id | dept_name |
+|---------|-----------|
+| 1       | IT        |
+| 2       | HR        |
+| 4       | Finance   |
+
+Important observation:
+
+- Amit and Rahul belong to IT.
+- Neha belongs to HR.
+- Pooja has dept_id 3, but department 3 is not present in DEPARTMENT table.
+- Suresh has NULL dept_id.
+- Finance department exists but has no employee.
+
+These cases help us understand different joins clearly.
+
+==================================================
+4. JOIN CONDITION
+==================================================
+
+A JOIN needs a condition to match rows.
+
+Common condition:
+
+employee.dept_id = department.dept_id
+
+Example:
+
+SELECT e.emp_name,
+       d.dept_name
+FROM employee e
+JOIN department d
+ON e.dept_id = d.dept_id;
+
+Here:
+- e is alias for employee
+- d is alias for department
+- ON defines matching condition
+
+==================================================
+5. INNER JOIN
+==================================================
+
+INNER JOIN returns only matching records from both tables.
+
+Query:
+
+SELECT e.emp_id,
+       e.emp_name,
+       d.dept_name
+FROM employee e
+INNER JOIN department d
+ON e.dept_id = d.dept_id;
+
+Output:
+
+| emp_id | emp_name | dept_name |
+|--------|----------|-----------|
+| 101    | Amit     | IT        |
+| 102    | Rahul    | IT        |
+| 103    | Neha     | HR        |
+
+Explanation:
+
+Only employees whose dept_id matches with DEPARTMENT table are returned.
+
+Not returned:
+- Pooja because dept_id 3 does not exist in department table.
+- Suresh because dept_id is NULL.
+- Finance because no employee belongs to Finance.
+
+Interview Answer:
+
+INNER JOIN returns only common/matching records from both tables.
+
+==================================================
+6. LEFT JOIN / LEFT OUTER JOIN
+==================================================
+
+LEFT JOIN returns all records from the left table and matching records from the right table.
+
+If no match is found, right table columns return NULL.
+
+Query:
+
+SELECT e.emp_id,
+       e.emp_name,
+       d.dept_name
+FROM employee e
+LEFT JOIN department d
+ON e.dept_id = d.dept_id;
+
+Output:
+
+| emp_id | emp_name | dept_name |
+|--------|----------|-----------|
+| 101    | Amit     | IT        |
+| 102    | Rahul    | IT        |
+| 103    | Neha     | HR        |
+| 104    | Pooja    | NULL      |
+| 105    | Suresh   | NULL      |
+
+Explanation:
+
+All employees are returned.
+
+Department name is NULL for:
+- Pooja because dept_id 3 does not exist in department table.
+- Suresh because dept_id is NULL.
+
+Interview Answer:
+
+LEFT JOIN returns all rows from the left table and only matching rows from the right table.
+
+==================================================
+7. RIGHT JOIN / RIGHT OUTER JOIN
+==================================================
+
+RIGHT JOIN returns all records from the right table and matching records from the left table.
+
+If no match is found, left table columns return NULL.
+
+Query:
+
+SELECT e.emp_name,
+       d.dept_name
+FROM employee e
+RIGHT JOIN department d
+ON e.dept_id = d.dept_id;
+
+Output:
+
+| emp_name | dept_name |
+|----------|-----------|
+| Amit     | IT        |
+| Rahul    | IT        |
+| Neha     | HR        |
+| NULL     | Finance   |
+
+Explanation:
+
+All departments are returned.
+
+Finance is returned even though no employee belongs to Finance.
+
+Interview Answer:
+
+RIGHT JOIN returns all rows from the right table and matching rows from the left table.
+
+Important:
+
+RIGHT JOIN can often be rewritten as LEFT JOIN by changing table order.
+
+Example:
+
+employee RIGHT JOIN department
+
+can be written as:
+
+department LEFT JOIN employee
+
+==================================================
+8. FULL OUTER JOIN
+==================================================
+
+FULL OUTER JOIN returns:
+- Matching records from both tables
+- Non-matching records from left table
+- Non-matching records from right table
+
+Query:
+
+SELECT e.emp_name,
+       d.dept_name
+FROM employee e
+FULL OUTER JOIN department d
+ON e.dept_id = d.dept_id;
+
+Output:
+
+| emp_name | dept_name |
+|----------|-----------|
+| Amit     | IT        |
+| Rahul    | IT        |
+| Neha     | HR        |
+| Pooja    | NULL      |
+| Suresh   | NULL      |
+| NULL     | Finance   |
+
+Explanation:
+
+It returns everything from both tables.
+
+Interview Answer:
+
+FULL OUTER JOIN returns all matching and non-matching records from both tables.
+
+Note:
+
+MySQL does not directly support FULL OUTER JOIN.
+PostgreSQL supports FULL OUTER JOIN.
+
+==================================================
+9. CROSS JOIN
+==================================================
+
+CROSS JOIN returns Cartesian product.
+
+Every row from first table is combined with every row from second table.
+
+Example:
+
+COLOR table:
+
+| color |
+|-------|
+| Red   |
+| Blue  |
+
+SIZE table:
+
+| size |
+|------|
+| S    |
+| M    |
+| L    |
+
+Query:
+
+SELECT color,
+       size
+FROM color
+CROSS JOIN size;
+
+Output:
+
+| color | size |
+|-------|------|
+| Red   | S    |
+| Red   | M    |
+| Red   | L    |
+| Blue  | S    |
+| Blue  | M    |
+| Blue  | L    |
+
+If first table has 2 rows and second table has 3 rows:
+
+Total output rows = 2 * 3 = 6
+
+Interview Answer:
+
+CROSS JOIN returns all possible combinations of rows from both tables.
+
+Use cases:
+- Product variants
+- Color-size combinations
+- Calendar generation
+- Test data generation
+
+Warning:
+
+CROSS JOIN can produce a huge number of rows.
+
+==================================================
+10. SELF JOIN
+==================================================
+
+SELF JOIN means joining a table with itself.
+
+Used when rows in the same table are related.
+
+Example:
+
+EMPLOYEE table:
+
+| emp_id | emp_name | manager_id |
+|--------|----------|------------|
+| 1      | Amit     | NULL       |
+| 2      | Rahul    | 1          |
+| 3      | Neha     | 1          |
+| 4      | Pooja    | 2          |
+
+Here:
+- Amit is manager of Rahul and Neha.
+- Rahul is manager of Pooja.
+
+Query:
+
+SELECT e.emp_name AS employee,
+       m.emp_name AS manager
+FROM employee e
+LEFT JOIN employee m
+ON e.manager_id = m.emp_id;
+
+Output:
+
+| employee | manager |
+|----------|---------|
+| Amit     | NULL    |
+| Rahul    | Amit    |
+| Neha     | Amit    |
+| Pooja    | Rahul   |
+
+Interview Answer:
+
+SELF JOIN is used to join a table with itself, commonly used for employee-manager hierarchy.
+
+==================================================
+11. JOIN WITH WHERE CONDITION
+==================================================
+
+Example:
+
+Find employees from IT department.
+
+SELECT e.emp_name,
+       d.dept_name
+FROM employee e
+JOIN department d
+ON e.dept_id = d.dept_id
+WHERE d.dept_name = 'IT';
+
+Output:
+
+| emp_name | dept_name |
+|----------|-----------|
+| Amit     | IT        |
+| Rahul    | IT        |
+
+Important:
+
+JOIN first combines data.
+WHERE filters final result.
+
+==================================================
+12. LEFT JOIN WITH WHERE - COMMON MISTAKE
+==================================================
+
+Suppose we want all employees and their department if available.
+
+Correct:
+
+SELECT e.emp_name,
+       d.dept_name
+FROM employee e
+LEFT JOIN department d
+ON e.dept_id = d.dept_id;
+
+Output includes employees with NULL department.
+
+------------------------------------------
+
+Common mistake:
+
+SELECT e.emp_name,
+       d.dept_name
+FROM employee e
+LEFT JOIN department d
+ON e.dept_id = d.dept_id
+WHERE d.dept_name = 'IT';
+
+This behaves like INNER JOIN for this condition.
+
+Why?
+
+Because rows where d.dept_name is NULL are removed by WHERE.
+
+------------------------------------------
+
+Better approach if condition belongs to right table but you still want all left table rows:
+
+SELECT e.emp_name,
+       d.dept_name
+FROM employee e
+LEFT JOIN department d
+ON e.dept_id = d.dept_id
+AND d.dept_name = 'IT';
+
+Interview Point:
+
+Putting condition in WHERE after LEFT JOIN can remove NULL rows and change the behavior like INNER JOIN.
+
+==================================================
+13. FIND UNMATCHED RECORDS USING LEFT JOIN
+==================================================
+
+Find employees without valid department.
+
+Query:
+
+SELECT e.emp_id,
+       e.emp_name
+FROM employee e
+LEFT JOIN department d
+ON e.dept_id = d.dept_id
+WHERE d.dept_id IS NULL;
+
+Output:
+
+| emp_id | emp_name |
+|--------|----------|
+| 104    | Pooja    |
+| 105    | Suresh   |
+
+Use case:
+- Find orphan records
+- Find invalid foreign key data
+- Find users without orders
+- Find products without category
+
+==================================================
+14. FIND DEPARTMENTS WITHOUT EMPLOYEES
+==================================================
+
+Query:
+
+SELECT d.dept_id,
+       d.dept_name
+FROM department d
+LEFT JOIN employee e
+ON d.dept_id = e.dept_id
+WHERE e.emp_id IS NULL;
+
+Output:
+
+| dept_id | dept_name |
+|---------|-----------|
+| 4       | Finance   |
+
+==================================================
+15. JOIN WITH GROUP BY
+==================================================
+
+Find employee count department-wise.
+
+Query:
+
+SELECT d.dept_name,
+       COUNT(e.emp_id) AS employee_count
+FROM department d
+LEFT JOIN employee e
+ON d.dept_id = e.dept_id
+GROUP BY d.dept_name;
+
+Output:
+
+| dept_name | employee_count |
+|-----------|----------------|
+| IT        | 2              |
+| HR        | 1              |
+| Finance   | 0              |
+
+Important:
+
+COUNT(e.emp_id) is better here than COUNT(*).
+
+Why?
+
+COUNT(*) counts rows, even NULL-extended rows from LEFT JOIN.
+COUNT(e.emp_id) counts only actual employees.
+
+==================================================
+16. JOIN WITH MULTIPLE TABLES
+==================================================
+
+Real projects often join more than two tables.
+
+Example:
+
+CUSTOMER
+
+| customer_id | name |
+|-------------|------|
+| 1           | Amit |
+
+ORDERS
+
+| order_id | customer_id | product_id |
+|----------|-------------|------------|
+| 101      | 1           | 501        |
+
+PRODUCT
+
+| product_id | product_name |
+|------------|--------------|
+| 501        | Laptop       |
+
+Query:
+
+SELECT c.name,
+       o.order_id,
+       p.product_name
+FROM customer c
+JOIN orders o
+ON c.customer_id = o.customer_id
+JOIN product p
+ON o.product_id = p.product_id;
+
+Output:
+
+| name | order_id | product_name |
+|------|----------|--------------|
+| Amit | 101      | Laptop       |
+
+==================================================
+17. NATURAL JOIN
+==================================================
+
+NATURAL JOIN automatically joins tables using columns with the same name.
+
+Example:
+
+SELECT *
+FROM employee
+NATURAL JOIN department;
+
+Problem:
+
+It depends on same column names automatically.
+
+Not recommended in production because it can create unexpected results if new same-name columns are added later.
+
+Interview Answer:
+
+NATURAL JOIN joins tables automatically based on columns with the same name, but it is usually avoided in production for clarity and safety.
+
+==================================================
+18. USING CLAUSE
+==================================================
+
+If both tables have same column name, USING can be used.
+
+Example:
+
+SELECT emp_name,
+       dept_name
+FROM employee
+JOIN department
+USING (dept_id);
+
+This is shorter than:
+
+ON employee.dept_id = department.dept_id
+
+Note:
+
+USING works when column name is same in both tables.
+
+==================================================
+19. JOIN VS SUBQUERY
+==================================================
+
+JOIN:
+- Combines data from multiple tables
+- Often better for fetching related data
+- Easier to return columns from multiple tables
+
+Subquery:
+- Query inside another query
+- Useful for filtering based on another result
+- Sometimes easier for existence checks
+
+Example using JOIN:
+
+SELECT e.emp_name
+FROM employee e
+JOIN department d
+ON e.dept_id = d.dept_id
+WHERE d.dept_name = 'IT';
+
+Example using Subquery:
+
+SELECT emp_name
+FROM employee
+WHERE dept_id IN (
+    SELECT dept_id
+    FROM department
+    WHERE dept_name = 'IT'
+);
+
+Interview:
+
+Both can sometimes solve the same problem. Choice depends on readability, performance, and database optimizer.
+
+==================================================
+20. EXISTS VS JOIN
+==================================================
+
+Find departments having employees.
+
+Using JOIN:
+
+SELECT DISTINCT d.dept_name
+FROM department d
+JOIN employee e
+ON d.dept_id = e.dept_id;
+
+Using EXISTS:
+
+SELECT d.dept_name
+FROM department d
+WHERE EXISTS (
+    SELECT 1
+    FROM employee e
+    WHERE e.dept_id = d.dept_id
+);
+
+EXISTS is useful when we only need to check existence, not fetch columns from the joined table.
+
+==================================================
+21. JOIN PERFORMANCE BASICS
+==================================================
+
+Joins can become slow when:
+- Tables are very large
+- Join columns are not indexed
+- Wrong join condition is used
+- Too many unnecessary columns are selected
+- Filtering happens too late
+- Cartesian product happens accidentally
+
+Best practices:
+- Index foreign key columns
+- Select only required columns
+- Use proper join condition
+- Filter early when possible
+- Check execution plan using EXPLAIN
+- Avoid unnecessary joins
+
+Example:
+
+employee.dept_id should be indexed if used frequently in joins.
+
+==================================================
+22. HOW JOIN WORKS INTERNALLY
+==================================================
+
+Database can use different join algorithms internally.
+
+Common algorithms:
+
+1. Nested Loop Join
+2. Hash Join
+3. Merge Join
+
+------------------------------------------
+Nested Loop Join
+------------------------------------------
+
+One table is scanned row by row.
+For each row, database searches matching rows in another table.
+
+Good for:
+- Small tables
+- Indexed lookups
+
+------------------------------------------
+Hash Join
+------------------------------------------
+
+Database builds a hash table on one table and searches matches from another table.
+
+Good for:
+- Large tables
+- Equality joins
+
+------------------------------------------
+Merge Join
+------------------------------------------
+
+Both tables are sorted on join key and then merged.
+
+Good for:
+- Sorted data
+- Indexed columns
+
+Interview Answer:
+
+Databases use algorithms like Nested Loop Join, Hash Join, and Merge Join depending on table size, indexes, and query plan.
+
+==================================================
+23. INNER JOIN VS LEFT JOIN
+==================================================
+
+INNER JOIN:
+- Returns only matching records
+- Non-matching rows are removed
+
+LEFT JOIN:
+- Returns all rows from left table
+- Matching rows from right table
+- Non-matching right side values become NULL
+
+Example:
+
+Use INNER JOIN when:
+You only need employees having valid departments.
+
+Use LEFT JOIN when:
+You need all employees even if department is missing.
+
+==================================================
+24. RIGHT JOIN VS LEFT JOIN
+==================================================
+
+RIGHT JOIN returns all rows from right table.
+
+But RIGHT JOIN is less commonly used.
+
+Reason:
+Same result can be achieved with LEFT JOIN by changing table order.
+
+Example:
+
+employee RIGHT JOIN department
+
+Same logic as:
+
+department LEFT JOIN employee
+
+Interview Answer:
+
+RIGHT JOIN is less preferred because LEFT JOIN is more readable and commonly used.
+
+==================================================
+25. FULL JOIN VS UNION OF LEFT AND RIGHT JOIN
+==================================================
+
+FULL JOIN returns all rows from both sides.
+
+In databases that do not support FULL JOIN directly, we can simulate it using:
+
+LEFT JOIN
+UNION
+RIGHT JOIN
+
+Concept:
+
+Full Join = Left Join + Right Join unmatched rows
+
+==================================================
+26. JOIN WITH NULL VALUES
+==================================================
+
+Important:
+
+NULL does not match with NULL using normal equality.
+
+Example:
+
+NULL = NULL is not true.
+
+So if both tables have NULL dept_id, they will not match using:
+
+ON e.dept_id = d.dept_id
+
+Interview:
+
+NULL values do not match in normal join conditions.
+
+==================================================
+27. MANY-TO-MANY JOIN
+==================================================
+
+Example:
+
+Student can enroll in many courses.
+Course can have many students.
+
+STUDENT
+
+| student_id | student_name |
+|------------|--------------|
+| 1          | Amit         |
+| 2          | Neha         |
+
+COURSE
+
+| course_id | course_name |
+|-----------|-------------|
+| 101       | Java        |
+| 102       | SQL         |
+
+STUDENT_COURSE
+
+| student_id | course_id |
+|------------|-----------|
+| 1          | 101       |
+| 1          | 102       |
+| 2          | 102       |
+
+Query:
+
+SELECT s.student_name,
+       c.course_name
+FROM student s
+JOIN student_course sc
+ON s.student_id = sc.student_id
+JOIN course c
+ON sc.course_id = c.course_id;
+
+Output:
+
+| student_name | course_name |
+|--------------|-------------|
+| Amit         | Java        |
+| Amit         | SQL         |
+| Neha         | SQL         |
+
+Interview:
+
+Many-to-many relationships are handled using a junction/mapping table.
+
+==================================================
+28. DUPLICATES IN JOINS
+==================================================
+
+Joins can return duplicate-looking rows when relationship is one-to-many.
+
+Example:
+
+One customer has many orders.
+
+Customer table:
+
+| customer_id | name |
+|-------------|------|
+| 1           | Amit |
+
+Orders table:
+
+| order_id | customer_id |
+|----------|-------------|
+| 101      | 1           |
+| 102      | 1           |
+
+Query:
+
+SELECT c.name,
+       o.order_id
+FROM customer c
+JOIN orders o
+ON c.customer_id = o.customer_id;
+
+Output:
+
+| name | order_id |
+|------|----------|
+| Amit | 101      |
+| Amit | 102      |
+
+This is not wrong.
+It happens because Amit has two orders.
+
+Interview:
+
+Duplicates in joins usually happen because of one-to-many relationships or incorrect join conditions.
+
+==================================================
+29. ACCIDENTAL CROSS JOIN
+==================================================
+
+Wrong query:
+
+SELECT *
+FROM employee e,
+department d;
+
+If no join condition is given, it creates Cartesian product.
+
+Another wrong query:
+
+SELECT *
+FROM employee e
+JOIN department d
+ON 1 = 1;
+
+This matches every row with every row.
+
+Always use correct join condition.
+
+==================================================
+30. MOST COMMON JOIN INTERVIEW QUESTIONS
+==================================================
+
+1. What is JOIN?
+2. Why do we need JOIN?
+3. Explain INNER JOIN.
+4. Explain LEFT JOIN.
+5. Explain RIGHT JOIN.
+6. Explain FULL OUTER JOIN.
+7. INNER JOIN vs LEFT JOIN?
+8. LEFT JOIN vs RIGHT JOIN?
+9. What is CROSS JOIN?
+10. What is SELF JOIN?
+11. How to find employees without department?
+12. How to find departments without employees?
+13. What happens when JOIN condition is missing?
+14. Why duplicates come in JOIN?
+15. What is many-to-many relationship?
+16. What is a mapping table?
+17. What is NATURAL JOIN?
+18. What is USING clause?
+19. JOIN vs Subquery?
+20. EXISTS vs JOIN?
+21. How JOIN works internally?
+22. What are Nested Loop Join, Hash Join, Merge Join?
+23. Why JOIN query becomes slow?
+24. How to optimize JOIN query?
+25. Can NULL match NULL in JOIN?
+
+==================================================
+31. INTERVIEW ANSWERS
+==================================================
+
+Q1. What is JOIN?
+
+JOIN combines rows from two or more tables based on a related column.
+
+------------------------------------------
+
+Q2. INNER JOIN vs LEFT JOIN?
+
+INNER JOIN returns only matching rows from both tables.
+
+LEFT JOIN returns all rows from the left table and matching rows from the right table. If no match is found, right table columns are NULL.
+
+------------------------------------------
+
+Q3. What is CROSS JOIN?
+
+CROSS JOIN returns Cartesian product. Every row from first table is combined with every row from second table.
+
+------------------------------------------
+
+Q4. What is SELF JOIN?
+
+SELF JOIN means joining a table with itself. It is commonly used for employee-manager hierarchy.
+
+------------------------------------------
+
+Q5. How to find employees without department?
+
+Use LEFT JOIN and filter where right side primary key is NULL.
+
+SELECT e.*
+FROM employee e
+LEFT JOIN department d
+ON e.dept_id = d.dept_id
+WHERE d.dept_id IS NULL;
+
+------------------------------------------
+
+Q6. Why duplicates come in joins?
+
+Duplicates usually come because of one-to-many relationship or wrong join condition.
+
+Example:
+One customer can have many orders, so customer details repeat for every order.
+
+------------------------------------------
+
+Q7. How to optimize JOIN?
+
+- Add index on join columns
+- Use correct join condition
+- Avoid SELECT *
+- Filter unnecessary rows
+- Use EXPLAIN ANALYZE
+- Avoid joining unnecessary tables
+
+------------------------------------------
+
+Q8. JOIN vs Subquery?
+
+JOIN is commonly used to fetch combined data from multiple tables.
+
+Subquery is useful when filtering based on another query result.
+
+Both can sometimes solve the same problem.
+
+------------------------------------------
+
+Q9. What happens if JOIN condition is missing?
+
+It creates Cartesian product, meaning every row from one table combines with every row from another table.
+
+------------------------------------------
+
+Q10. Can NULL match NULL in JOIN?
+
+No. NULL does not match NULL using normal equality condition.
+
+
+==================================================
+32. PRACTICE QUERIES
+==================================================
+
+1. Find all employees with department names.
+2. Find employees without department.
+3. Find departments without employees.
+4. Find employee count department-wise.
+5. Find departments having more than 5 employees.
+6. Find all customers with their orders.
+7. Find customers who never placed any order.
+8. Find products without category.
+9. Find order details with customer and product.
+10. Find employee and manager name using self join.
+
+==================================================
+33. QUICK REVISION
+==================================================
+
+JOIN
+    -> Combines data from multiple tables
+
+INNER JOIN
+    -> Only matching rows
+
+LEFT JOIN
+    -> All left rows + matching right rows
+
+RIGHT JOIN
+    -> All right rows + matching left rows
+
+FULL JOIN
+    -> All rows from both tables
+
+CROSS JOIN
+    -> All combinations
+
+SELF JOIN
+    -> Table joined with itself
+
+ON
+    -> Join condition
+
+USING
+    -> Short form when column name is same
+
+NATURAL JOIN
+    -> Auto join on same column names
+
+LEFT JOIN + IS NULL
+    -> Find unmatched records
+
+Many-to-Many
+    -> Requires mapping table
+
+Duplicates
+    -> Often due to one-to-many relationship
+
+Performance
+    -> Index join columns and check EXPLAIN
+
+Internal Join Algorithms
+    -> Nested Loop Join
+    -> Hash Join
+    -> Merge Join

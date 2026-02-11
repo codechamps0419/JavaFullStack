@@ -1,0 +1,1288 @@
+/* @Author: Dynamic Duo Learners */
+
+==================================================
+1. WHAT IS AN INDEX IN SQL?
+==================================================
+
+An Index is a database object used to speed up data retrieval.
+
+Simple meaning:
+
+Index works like an index page of a book.
+
+If you want to find a topic in a book, you do not read every page.
+You check the index page, find the page number, and directly go there.
+
+Similarly, in database:
+
+Without index:
+Database may scan the whole table.
+
+With index:
+Database can quickly locate required rows.
+
+Interview Answer:
+
+An index is a data structure that improves SELECT query performance by allowing the database to find rows faster without scanning the entire table.
+
+==================================================
+2. WHY DO WE NEED INDEXES?
+==================================================
+
+Indexes are needed to improve query performance.
+
+They are useful for:
+
+1. Searching data faster
+2. Filtering rows faster
+3. Joining tables faster
+4. Sorting data faster
+5. Enforcing uniqueness
+6. Improving WHERE, JOIN, ORDER BY, GROUP BY performance
+
+Example:
+
+SELECT *
+FROM employee
+WHERE emp_id = 101;
+
+If emp_id has an index, database can quickly find employee 101.
+
+Without index, database may check every row.
+
+==================================================
+3. SAMPLE TABLE
+==================================================
+
+EMPLOYEE table:
+
+| emp_id | emp_name | email           | dept_id | salary | city  |
+|--------|----------|-----------------|---------|--------|-------|
+| 101    | Amit     | a@gmail.com     | 1       | 50000  | Pune  |
+| 102    | Rahul    | r@gmail.com     | 1       | 70000  | Pune  |
+| 103    | Neha     | n@gmail.com     | 2       | 80000  | Delhi |
+| 104    | Pooja    | p@gmail.com     | 2       | 40000  | Mumbai|
+
+==================================================
+4. FULL TABLE SCAN / SEQUENTIAL SCAN
+==================================================
+
+Without index, database checks rows one by one.
+
+Example:
+
+SELECT *
+FROM employee
+WHERE email = 'n@gmail.com';
+
+If email has no index:
+
+Database may scan:
+
+Row 1 -> Not match
+Row 2 -> Not match
+Row 3 -> Match
+Row 4 -> Not match
+
+This is called:
+- Full Table Scan
+- Sequential Scan
+
+Interview Answer:
+
+Sequential Scan means database scans all rows of the table to find matching records.
+
+==================================================
+5. INDEX SCAN
+==================================================
+
+If index exists, database uses index structure to find row quickly.
+
+Example:
+
+CREATE INDEX idx_employee_email
+ON employee(email);
+
+Now query:
+
+SELECT *
+FROM employee
+WHERE email = 'n@gmail.com';
+
+Database can use idx_employee_email to quickly locate the row.
+
+Interview Answer:
+
+Index Scan means database uses an index to locate matching rows instead of scanning the entire table.
+
+==================================================
+6. HOW TO CREATE INDEX
+==================================================
+
+Syntax:
+
+CREATE INDEX index_name
+ON table_name(column_name);
+
+Example:
+
+CREATE INDEX idx_employee_email
+ON employee(email);
+
+Naming convention:
+
+idx_table_column
+
+Example:
+
+idx_employee_email
+
+==================================================
+7. HOW TO DROP INDEX
+==================================================
+
+PostgreSQL:
+
+DROP INDEX index_name;
+
+Example:
+
+DROP INDEX idx_employee_email;
+
+Important:
+
+Dropping index does not delete table data.
+It only removes the index structure.
+
+==================================================
+8. PRIMARY KEY INDEX
+==================================================
+
+When we create Primary Key, database automatically creates an index.
+
+Example:
+
+CREATE TABLE employee (
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(100)
+);
+
+Here, emp_id automatically gets an index.
+
+Interview Answer:
+
+Primary Key automatically creates a unique index to enforce uniqueness and speed up lookup.
+
+==================================================
+9. UNIQUE INDEX
+==================================================
+
+Unique Index prevents duplicate values.
+
+Example:
+
+CREATE UNIQUE INDEX idx_employee_email_unique
+ON employee(email);
+
+Now duplicate emails are not allowed.
+
+Use case:
+- Email
+- Username
+- PAN number
+- Employee code
+
+Interview Answer:
+
+A unique index improves lookup speed and also ensures duplicate values are not allowed.
+
+==================================================
+10. NORMAL INDEX VS UNIQUE INDEX
+==================================================
+
+Normal Index:
+- Improves search performance
+- Allows duplicate values
+
+Unique Index:
+- Improves search performance
+- Does not allow duplicate values
+
+Example:
+
+city can have duplicates.
+So city can have normal index.
+
+email should be unique.
+So email can have unique index.
+
+==================================================
+11. B-TREE INDEX
+==================================================
+
+B-Tree is the most common index type.
+
+Most databases use B-Tree index by default.
+
+B-Tree is useful for:
+
+1. Equality search
+2. Range search
+3. Sorting
+4. Less than / greater than queries
+
+Examples:
+
+WHERE emp_id = 101
+
+WHERE salary > 50000
+
+WHERE salary BETWEEN 40000 AND 80000
+
+ORDER BY salary
+
+Interview Answer:
+
+B-Tree index stores data in sorted tree structure and helps database quickly search, sort, and perform range queries.
+
+==================================================
+12. HOW B-TREE INDEX WORKS SIMPLY
+==================================================
+
+Imagine salary values:
+
+30000
+40000
+50000
+60000
+70000
+80000
+90000
+
+B-Tree keeps values sorted.
+
+When searching salary = 70000:
+
+Database does not check all rows.
+It navigates through tree levels and finds matching location quickly.
+
+Similar to binary search concept, but optimized for database storage.
+
+==================================================
+13. HASH INDEX
+==================================================
+
+Hash Index uses hashing.
+
+Useful mainly for equality search.
+
+Example:
+
+WHERE email = 'a@gmail.com'
+
+Hash index is not good for range queries.
+
+Not good for:
+
+WHERE salary > 50000
+
+WHERE salary BETWEEN 40000 AND 80000
+
+Interview Answer:
+
+Hash index is useful for equality comparisons but not suitable for range queries or sorting.
+
+==================================================
+14. B-TREE VS HASH INDEX
+==================================================
+
+B-Tree:
+- Good for equality
+- Good for range queries
+- Good for sorting
+- Most commonly used
+
+Hash:
+- Good for equality only
+- Not useful for range
+- Not useful for sorting
+
+Interview Answer:
+
+B-Tree is more general-purpose, while Hash index is mainly useful for equality lookups.
+
+==================================================
+15. COMPOSITE INDEX
+==================================================
+
+Composite Index is an index on multiple columns.
+
+Example:
+
+CREATE INDEX idx_employee_dept_city
+ON employee(dept_id, city);
+
+This index is useful for queries like:
+
+SELECT *
+FROM employee
+WHERE dept_id = 1
+AND city = 'Pune';
+
+Interview Answer:
+
+A composite index is created on multiple columns and is useful when queries filter using those columns together.
+
+==================================================
+16. ORDER MATTERS IN COMPOSITE INDEX
+==================================================
+
+Composite index:
+
+CREATE INDEX idx_employee_dept_city
+ON employee(dept_id, city);
+
+This index can be useful for:
+
+WHERE dept_id = 1
+
+WHERE dept_id = 1 AND city = 'Pune'
+
+But may not be fully useful for:
+
+WHERE city = 'Pune'
+
+Why?
+
+Because index starts with dept_id.
+
+This is called leftmost prefix rule.
+
+==================================================
+17. LEFTMOST PREFIX RULE
+==================================================
+
+For composite index:
+
+(dept_id, city, salary)
+
+Index can be used for:
+
+1. WHERE dept_id = 1
+
+2. WHERE dept_id = 1 AND city = 'Pune'
+
+3. WHERE dept_id = 1 AND city = 'Pune' AND salary > 50000
+
+May not be used properly for:
+
+WHERE city = 'Pune'
+
+WHERE salary > 50000
+
+Interview Answer:
+
+In a composite index, database can efficiently use the index from the leftmost column onward. This is called leftmost prefix rule.
+
+==================================================
+18. COVERING INDEX
+==================================================
+
+A Covering Index contains all columns needed by the query.
+
+Example:
+
+CREATE INDEX idx_employee_dept_salary_name
+ON employee(dept_id, salary, emp_name);
+
+Query:
+
+SELECT emp_name,
+       salary
+FROM employee
+WHERE dept_id = 1;
+
+If all required data is available in index, database may not need to visit table.
+
+This can be very fast.
+
+Interview Answer:
+
+A covering index is an index that contains all columns required by the query, so database can answer query using only the index.
+
+==================================================
+19. PARTIAL INDEX
+==================================================
+
+Partial Index is created only for selected rows.
+
+PostgreSQL supports partial indexes.
+
+Example:
+
+CREATE INDEX idx_active_employee_email
+ON employee(email)
+WHERE status = 'ACTIVE';
+
+Useful when most queries filter active employees only.
+
+Query:
+
+SELECT *
+FROM employee
+WHERE status = 'ACTIVE'
+AND email = 'a@gmail.com';
+
+Interview Answer:
+
+Partial index indexes only rows matching a condition and is useful when queries frequently filter a subset of data.
+
+==================================================
+20. FUNCTION-BASED INDEX / EXPRESSION INDEX
+==================================================
+
+Sometimes queries use functions.
+
+Example:
+
+SELECT *
+FROM employee
+WHERE LOWER(email) = 'a@gmail.com';
+
+Normal index on email may not be used because function is applied.
+
+Solution:
+
+CREATE INDEX idx_employee_lower_email
+ON employee(LOWER(email));
+
+Now query can use expression index.
+
+Interview Answer:
+
+Function-based index is created on an expression or function result and helps queries that use functions in WHERE clause.
+
+==================================================
+21. INDEX ON FOREIGN KEY
+==================================================
+
+Foreign keys are commonly used in joins.
+
+Example:
+
+employee.dept_id references department.dept_id.
+
+Query:
+
+SELECT e.emp_name,
+       d.dept_name
+FROM employee e
+JOIN department d
+ON e.dept_id = d.dept_id;
+
+Index on employee.dept_id can improve join performance.
+
+CREATE INDEX idx_employee_dept_id
+ON employee(dept_id);
+
+Interview Answer:
+
+Indexing foreign key columns can improve join performance and delete/update checks on parent table.
+
+==================================================
+22. INDEX AND ORDER BY
+==================================================
+
+Index can help ORDER BY if data is already sorted in index.
+
+Example:
+
+CREATE INDEX idx_employee_salary
+ON employee(salary);
+
+Query:
+
+SELECT *
+FROM employee
+ORDER BY salary;
+
+Database may use index order instead of sorting separately.
+
+Interview Answer:
+
+Indexes store values in sorted order, so they can help ORDER BY queries.
+
+==================================================
+23. INDEX AND GROUP BY
+==================================================
+
+Index can help GROUP BY when grouping column is indexed.
+
+Example:
+
+CREATE INDEX idx_employee_dept
+ON employee(dept_id);
+
+Query:
+
+SELECT dept_id,
+       COUNT(*)
+FROM employee
+GROUP BY dept_id;
+
+Database may use index to group faster.
+
+==================================================
+24. INDEX AND JOIN
+==================================================
+
+Indexes improve joins when join columns are indexed.
+
+Example:
+
+employee.dept_id = department.dept_id
+
+Indexes:
+- department.dept_id usually indexed as primary key
+- employee.dept_id should also be indexed
+
+Query:
+
+SELECT e.emp_name,
+       d.dept_name
+FROM employee e
+JOIN department d
+ON e.dept_id = d.dept_id;
+
+Interview Answer:
+
+Indexes on join columns reduce lookup cost and improve join performance.
+
+==================================================
+25. INDEX AND LIKE
+==================================================
+
+Index may work for prefix search:
+
+WHERE name LIKE 'A%'
+
+Because database can search names starting with A.
+
+Index may not work effectively for contains search:
+
+WHERE name LIKE '%mit%'
+
+Because value can appear anywhere.
+
+Interview Answer:
+
+B-Tree index can help prefix LIKE searches but usually not leading wildcard searches.
+
+==================================================
+26. INDEX AND NULL
+==================================================
+
+Indexes can include NULL values depending on database.
+
+Example:
+
+WHERE manager_id IS NULL
+
+Index may be used if manager_id is indexed.
+
+PostgreSQL indexes can store NULL values.
+
+Partial index can be useful:
+
+CREATE INDEX idx_employee_manager_null
+ON employee(manager_id)
+WHERE manager_id IS NULL;
+
+==================================================
+27. WHEN INDEX IS USED
+==================================================
+
+Index is usually used when:
+
+1. Query filters selective data
+2. WHERE column has index
+3. JOIN column has index
+4. ORDER BY column has index
+5. GROUP BY column has index
+6. Query returns small percentage of rows
+7. Statistics show index is beneficial
+
+Example:
+
+SELECT *
+FROM employee
+WHERE emp_id = 101;
+
+Index likely used.
+
+==================================================
+28. WHEN INDEX MAY NOT BE USED
+==================================================
+
+Index may not be used when:
+
+1. Table is very small
+2. Query returns large percentage of rows
+3. Function is applied on indexed column
+4. Leading wildcard LIKE is used
+5. Data type mismatch occurs
+6. Low selectivity column
+7. Outdated statistics
+8. OR conditions are complex
+
+Example:
+
+SELECT *
+FROM employee
+WHERE city = 'Pune';
+
+If most employees are from Pune, database may prefer sequential scan.
+
+==================================================
+29. SELECTIVITY
+==================================================
+
+Selectivity means how unique or filtered a column is.
+
+High Selectivity:
+- email
+- emp_id
+- username
+
+Low Selectivity:
+- gender
+- status
+- boolean column
+
+Index is more useful on high-selectivity columns.
+
+Example:
+
+email = 'a@gmail.com' returns one row.
+Good index candidate.
+
+status = 'ACTIVE' may return 90% rows.
+Not always good index candidate.
+
+Interview Answer:
+
+High selectivity means the column filters out many rows. Indexes are more effective on high-selectivity columns.
+
+==================================================
+30. WHY TOO MANY INDEXES ARE BAD
+==================================================
+
+Indexes speed up SELECT queries but slow down write operations.
+
+Whenever INSERT, UPDATE, DELETE happens:
+
+Database must update:
+- Table data
+- Related indexes
+
+Problems of too many indexes:
+1. Slow INSERT
+2. Slow UPDATE
+3. Slow DELETE
+4. More disk space
+5. More maintenance
+6. Slower bulk load
+7. More planning overhead
+
+Interview Answer:
+
+Too many indexes are bad because every write operation must also update indexes, causing extra storage and maintenance overhead.
+
+==================================================
+31. INDEX IMPACT ON INSERT
+==================================================
+
+When new row is inserted:
+
+Database inserts row into table.
+Then updates all indexes on that table.
+
+If table has 10 indexes, database may update 10 index structures.
+
+So write performance decreases.
+
+==================================================
+32. INDEX IMPACT ON UPDATE
+==================================================
+
+If indexed column is updated, index also needs update.
+
+Example:
+
+UPDATE employee
+SET email = 'new@gmail.com'
+WHERE emp_id = 101;
+
+If email is indexed, database updates email index too.
+
+==================================================
+33. INDEX IMPACT ON DELETE
+==================================================
+
+When row is deleted:
+
+Database removes row from table.
+Also removes related entries from indexes.
+
+More indexes = more work.
+
+==================================================
+34. CLUSTERED INDEX
+==================================================
+
+Clustered Index determines physical order of data rows.
+
+Important:
+
+Not all databases use the term the same way.
+
+In SQL Server:
+- Table can have one clustered index
+- Data rows are physically stored in clustered index order
+
+In PostgreSQL:
+- CLUSTER command can physically reorder table based on index
+- But PostgreSQL does not automatically maintain clustered order forever
+
+Interview Answer:
+
+A clustered index defines physical order of table data. A table can generally have only one clustered index because data can be physically ordered only one way.
+
+==================================================
+35. NON-CLUSTERED INDEX
+==================================================
+
+Non-clustered index is separate from table data.
+
+It stores indexed column values and pointer/reference to actual row.
+
+A table can have multiple non-clustered indexes.
+
+Interview Answer:
+
+A non-clustered index is a separate structure that stores key values and references to actual table rows.
+
+==================================================
+36. CLUSTERED VS NON-CLUSTERED INDEX
+==================================================
+
+Clustered Index:
+- Controls physical order of data
+- Usually one per table
+- Fast for range queries on clustered key
+
+Non-Clustered Index:
+- Separate structure
+- Multiple allowed
+- Points to actual rows
+
+Interview Answer:
+
+Clustered index stores data rows in index order, while non-clustered index stores pointers to actual rows.
+
+==================================================
+37. POSTGRESQL INDEX TYPES
+==================================================
+
+PostgreSQL supports multiple index types:
+
+1. B-tree
+2. Hash
+3. GIN
+4. GiST
+5. SP-GiST
+6. BRIN
+
+For Java backend interviews, mostly focus on:
+- B-tree
+- Hash basics
+- GIN for JSONB/full text/arrays
+- BRIN basics for large ordered tables
+
+==================================================
+38. GIN INDEX
+==================================================
+
+GIN stands for Generalized Inverted Index.
+
+Useful for:
+- JSONB
+- Arrays
+- Full-text search
+
+Example:
+
+CREATE INDEX idx_product_attributes
+ON product
+USING GIN(attributes);
+
+If attributes is JSONB, GIN helps search inside JSON.
+
+Interview Answer:
+
+GIN index is useful for composite values like JSONB, arrays, and full-text search in PostgreSQL.
+
+==================================================
+39. BRIN INDEX
+==================================================
+
+BRIN stands for Block Range Index.
+
+Useful for very large tables where data is naturally ordered.
+
+Example:
+- Logs table ordered by created_at
+- Time-series data
+- Audit table
+
+BRIN is smaller than B-tree.
+
+Example:
+
+CREATE INDEX idx_logs_created_at_brin
+ON logs
+USING BRIN(created_at);
+
+Interview Answer:
+
+BRIN index is useful for very large tables with naturally ordered data and requires much less storage than B-tree.
+
+==================================================
+40. EXPLAIN AND INDEX USAGE
+==================================================
+
+Use EXPLAIN to check query plan.
+
+Example:
+
+EXPLAIN
+SELECT *
+FROM employee
+WHERE email = 'a@gmail.com';
+
+Use EXPLAIN ANALYZE to execute and show actual runtime.
+
+EXPLAIN ANALYZE
+SELECT *
+FROM employee
+WHERE email = 'a@gmail.com';
+
+Look for:
+- Seq Scan
+- Index Scan
+- Bitmap Index Scan
+- Bitmap Heap Scan
+
+==================================================
+41. SEQ SCAN VS INDEX SCAN
+==================================================
+
+Seq Scan:
+- Reads table rows sequentially
+- Good for small table or large result
+
+Index Scan:
+- Uses index to find rows
+- Good for selective queries
+
+Bitmap Index Scan:
+- Uses index to find many matching rows
+- Then fetches heap/table rows efficiently
+
+Interview Answer:
+
+Seq Scan scans full table, Index Scan uses index to locate rows, Bitmap Scan is often used when many rows match but index is still useful.
+
+==================================================
+42. INDEX ONLY SCAN
+==================================================
+
+Index Only Scan means database gets all required columns from the index itself.
+
+Example:
+
+Index:
+
+CREATE INDEX idx_employee_dept_salary
+ON employee(dept_id, salary);
+
+Query:
+
+SELECT dept_id,
+       salary
+FROM employee
+WHERE dept_id = 1;
+
+If data is available in index, database may avoid reading table.
+
+Interview Answer:
+
+Index Only Scan happens when all required columns are available in index, reducing table access.
+
+==================================================
+43. COMMON INDEXING STRATEGY
+==================================================
+
+Good candidates for index:
+
+1. Primary keys
+2. Foreign keys
+3. Columns used in WHERE
+4. Columns used in JOIN
+5. Columns used in ORDER BY
+6. Columns used in GROUP BY
+7. High selectivity columns
+8. Frequently searched columns
+
+Avoid indexing:
+
+1. Very small tables
+2. Low selectivity columns
+3. Columns frequently updated
+4. Unused columns
+5. Every column blindly
+
+==================================================
+44. INDEX DESIGN EXAMPLE
+==================================================
+
+Query:
+
+SELECT *
+FROM orders
+WHERE customer_id = 101
+AND status = 'PAID'
+ORDER BY order_date DESC;
+
+Possible index:
+
+CREATE INDEX idx_orders_customer_status_date
+ON orders(customer_id, status, order_date DESC);
+
+Why this order?
+
+customer_id:
+Highly selective and filtered
+
+status:
+Additional filter
+
+order_date:
+Used for sorting
+
+==================================================
+45. INDEX FOR PAGINATION
+==================================================
+
+Offset pagination can become slow:
+
+SELECT *
+FROM orders
+ORDER BY order_date DESC
+LIMIT 10 OFFSET 100000;
+
+Better approach:
+
+Keyset pagination.
+
+SELECT *
+FROM orders
+WHERE order_date < '2026-01-01'
+ORDER BY order_date DESC
+LIMIT 10;
+
+Index:
+
+CREATE INDEX idx_orders_order_date
+ON orders(order_date DESC);
+
+Interview Point:
+
+Indexes help pagination, but large OFFSET can still be slow.
+
+==================================================
+46. INDEX MAINTENANCE
+==================================================
+
+Indexes need maintenance.
+
+In PostgreSQL:
+- VACUUM helps clean dead tuples
+- ANALYZE updates statistics
+- REINDEX can rebuild corrupted/bloated index
+
+Commands:
+
+ANALYZE employee;
+
+REINDEX INDEX idx_employee_email;
+
+Interview Answer:
+
+Indexes can become bloated, and statistics can become outdated, so maintenance like VACUUM, ANALYZE, and REINDEX may be needed.
+
+==================================================
+47. COMMON MISTAKES
+==================================================
+
+Mistake 1:
+
+Creating index on every column.
+
+Problem:
+Slows writes and wastes storage.
+
+------------------------------------------
+
+Mistake 2:
+
+Ignoring composite index column order.
+
+Problem:
+Index may not be used due to leftmost prefix rule.
+
+------------------------------------------
+
+Mistake 3:
+
+Using function on indexed column without expression index.
+
+Example:
+
+WHERE LOWER(email) = 'a@gmail.com'
+
+Normal email index may not be used.
+
+------------------------------------------
+
+Mistake 4:
+
+Expecting index to always be used.
+
+Database optimizer may choose Seq Scan if it is cheaper.
+
+------------------------------------------
+
+Mistake 5:
+
+Using leading wildcard LIKE.
+
+WHERE name LIKE '%abc%'
+
+B-tree index usually not useful.
+
+------------------------------------------
+
+Mistake 6:
+
+Not indexing foreign keys.
+
+Joins and parent deletes/updates can become slow.
+
+==================================================
+48. REAL PROJECT USE CASES
+==================================================
+
+1. Login by email
+
+CREATE UNIQUE INDEX idx_user_email
+ON users(email);
+
+2. Orders by customer
+
+CREATE INDEX idx_orders_customer_id
+ON orders(customer_id);
+
+3. Search products by category
+
+CREATE INDEX idx_product_category
+ON product(category_id);
+
+4. Fetch latest transactions
+
+CREATE INDEX idx_transaction_account_date
+ON transaction(account_id, txn_date DESC);
+
+5. JSONB search
+
+CREATE INDEX idx_product_attr_gin
+ON product USING GIN(attributes);
+
+==================================================
+49. MOST ASKED INTERVIEW QUESTIONS
+==================================================
+
+1. What is Index?
+2. Why do we need Index?
+3. How does Index work?
+4. What is B-Tree Index?
+5. B-Tree vs Hash Index?
+6. What is Composite Index?
+7. What is Leftmost Prefix Rule?
+8. What is Unique Index?
+9. Primary Key vs Unique Index?
+10. Clustered vs Non-Clustered Index?
+11. Why too many indexes are bad?
+12. When index is not used?
+13. What is Selectivity?
+14. How index improves JOIN?
+15. How index improves ORDER BY?
+16. What is Covering Index?
+17. What is Index Only Scan?
+18. What is Partial Index?
+19. What is Function-Based Index?
+20. What is GIN Index?
+21. What is BRIN Index?
+22. What is EXPLAIN?
+23. What is Seq Scan vs Index Scan?
+24. How to design index for query?
+25. How to debug slow query using index?
+
+==================================================
+50. INTERVIEW ANSWERS
+==================================================
+
+Q1. What is Index?
+
+An index is a data structure that improves data retrieval speed by helping the database find rows without scanning the whole table.
+
+------------------------------------------
+
+Q2. Why too many indexes are bad?
+
+Because INSERT, UPDATE, and DELETE operations must also update indexes, causing extra storage and maintenance overhead.
+
+------------------------------------------
+
+Q3. What is Composite Index?
+
+A composite index is an index created on multiple columns, useful when queries filter or sort using those columns together.
+
+------------------------------------------
+
+Q4. What is Leftmost Prefix Rule?
+
+In a composite index, database can efficiently use the index from the leftmost column onward.
+
+------------------------------------------
+
+Q5. B-Tree vs Hash Index?
+
+B-Tree supports equality, range queries, and sorting.
+Hash index mainly supports equality lookup.
+
+------------------------------------------
+
+Q6. Clustered vs Non-Clustered Index?
+
+Clustered index stores table data in index order.
+Non-clustered index is a separate structure with pointers to actual rows.
+
+------------------------------------------
+
+Q7. When index may not be used?
+
+When table is small, query returns many rows, function is applied on column, leading wildcard LIKE is used, or column has low selectivity.
+
+------------------------------------------
+
+Q8. What is Covering Index?
+
+A covering index contains all columns required by the query, so database can answer query using only the index.
+
+------------------------------------------
+
+Q9. What is Partial Index?
+
+Partial index indexes only rows matching a condition, useful for frequently queried subsets.
+
+------------------------------------------
+
+Q10. How to check index usage?
+
+Use EXPLAIN or EXPLAIN ANALYZE and check whether query uses Seq Scan, Index Scan, Bitmap Scan, or Index Only Scan.
+
+==================================================
+51. QUICK REVISION
+==================================================
+
+Index
+    -> Speeds up SELECT queries
+
+Without Index
+    -> Sequential Scan
+
+With Index
+    -> Faster lookup
+
+Primary Key
+    -> Automatically indexed
+
+Unique Index
+    -> Prevents duplicates
+
+B-Tree
+    -> Default and most common
+    -> Equality, range, sorting
+
+Hash
+    -> Equality lookup
+
+Composite Index
+    -> Multiple columns
+
+Leftmost Prefix
+    -> Column order matters
+
+Covering Index
+    -> Query satisfied from index only
+
+Partial Index
+    -> Index selected rows only
+
+Expression Index
+    -> Index on function/expression
+
+Foreign Key Index
+    -> Improves joins
+
+Too Many Indexes
+    -> Slows INSERT/UPDATE/DELETE
+
+Selectivity
+    -> How effectively column filters rows
+
+EXPLAIN
+    -> Shows query plan
+
+Seq Scan
+    -> Full table scan
+
+Index Scan
+    -> Uses index
+
+Bitmap Scan
+    -> Index + heap fetch
+
+Index Only Scan
+    -> Uses only index
+
+PostgreSQL Special Indexes
+    -> GIN for JSONB/arrays/full-text
+    -> BRIN for huge ordered tables
+
+Most Important Interview Points:
+    -> Index improves reads but slows writes
+    -> Composite index column order matters
+    -> Index may not always be used
+    -> Use EXPLAIN ANALYZE to verify

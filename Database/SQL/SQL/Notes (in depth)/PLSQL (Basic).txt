@@ -1,0 +1,925 @@
+
+/* @Author: Dynamic Duo Learners */
+
+What is PL/SQL?
+---------------
+PL/SQL (Procedural Language/SQL) is Oracle's extension of SQL.
+It combines SQL with programming features like:
+- Variables
+- Conditions
+- Loops
+- Procedures
+- Functions
+- Exception Handling
+
+Formula:
+PL/SQL = SQL + Programming Logic
+
+----------------------------------------
+PL/SQL Block Structure
+----------------------------------------
+
+DECLARE
+   -- Variables
+BEGIN
+   -- Statements
+EXCEPTION
+   -- Error handling
+END;
+/
+
+Sections:
+- DECLARE   : Variable declarations (Optional)
+- BEGIN     : Executable code (Mandatory)
+- EXCEPTION : Error handling (Optional)
+- END       : End of block
+
+----------------------------------------
+Variables
+----------------------------------------
+
+DECLARE
+   v_name VARCHAR2(50);
+   v_age NUMBER;
+BEGIN
+   v_name := 'John';
+   v_age := 25;
+END;
+/
+
+Common Data Types:
+- NUMBER
+- VARCHAR2(n)
+- DATE
+- BOOLEAN
+
+----------------------------------------
+1. CONDITIONAL STATEMENTS
+----------------------------------------
+
+Conditional statements are used to make decisions
+based on a condition.
+
+Syntax:
+
+IF condition THEN
+   statements;
+END IF;
+
+----------------------------------------
+IF Statement
+----------------------------------------
+
+Example:
+
+DECLARE
+   v_marks NUMBER := 80;
+BEGIN
+   IF v_marks >= 50 THEN
+      DBMS_OUTPUT.PUT_LINE('Pass');
+   END IF;
+END;
+/
+
+Output:
+Pass
+
+----------------------------------------
+IF - ELSE Statement
+----------------------------------------
+
+Syntax:
+
+IF condition THEN
+   statements;
+ELSE
+   statements;
+END IF;
+
+Example:
+
+DECLARE
+   v_marks NUMBER := 40;
+BEGIN
+   IF v_marks >= 50 THEN
+      DBMS_OUTPUT.PUT_LINE('Pass');
+   ELSE
+      DBMS_OUTPUT.PUT_LINE('Fail');
+   END IF;
+END;
+/
+
+Output:
+Fail
+
+----------------------------------------
+IF - ELSIF - ELSE Statement
+----------------------------------------
+
+Used when multiple conditions are checked.
+
+Syntax:
+
+IF condition1 THEN
+   statements;
+ELSIF condition2 THEN
+   statements;
+ELSIF condition3 THEN
+   statements;
+ELSE
+   statements;
+END IF;
+
+Example:
+
+DECLARE
+   v_marks NUMBER := 75;
+BEGIN
+   IF v_marks >= 90 THEN
+      DBMS_OUTPUT.PUT_LINE('Grade A');
+   ELSIF v_marks >= 75 THEN
+      DBMS_OUTPUT.PUT_LINE('Grade B');
+   ELSIF v_marks >= 50 THEN
+      DBMS_OUTPUT.PUT_LINE('Grade C');
+   ELSE
+      DBMS_OUTPUT.PUT_LINE('Fail');
+   END IF;
+END;
+/
+
+Output:
+Grade B
+
+----------------------------------------
+Nested IF Statement
+----------------------------------------
+
+Example:
+
+DECLARE
+   v_age NUMBER := 20;
+BEGIN
+   IF v_age >= 18 THEN
+      IF v_age >= 21 THEN
+         DBMS_OUTPUT.PUT_LINE('Adult');
+      ELSE
+         DBMS_OUTPUT.PUT_LINE('Young Adult');
+      END IF;
+   ELSE
+      DBMS_OUTPUT.PUT_LINE('Minor');
+   END IF;
+END;
+/
+
+----------------------------------------
+CASE Statement
+----------------------------------------
+
+Alternative to multiple IF statements.
+
+Syntax:
+
+CASE
+   WHEN condition1 THEN result1
+   WHEN condition2 THEN result2
+   ELSE result
+END CASE;
+
+Example:
+
+DECLARE
+   v_grade CHAR(1) := 'A';
+BEGIN
+   CASE v_grade
+      WHEN 'A' THEN
+         DBMS_OUTPUT.PUT_LINE('Excellent');
+      WHEN 'B' THEN
+         DBMS_OUTPUT.PUT_LINE('Good');
+      ELSE
+         DBMS_OUTPUT.PUT_LINE('Average');
+   END CASE;
+END;
+/
+
+----------------------------------------
+2. LOOPS
+----------------------------------------
+
+Loops are used to execute a block of code repeatedly.
+
+Types:
+1. Basic LOOP
+2. WHILE LOOP
+3. FOR LOOP
+
+----------------------------------------
+Basic LOOP
+----------------------------------------
+
+Syntax:
+
+LOOP
+   statements;
+   EXIT WHEN condition;
+END LOOP;
+
+Example:
+
+DECLARE
+   i NUMBER := 1;
+BEGIN
+   LOOP
+      DBMS_OUTPUT.PUT_LINE(i);
+      i := i + 1;
+
+      EXIT WHEN i > 5;
+   END LOOP;
+END;
+/
+
+Output:
+1
+2
+3
+4
+5
+
+----------------------------------------
+WHILE LOOP
+----------------------------------------
+
+Syntax:
+
+WHILE condition LOOP
+   statements;
+END LOOP;
+
+Example:
+
+DECLARE
+   i NUMBER := 1;
+BEGIN
+   WHILE i <= 5 LOOP
+      DBMS_OUTPUT.PUT_LINE(i);
+      i := i + 1;
+   END LOOP;
+END;
+/
+
+Output:
+1
+2
+3
+4
+5
+
+----------------------------------------
+FOR LOOP
+----------------------------------------
+
+Syntax:
+
+FOR variable IN start..end LOOP
+   statements;
+END LOOP;
+
+Example:
+
+BEGIN
+   FOR i IN 1..5 LOOP
+      DBMS_OUTPUT.PUT_LINE(i);
+   END LOOP;
+END;
+/
+
+Output:
+1
+2
+3
+4
+5
+
+----------------------------------------
+Reverse FOR LOOP
+----------------------------------------
+
+Syntax:
+
+FOR variable IN REVERSE start..end LOOP
+   statements;
+END LOOP;
+
+Example:
+
+BEGIN
+   FOR i IN REVERSE 1..5 LOOP
+      DBMS_OUTPUT.PUT_LINE(i);
+   END LOOP;
+END;
+/
+
+Output:
+5
+4
+3
+2
+1
+
+----------------------------------------
+LOOP CONTROL STATEMENTS
+----------------------------------------
+
+EXIT:
+Terminates the loop immediately.
+
+EXIT WHEN:
+Terminates loop when condition becomes TRUE.
+
+CONTINUE:
+Skips current iteration and moves to next.
+
+Example:
+
+BEGIN
+   FOR i IN 1..5 LOOP
+      CONTINUE WHEN i = 3;
+      DBMS_OUTPUT.PUT_LINE(i);
+   END LOOP;
+END;
+/
+
+Output:
+1
+2
+4
+5
+---------------------------------------------------------
+
+IMPORTANT TOPIC
+=========================================================
+
+1. SEQUENCE
+---------------------------------------------------------
+
+What is a Sequence?
+
+A Sequence is a database object used to generate unique
+numeric values automatically.
+
+Why do we need it?
+
+When multiple users insert records simultaneously,
+manually generating IDs can create duplicates.
+Sequence guarantees unique values.
+
+Example:
+
+CREATE SEQUENCE EMP_SEQ
+START WITH 1
+INCREMENT BY 1;
+
+Get Next Value:
+
+SELECT EMP_SEQ.NEXTVAL FROM DUAL;
+
+Real Project Usage:
+
+- Employee ID
+- Order ID
+- Transaction ID
+- Audit ID
+
+Java Perspective:
+
+Equivalent to AUTO_INCREMENT in MySQL.
+
+Hibernate:
+
+@GeneratedValue(strategy = GenerationType.SEQUENCE)
+
+Interview Questions:
+
+Q. Difference between NEXTVAL and CURRVAL?
+
+NEXTVAL:
+Generates next sequence value.
+
+CURRVAL:
+Returns current generated value.
+
+Advantages:
+
+- Unique values
+- High performance
+- Concurrent user support
+
+---------------------------------------------------------
+2. INDEX
+---------------------------------------------------------
+
+What is an Index?
+
+An Index is a database object that used to improves data retrieval
+speed.
+
+Without Index:
+
+SELECT * FROM EMPLOYEE
+WHERE EMAIL='abc@test.com';
+
+Oracle scans entire table.
+
+With Index:
+
+Oracle directly locates matching rows.
+
+Why Use Index?
+
+To improve SELECT query performance.
+
+Real Project Usage:
+
+Indexes are commonly created on:
+
+- Primary Keys
+- Foreign Keys
+- Email
+- Username
+- Status
+- Account Number
+
+Types:
+
+1. Single Column Index
+2. Composite Index
+3. Unique Index
+
+Example:
+
+CREATE INDEX IDX_EMP_EMAIL
+ON EMPLOYEE(EMAIL);
+
+Advantages:
+
+- Faster SELECT queries
+- Faster JOIN operations
+
+Disadvantages:
+
+- Consumes storage
+- Slower INSERT/UPDATE/DELETE
+
+Reason:
+Index also needs updating.
+
+Interview Questions:
+
+Q. Should every column have an index?
+
+No.
+
+Create indexes only on columns frequently used in:
+
+WHERE
+JOIN
+ORDER BY
+GROUP BY
+
+---------------------------------------------------------
+3. STORED PROCEDURE
+---------------------------------------------------------
+
+What is a Stored Procedure?
+
+A Stored Procedure is a precompiled collection of SQL
+statements stored in the database.
+
+Why Use Procedure?
+
+Instead of sending multiple SQL statements from Java,
+call a single procedure.
+
+Example:
+
+CREATE PROCEDURE UPDATE_SALARY
+(
+ P_EMP_ID NUMBER,
+ P_SALARY NUMBER
+)
+AS
+BEGIN
+ UPDATE EMPLOYEE
+ SET SALARY=P_SALARY
+ WHERE ID=P_EMP_ID;
+END;
+/
+
+Benefits:
+
+1. Better Performance
+
+Procedure is compiled once and reused.
+
+2. Reduced Network Traffic
+
+Instead of sending multiple SQL statements,
+send one procedure call.
+
+3. Security
+
+Users can execute procedure without direct access
+to tables.
+
+Real Project Usage:
+
+- Salary Processing
+- Batch Jobs
+- Data Migration
+- Monthly Reports
+
+Java JDBC Example:
+
+CallableStatement cs =
+conn.prepareCall("{call UPDATE_SALARY(?,?)}");
+
+Interview Questions:
+
+Q. Can a Procedure return values?
+
+Yes.
+
+Using OUT parameters.
+
+Q. Can Procedure be called from Java?
+
+Yes.
+
+Using CallableStatement.
+
+---------------------------------------------------------
+4. FUNCTION
+---------------------------------------------------------
+
+What is a Function?
+
+A Function is a PL/SQL program that always returns
+a value.
+
+Example:
+
+CREATE FUNCTION GET_BONUS
+(
+ P_SALARY NUMBER
+)
+RETURN NUMBER
+AS
+BEGIN
+ RETURN P_SALARY * .10;
+END;
+/
+
+Usage:
+
+SELECT GET_BONUS(50000)
+FROM DUAL;
+
+Real Project Usage:
+
+- Tax Calculation
+- Bonus Calculation
+- Interest Calculation
+- Currency Conversion
+
+Advantages:
+
+- Reusable logic
+- Can be used inside SQL statements
+
+Interview Questions:
+
+Procedure vs Function
+
+Procedure:
+- May not return value
+- Uses OUT parameters
+
+Function:
+- Must return value
+- Uses RETURN keyword
+- Can be used in SELECT statement
+
+---------------------------------------------------------
+5. TRIGGER
+---------------------------------------------------------
+
+What is a Trigger?
+
+A Trigger is a PL/SQL block that executes automatically
+when a database event occurs.
+
+Trigger Events:
+
+- INSERT
+- UPDATE
+- DELETE
+
+Example:
+
+CREATE TRIGGER TRG_EMP_AUDIT
+AFTER INSERT
+ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+ INSERT INTO AUDIT_LOG
+ VALUES('Employee Created');
+END;
+/
+
+Real Project Usage:
+
+- Audit Logging
+- History Tables
+- Data Validation
+- Auto Timestamp Updates
+
+Advantages:
+
+- Automatic execution
+- Enforces business rules
+- Maintains consistency
+
+Disadvantages:
+
+- Hidden logic
+- Difficult debugging
+
+Interview Questions:
+
+Q. Why are Triggers sometimes avoided?
+
+Because business logic becomes hidden inside the database
+and debugging becomes difficult.
+
+---------------------------------------------------------
+6. PACKAGE
+---------------------------------------------------------
+
+What is a Package?
+
+A Package groups related Procedures and Functions.
+
+Java Analogy:
+
+Oracle Package ≈ Java Service Class
+
+Example:
+
+EmployeeService
+
+contains:
+
+addEmployee()
+updateEmployee()
+deleteEmployee()
+
+Similarly: EMP_PACKAGE
+
+CREATE OR REPLACE PACKAGE EMP_PACKAGE AS
+    PROCEDURE show_message;
+    FUNCTION get_bonus(salary NUMBER) RETURN NUMBER;
+END emp_pkg;
+/
+
+contains:
+
+GET_BONUS
+ADD_EMPLOYEE
+UPDATE_EMPLOYEE
+DELETE_EMPLOYEE
+
+Advantages:
+
+- Better organization
+- Reusability
+- Easier maintenance
+- Better performance
+
+Real Project Usage:
+
+- CUSTOMER_PACKAGE
+- ACCOUNT_PACKAGE
+- PAYMENT_PACKAGE
+
+Interview Questions:
+
+Q. Why use Package instead of individual procedures?
+
+Because related logic remains organized in one place.
+
+---------------------------------------------------------
+7. CURSOR
+---------------------------------------------------------
+
+What is a Cursor?
+
+A Cursor is a pointer to query result rows.
+
+Why Use Cursor?
+
+PL/SQL processes one row at a time.
+
+Example:
+
+CURSOR EMP_CURSOR IS
+SELECT * FROM EMPLOYEE;
+
+Java Equivalent:
+
+ResultSet rs;
+
+while(rs.next())
+{
+}
+
+Types:
+
+1. Implicit Cursor
+2. Explicit Cursor
+
+Real Project Usage:
+
+- Batch Processing
+- Data Migration
+- Record Validation
+
+Interview Questions:
+
+Q. Why use Cursor?
+
+When records must be processed row by row.
+
+---------------------------------------------------------
+8. VIEW
+---------------------------------------------------------
+
+What is a View?
+
+A View is a virtual table based on a query.
+
+Example:
+
+CREATE VIEW ACTIVE_EMPLOYEES
+AS
+SELECT *
+FROM EMPLOYEE
+WHERE STATUS='ACTIVE';
+
+Benefits:
+
+- Simplifies complex queries
+- Security
+- Reusability
+
+Real Project Usage:
+
+Instead of writing large joins repeatedly,
+create a view and query it.
+
+Interview Questions:
+
+Q. Does a View store data?
+
+No.
+
+It stores only SQL definition.
+
+---------------------------------------------------------
+9. MATERIALIZED VIEW
+---------------------------------------------------------
+
+What is Materialized View?
+
+A Materialized View physically stores query results.
+
+Unlike View.
+
+Why Use It?
+
+For reporting and analytics.
+
+Example:
+
+Monthly Sales Summary
+
+Instead of calculating millions of rows every time,
+store the result.
+
+Advantages:
+
+- Faster reports
+- Better performance
+
+Disadvantages:
+
+- Consumes storage
+- Needs refresh
+
+Interview Questions:
+
+View vs Materialized View
+
+VIEW:
+- Virtual
+- No data stored
+- Always latest
+
+MATERIALIZED VIEW:
+- Physical
+- Data stored
+- Requires refresh
+
+---------------------------------------------------------
+10. EXCEPTION HANDLING
+---------------------------------------------------------
+
+What is Exception Handling?
+
+Used to handle runtime errors gracefully.
+
+Example:
+
+BEGIN
+ ...
+EXCEPTION
+ WHEN NO_DATA_FOUND THEN
+   ...
+ WHEN OTHERS THEN
+   ...
+END;
+/
+
+Common Exceptions:
+
+NO_DATA_FOUND
+TOO_MANY_ROWS
+ZERO_DIVIDE
+
+Java Equivalent:
+
+try
+{
+}
+catch(Exception e)
+{
+}
+
+Benefits:
+
+- Prevents application failure
+- Better error handling
+- Easier debugging
+
+---------------------------------------------------------
+11. TRANSACTIONS
+---------------------------------------------------------
+
+What is a Transaction?
+
+A Transaction is a group of SQL operations executed
+as one unit.
+
+Commands:
+
+COMMIT
+ROLLBACK
+SAVEPOINT
+
+Example:
+
+UPDATE ACCOUNT
+SET BALANCE=BALANCE-1000
+WHERE ID=1;
+
+UPDATE ACCOUNT
+SET BALANCE=BALANCE+1000
+WHERE ID=2;
+
+COMMIT;
+
+Java Equivalent:
+
+connection.commit();
+
+connection.rollback();
+
+Interview Questions:
+
+Q. Why use Transactions?
+
+To maintain data consistency.
+
+Example:
+
+Money transfer between accounts.
+
+-----------------------------------------------------

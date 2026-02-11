@@ -1,0 +1,354 @@
+/* @Author: Dynamic Duo Learners */
+
+
+==================================================
+1. WHAT IS A DATABASE?
+==================================================
+
+A Database is an organized collection of data stored electronically so 
+that it can be easily accessed, managed, updated, and retrieved.
+
+Real-world example:
+Imagine a school maintaining information about students.
+
+Student Table:
+
+| ID | Name   | City    |
+|----|--------|---------|
+| 1  | Rahul  | Pune    |
+| 2  | Amit   | Mumbai  |
+
+Instead of maintaining data in Excel files or notebooks, databases store data efficiently and securely.
+
+Benefits:
+- Fast retrieval of data
+- Data consistency
+- Data security
+- Multi-user access
+- Backup and recovery support
+
+Examples:
+- PostgreSQL
+- MySQL
+- Oracle
+- SQL Server
+
+==================================================
+2. DBMS VS RDBMS
+==================================================
+
+DBMS = Database Management System
+
+Used to store and manage data.
+
+Examples:
+- File System
+- XML Storage
+
+Limitations:
+- Less relationship support
+- Higher redundancy
+- Weaker consistency
+
+------------------------------------------
+
+RDBMS = Relational Database Management System
+
+Stores data in related tables.
+
+Examples:
+- PostgreSQL
+- MySQL
+- Oracle
+- SQL Server
+
+Advantages:
+- Supports relationships
+- Reduces duplicate data
+- Better consistency
+- Strong integrity rules
+
+Interview Answer:
+
+DBMS stores data generally, whereas RDBMS stores data in related tables using keys and constraints.
+
+==================================================
+3. TABLE
+==================================================
+
+A Table is a collection of related data organized into rows and columns.
+
+Example:
+
+EMPLOYEE
+
+| EMP_ID | NAME      | SALARY |
+|---------|-----------|---------|
+| 101     | Hrushikesh| 50000   |
+| 102     | Rahul     | 60000   |
+
+Table = Similar to an Excel Sheet.
+
+Interview:
+
+A table is the basic storage unit in a relational database.
+
+==================================================
+4. ROW (RECORD)
+==================================================
+
+A Row represents one complete record.
+
+Example:
+
+| EMP_ID | NAME      | SALARY |
+|---------|-----------|---------|
+| 101     | Hrushikesh| 50000   |
+
+Entire row represents one employee.
+
+Interview:
+
+A row represents a single record in a table.
+
+==================================================
+5. COLUMN (FIELD)
+==================================================
+
+A Column represents one attribute of data.
+
+Example:
+
+EMP_ID
+NAME
+SALARY
+
+Each column stores a specific type of information.
+
+Interview:
+
+A column represents a property or attribute of an entity.
+
+==================================================
+6. PRIMARY KEY
+==================================================
+
+Primary Key uniquely identifies each row.
+
+Rules:
+- Must be unique
+- Cannot be NULL
+- One primary key per table
+
+Example:
+
+| EMP_ID | NAME |
+|---------|------|
+| 101     | A    |
+| 102     | B    |
+
+EMP_ID is Primary Key.
+
+SQL:
+
+CREATE TABLE employee(
+    emp_id INT PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+Why needed?
+Without a primary key, we cannot uniquely identify a row.
+
+Interview:
+
+Primary Key uniquely identifies a record and does not allow NULL or duplicate values.
+
+==================================================
+7. FOREIGN KEY
+==================================================
+
+Foreign Key creates a relationship between two tables.
+
+Example:
+
+DEPARTMENT
+
+| DEPT_ID | NAME |
+|----------|------|
+| 1        | IT   |
+| 2        | HR   |
+
+EMPLOYEE
+
+| EMP_ID | NAME | DEPT_ID |
+|---------|------|---------|
+| 101     | A    | 1       |
+| 102     | B    | 2       |
+
+DEPT_ID in EMPLOYEE is Foreign Key.
+
+SQL:
+
+CREATE TABLE employee(
+    emp_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    dept_id INT,
+    FOREIGN KEY(dept_id)
+    REFERENCES department(dept_id)
+);
+
+Purpose:
+Maintains referential integrity.
+
+Interview:
+
+A Foreign Key links one table to another table's Primary Key.
+
+==================================================
+8. UNIQUE KEY
+==================================================
+
+Ensures unique values in a column.
+
+Differences from Primary Key:
+- Allows one NULL in most databases
+- Multiple unique keys allowed
+
+Example:
+
+CREATE TABLE employee(
+    emp_id INT PRIMARY KEY,
+    email VARCHAR(100) UNIQUE
+);
+
+Benefits:
+No duplicate email IDs.
+
+Interview:
+
+Unique Key prevents duplicate values but is different from Primary Key because it generally allows NULL values.
+
+==================================================
+9. COMPOSITE KEY
+==================================================
+
+Composite Key consists of multiple columns together forming uniqueness.
+
+Example:
+
+Student Course Table
+
+| STUDENT_ID | COURSE_ID |
+|------------|-----------|
+| 1          | 101       |
+| 1          | 102       |
+
+Neither column alone is unique.
+
+Together they are unique.
+
+SQL:
+
+PRIMARY KEY(student_id, course_id)
+
+Interview:
+
+When multiple columns together uniquely identify a record, it is called a Composite Key.
+
+==================================================
+10. CANDIDATE KEY
+==================================================
+
+Candidate Key = Any column capable of becoming Primary Key.
+
+Example:
+
+| EMP_ID | EMAIL             |
+|---------|------------------|
+| 101     | a@gmail.com      |
+| 102     | b@gmail.com      |
+
+Both EMP_ID and EMAIL are unique.
+
+Both are Candidate Keys.
+
+One becomes Primary Key.
+Others can become Unique Keys.
+
+Interview:
+
+Candidate Keys are all possible columns that can uniquely identify records.
+
+==================================================
+PRIMARY KEY VS UNIQUE KEY
+==================================================
+
+Primary Key:
+- Unique
+- No NULL
+- Only one per table
+
+Unique Key:
+- Unique
+- NULL allowed
+- Multiple allowed
+
+==================================================
+PRIMARY KEY VS FOREIGN KEY
+==================================================
+
+Primary Key:
+- Identifies record
+- Unique
+- No NULL
+
+Foreign Key:
+- Creates relationship
+- Can repeat
+- Can contain NULL (depending on design)
+
+==================================================
+INTERVIEW QUESTIONS
+==================================================
+
+1. What is Database?
+2. DBMS vs RDBMS?
+3. What is a Table?
+4. What is a Row?
+5. What is a Column?
+6. What is Primary Key?
+7. Why Primary Key cannot contain NULL?
+8. What is Foreign Key?
+9. What is Referential Integrity?
+10. Difference between Primary Key and Unique Key?
+11. What is Composite Key?
+12. What is Candidate Key?
+13. Can a table have multiple Primary Keys?
+14. Can Foreign Key contain duplicates?
+15. Why do we need Foreign Keys?
+
+==================================================
+QUICK REVISION
+==================================================
+
+Database  -> Collection of data
+Table     -> Collection of rows and columns
+Row       -> One record
+Column    -> One attribute
+
+Primary Key
+    -> Unique
+    -> No NULL
+
+Foreign Key
+    -> Relationship between tables
+
+Unique Key
+    -> Unique values
+    -> NULL allowed
+
+Composite Key
+    -> Multiple columns together unique
+
+Candidate Key
+    -> Potential Primary Key
