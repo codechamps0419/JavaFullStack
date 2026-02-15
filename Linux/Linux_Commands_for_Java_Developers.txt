@@ -1,0 +1,330 @@
+/* © Dynamic Duo Learners */
+
+===============================================================================
+        ESSENTIAL LINUX COMMANDS FOR JAVA DEVELOPERS
+===============================================================================
+
+===============================================================================
+1. PROCESS MANAGEMENT
+===============================================================================
+
+# Find Java processes
+ps aux | grep java
+jps                          # List Java processes with PIDs
+
+# Kill Java process
+kill -9 <PID>
+pkill -f "spring-boot"       # Kill by name pattern
+
+# Check port usage
+netstat -tulpn | grep 8080
+lsof -i :8080                # See what's using port 8080
+
+# Background/foreground jobs
+nohup java -jar app.jar &    # Run in background
+jobs                         # List background jobs
+fg %1                        # Bring job to foreground
+
+
+===============================================================================
+2. FILE OPERATIONS
+===============================================================================
+
+# Navigate and list
+ls -lah                      # List with hidden files, human-readable sizes
+cd -                         # Go to previous directory
+pwd                          # Print working directory
+
+# Search files
+find . -name "*.jar"         # Find JAR files
+find . -type f -mtime -7     # Files modified in last 7 days
+locate application.properties
+
+# File content
+cat application.yml          # View entire file
+less logs/app.log            # Paginated view (q to quit)
+head -n 50 app.log           # First 50 lines
+tail -f logs/app.log         # Follow log in real-time
+tail -n 100 app.log          # Last 100 lines
+
+# Edit files
+vim application.properties   # Open with Vim
+nano application.properties  # Open with Nano (easier for beginners)
+vi config.yml                # Open with Vi
+
+
+===============================================================================
+3. FILE EDITING (VIM/VI/NANO)
+===============================================================================
+
+# VIM/VI BASICS
+vim filename.txt             # Open file in Vim
+
+# Vim Modes:
+# - Normal mode (default): Navigate and execute commands
+# - Insert mode: Edit text
+# - Command mode: Save, quit, search
+
+# Vim Commands:
+i                            # Enter insert mode (insert before cursor)
+a                            # Enter insert mode (insert after cursor)
+ESC                          # Return to normal mode
+:w                           # Save file
+:q                           # Quit
+:wq  or  :x                  # Save and quit
+:q!                          # Quit without saving
+:set number                  # Show line numbers
+/searchterm                  # Search forward
+?searchterm                  # Search backward
+n                            # Next search result
+dd                           # Delete current line
+yy                           # Copy current line
+p                            # Paste
+u                            # Undo
+Ctrl + r                     # Redo
+gg                           # Go to first line
+G                            # Go to last line
+:10                          # Go to line 10
+
+# NANO BASICS (Easier for beginners)
+nano filename.txt            # Open file in Nano
+
+# Nano Commands (shown at bottom of screen):
+Ctrl + O                     # Save file (WriteOut)
+Ctrl + X                     # Exit
+Ctrl + K                     # Cut line
+Ctrl + U                     # Paste
+Ctrl + W                     # Search
+Ctrl + \                     # Search and replace
+Ctrl + G                     # Help
+Alt + U                      # Undo
+Alt + E                      # Redo
+
+# Quick edits without opening editor
+echo "server.port=9090" >> application.properties  # Append line
+echo "spring.profiles.active=prod" > config.txt   # Overwrite file
+
+
+===============================================================================
+4. LOG ANALYSIS
+===============================================================================
+
+# Search logs
+grep "ERROR" app.log
+grep -i "exception" app.log  # Case-insensitive
+grep -r "NullPointer" logs/  # Recursive search
+grep -A 5 "ERROR" app.log    # Show 5 lines after match
+grep -B 5 "ERROR" app.log    # Show 5 lines before match
+
+# Count occurrences
+grep -c "ERROR" app.log
+grep "ERROR" app.log | wc -l
+
+# Filter and pipe
+cat app.log | grep "ERROR" | grep "OrderService"
+tail -f app.log | grep --line-buffered "ERROR"
+
+
+===============================================================================
+5. SYSTEM MONITORING
+===============================================================================
+
+# CPU and memory
+top                          # Real-time system monitor (press 'q' to quit)
+htop                         # Better alternative to top
+free -h                      # Memory usage
+df -h                        # Disk space
+
+# Java-specific monitoring
+jstat -gc <PID> 1000         # GC stats every 1 second
+jmap -heap <PID>             # Heap summary
+jstack <PID>                 # Thread dump
+jcmd <PID> VM.uptime         # JVM uptime
+
+
+===============================================================================
+6. NETWORK & CONNECTIVITY
+===============================================================================
+
+# Test connectivity
+ping google.com
+curl http://localhost:8080/actuator/health
+curl -X POST http://localhost:8080/api/orders -H "Content-Type: application/json" -d '{"id":1}'
+
+# Download files
+wget https://example.com/file.jar
+curl -O https://example.com/file.jar
+
+# Check DNS
+nslookup example.com
+dig example.com
+
+
+===============================================================================
+7. FILE PERMISSIONS
+===============================================================================
+
+# Change permissions
+chmod +x script.sh           # Make executable
+chmod 755 deploy.sh          # rwxr-xr-x
+chmod 644 config.properties  # rw-r--r--
+
+# Change ownership
+chown user:group app.jar
+chown -R user:group /opt/app
+
+
+===============================================================================
+8. TEXT PROCESSING
+===============================================================================
+
+# AWK - extract columns
+ps aux | awk '{print $2, $11}'  # Print PID and command
+cat app.log | awk '/ERROR/ {print $1, $2, $5}'
+
+# SED - find and replace
+sed 's/localhost/prod-server/g' config.yml
+sed -i 's/8080/9090/g' application.properties  # In-place edit
+
+# Cut - extract fields
+echo "user:password:1001" | cut -d: -f1  # Extract username
+
+
+===============================================================================
+9. COMPRESSION & ARCHIVES
+===============================================================================
+
+# TAR archives
+tar -czf app-backup.tar.gz /opt/app     # Create compressed archive
+tar -xzf app-backup.tar.gz              # Extract
+tar -tzf app-backup.tar.gz              # List contents
+
+# ZIP
+zip -r app.zip /opt/app
+unzip app.zip
+unzip -l app.zip                        # List contents
+
+
+===============================================================================
+10. ENVIRONMENT & VARIABLES
+===============================================================================
+
+# Environment variables
+export JAVA_HOME=/usr/lib/jvm/java-17
+export PATH=$PATH:$JAVA_HOME/bin
+echo $JAVA_HOME
+env | grep JAVA                         # List Java-related vars
+
+# Check Java version
+java -version
+javac -version
+mvn -version
+
+
+===============================================================================
+11. MAVEN/GRADLE COMMANDS
+===============================================================================
+
+# Maven
+mvn clean install
+mvn spring-boot:run
+mvn test
+mvn package -DskipTests
+mvn dependency:tree                     # View dependencies
+
+# Gradle
+./gradlew build
+./gradlew bootRun
+./gradlew test
+./gradlew clean build --refresh-dependencies
+
+
+===============================================================================
+12. DOCKER (Common for Java devs)
+===============================================================================
+
+# Container management
+docker ps                               # Running containers
+docker ps -a                            # All containers
+docker logs -f <container-id>           # Follow logs
+docker exec -it <container-id> bash     # Enter container
+
+# Images
+docker images
+docker pull rabbitmq:3-management
+docker build -t myapp:1.0 .
+
+# Docker Compose
+docker-compose up -d                    # Start in background
+docker-compose down                     # Stop and remove
+docker-compose logs -f                  # Follow logs
+docker-compose ps                       # List services
+
+
+===============================================================================
+13. USEFUL COMBINATIONS
+===============================================================================
+
+# Find and kill Java process on port 8080
+lsof -ti:8080 | xargs kill -9
+
+# Monitor log for errors in real-time
+tail -f app.log | grep --color=always -i "error\|exception"
+
+# Find largest files
+du -ah /opt/app | sort -rh | head -20
+
+# Count lines of Java code
+find . -name "*.java" | xargs wc -l
+
+# Check if service is responding
+curl -s http://localhost:8080/actuator/health | grep UP
+
+# Archive logs older than 7 days
+find logs/ -name "*.log" -mtime +7 -exec gzip {} \;
+
+
+===============================================================================
+14. SHORTCUTS & TIPS
+===============================================================================
+
+Ctrl + C        # Kill current process
+Ctrl + Z        # Suspend process
+Ctrl + R        # Search command history
+Ctrl + L        # Clear screen
+!!              # Repeat last command
+!$              # Last argument of previous command
+history         # Show command history
+alias ll='ls -lah'  # Create alias
+
+
+===============================================================================
+15. QUICK REFERENCE FOR YOUR RABBITMQ PROJECT
+===============================================================================
+
+# Start RabbitMQ
+docker-compose up -d
+
+# Check if RabbitMQ is running
+docker ps | grep rabbitmq
+curl http://localhost:15672
+
+# View application logs
+tail -f logs/spring.log
+
+# Test order creation
+curl -X POST http://localhost:8080/api/orders \
+  -H "Content-Type: application/json" \
+  -d '{"customerId":"CUST-1","productId":"P100","quantity":1,"amount":1500}'
+
+# Monitor Java process
+jps
+ps aux | grep spring-boot
+
+# Check port 8080
+netstat -tulpn | grep 8080
+
+
+===============================================================================
+All the best, CHAMP!
+===============================================================================
