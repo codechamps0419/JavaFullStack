@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Git Command Cheat Sheet | Dynamic Duo Learners</title>
+<style>
+:root {
+  --ink:#25304a; --muted:#697386; --paper:#fffdfb; --line:#e8e3ee;
+  --pink:#ffe0ec; --mint:#def7eb; --blue:#e2efff; --lav:#ebe3ff;
+  --peach:#ffe9d8; --yellow:#fff3bd; --dark:#172033;
+  --shadow:0 14px 34px rgba(76,65,105,.11);
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; color:var(--ink); font-family:"Segoe UI",Arial,sans-serif; line-height:1.55;
+  background:
+    radial-gradient(circle at 8% 8%,rgba(255,224,236,.8),transparent 24%),
+    radial-gradient(circle at 93% 5%,rgba(222,247,235,.8),transparent 25%),
+    linear-gradient(180deg,#fffafd,#f8fbff);
+}
+.page { max-width:1160px; margin:auto; padding:28px; }
+.hero {
+  position:relative; overflow:hidden; padding:44px; border-radius:30px;
+  background:rgba(255,255,255,.94); border:1px solid #fff; box-shadow:var(--shadow);
+}
+.hero:after {
+  content:"</>"; position:absolute; right:38px; top:22px; font:800 92px Consolas,monospace;
+  color:rgba(124,58,237,.08); transform:rotate(-8deg);
+}
+.badge {
+  display:inline-block; padding:7px 14px; border-radius:999px; background:var(--yellow);
+  font-size:13px; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+}
+h1 { margin:18px 0 10px; font-size:clamp(36px,5.5vw,64px); line-height:1.02; letter-spacing:-.045em; }
+.hero p { max-width:760px; color:var(--muted); font-size:18px; }
+.creator { margin-top:22px; font-weight:850; color:#7338c8; }
+.summary {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:24px 0 30px;
+}
+.summary div {
+  padding:18px; border-radius:20px; text-align:center; font-weight:800; border:1px solid var(--line);
+}
+.summary div:nth-child(1) { background:var(--mint); }
+.summary div:nth-child(2) { background:var(--blue); }
+.summary div:nth-child(3) { background:var(--lav); }
+.level-section {
+  margin:28px 0; border-radius:26px; overflow:hidden; background:#fff;
+  border:1px solid var(--line); box-shadow:var(--shadow);
+}
+.level-header {
+  display:flex; justify-content:space-between; align-items:center; gap:20px; padding:24px 28px;
+}
+.basic .level-header { background:var(--mint); }
+.medium .level-header { background:var(--blue); }
+.advanced .level-header { background:var(--lav); }
+.level-label {
+  display:inline-block; padding:5px 11px; border-radius:999px; background:rgba(255,255,255,.7);
+  font-size:12px; font-weight:850; text-transform:uppercase; letter-spacing:.08em;
+}
+.level-header h2 { margin:8px 0 2px; font-size:28px; }
+.level-header p { margin:0; color:#556176; }
+.count {
+  min-width:84px; height:84px; border-radius:25px; background:rgba(255,255,255,.78);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-size:27px; font-weight:900;
+}
+.count small { font-size:11px; text-transform:uppercase; letter-spacing:.08em; }
+.command-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; padding:22px; }
+.command-card {
+  border:1px solid var(--line); border-radius:18px; overflow:hidden; background:var(--paper);
+  break-inside:avoid;
+}
+.command-top {
+  display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+  padding:15px 16px; background:var(--dark); color:white;
+}
+.command-top code {
+  font:600 13.5px/1.5 Consolas,"Courier New",monospace; overflow-wrap:anywhere; white-space:pre-wrap;
+}
+.copy-btn {
+  border:0; border-radius:9px; padding:6px 9px; background:#f3e8ff; color:#5b21b6;
+  font-weight:800; cursor:pointer;
+}
+.command-info { padding:13px 16px 15px; }
+.command-info p { margin:5px 0; font-size:14px; }
+.command-info strong { color:#6032a5; }
+.workflow {
+  padding:26px; border:1px solid var(--line); border-radius:26px; background:#fff8ec; box-shadow:var(--shadow);
+}
+.workflow h2 { margin-top:0; }
+.workflow-step { display:grid; grid-template-columns:42px 1fr; gap:14px; align-items:start; margin:16px 0; }
+.workflow-step>span {
+  width:38px; height:38px; border-radius:14px; display:grid; place-items:center;
+  background:var(--peach); font-weight:900;
+}
+.workflow-step h3 { margin:0 0 7px; }
+pre {
+  margin:0; padding:13px; border-radius:13px; background:var(--dark); color:white;
+  overflow:auto; font:13px/1.5 Consolas,"Courier New",monospace;
+}
+.note {
+  margin:28px 0; padding:20px 24px; border-radius:22px; background:#fff0f0; border:1px solid #ffd3d3;
+}
+.note h2 { margin:0 0 8px; }
+footer { text-align:center; padding:25px 0 8px; color:var(--muted); font-size:14px; }
+@media(max-width:800px) {
+  .page { padding:16px; } .hero { padding:28px; }
+  .summary,.command-grid { grid-template-columns:1fr; }
+  .level-header { align-items:flex-start; } .count { min-width:70px; height:70px; }
+}
+@media print {
+  @page { size:A4; margin:12mm; }
+  body { background:white; font-size:9.5pt; }
+  .page { max-width:none; padding:0; }
+  .hero,.level-section,.workflow,.note { box-shadow:none; }
+  .hero { page-break-after:always; }
+  .copy-btn { display:none; }
+  .command-grid { grid-template-columns:1fr 1fr; gap:9px; padding:12px; }
+  .command-card,.level-section { break-inside:avoid; page-break-inside:avoid; }
+  .level-header,.summary div { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+  .command-top,pre { background:#f1f2f4!important; color:#111827!important; border-bottom:1px solid #ddd; }
+}
+
+.reference-section {
+  margin: 28px 0;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  break-inside: avoid;
+}
+.reference-section > h2 {
+  margin: 0 0 8px;
+  font-size: 27px;
+}
+.reference-section > p {
+  margin: 0 0 18px;
+  color: var(--muted);
+}
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 16px;
+}
+.compare-card {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fffdfb;
+  break-inside: avoid;
+}
+.compare-card h3 {
+  margin: 0 0 8px;
+  color: #6535aa;
+}
+.compare-card p {
+  margin: 7px 0;
+  font-size: 14px;
+}
+.compare-card code, .reference-section code {
+  font-family: Consolas, "Courier New", monospace;
+  background: #f3effa;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+.command-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 14px;
+}
+.command-table th, .command-table td {
+  border: 1px solid var(--line);
+  padding: 12px;
+  text-align: left;
+  vertical-align: top;
+}
+.command-table th {
+  background: #f1ecff;
+}
+.alias-card {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  margin: 10px 0;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: #fffdfb;
+}
+.alias-card pre {
+  margin: 0;
+}
+.safe-risk-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.safe-box, .risk-box {
+  border-radius: 18px;
+  padding: 18px;
+  border: 1px solid var(--line);
+}
+.safe-box { background: #ecfff5; }
+.risk-box { background: #fff1f1; }
+.safe-box h3, .risk-box h3 { margin-top: 0; }
+.mini-list {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+@media(max-width:800px) {
+  .compare-grid, .safe-risk-grid, .alias-card { grid-template-columns: 1fr; }
+}
+@media print {
+  .reference-section { box-shadow: none; page-break-inside: avoid; }
+  .compare-card, .safe-box, .risk-box, .alias-card { break-inside: avoid; }
+  .command-table th { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
+
+
+.diagram-section {
+  margin: 28px 0;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+.diagram-section h2 {
+  margin: 0 0 8px;
+  font-size: 27px;
+}
+.diagram-section p {
+  margin: 0 0 16px;
+  color: var(--muted);
+}
+.diagram-wrap {
+  width: 100%;
+  overflow: hidden;
+}
+.diagram-wrap svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin-top: 0px;
+}
+.diagram-legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+.legend-card {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: #fffdfb;
+}
+.legend-card h3 {
+  margin: 0 0 6px;
+  color: #6535aa;
+  font-size: 16px;
+}
+.legend-card p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: var(--ink);
+}
+.section.gold .section-head { 
+  background: #fff0a6; 
+}
+
+@media(max-width:800px) {
+  .diagram-legend { grid-template-columns: 1fr; }
+}
+@media print {
+  .diagram-section {
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+}
+.qa-line {
+    border-left-color: #f59e0b;
+}
+.bullet, .qa-line {
+    background: #fbfbfe;
+    border-left: 4px solid #a78bfa;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin: 4px 0;
+}
+.section {
+    background: rgba(255, 255, 255, .96);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    break-inside: avoid-page;
+}
+.section-body {
+    padding: 12px 24px 26px;
+}
+.section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 2px 12px;
+    border-bottom: 1px solid var(--line);
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="hero">
+    <span class="badge">Modern Developer Edition 💎</span>
+    <h1>Git Command Cheat Sheet</h1>
+    <p>Only practical, currently used Git commands - organized into Basic, Intermediate and Advanced levels with a simple explanation of what each command does and when to use it.</p>
+    <div class="creator">🌟 Created by ~ Dynamic Duo Learners 🤜🤛 </div>
+  </header>
+
+<section class="diagram-section">
+  <h2>Git Areas Diagram</h2>
+  <p>This visual shows where your code lives during day-to-day Git work and which commands move changes from one area to another.</p>
+
+  <div class="diagram-wrap">
+    <svg width="1080" height="415" viewBox="0 0 1080 450" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Git areas diagram showing Working Directory, Staging Area, Local Repository, Remote Repository and Stash">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#5b4a8f"/>
+        </marker>
+        <style>
+          .box { stroke:#d9d2eb; stroke-width:2; rx:22; ry:22; }
+          .title { font: 700 21px 'Segoe UI', Arial, sans-serif; fill:#25304a; }
+          .sub { font: 14px 'Segoe UI', Arial, sans-serif; fill:#5d6880; }
+          .small { font: 13px 'Segoe UI', Arial, sans-serif; fill:#374151; }
+          .cmd { font: 700 13px 'Segoe UI', Arial, sans-serif; fill:#6b21a8; }
+          .arrowline { stroke:#5b4a8f; stroke-width:3; fill:none; marker-end:url(#arrow); }
+          .backline { stroke:#b45309; stroke-width:3; fill:none; marker-end:url(#arrow); }
+          .stashline { stroke:#047857; stroke-width:3; fill:none; marker-end:url(#arrow); }
+        </style>
+      </defs>
+
+      <!-- Main boxes -->
+      <rect class="box" x="30" y="80" width="210" height="135" fill="#def7eb"/>
+      <text class="title" x="135" y="118" text-anchor="middle">Working Directory</text>
+      <text class="sub" x="135" y="145" text-anchor="middle">Your local files</text>
+      <text class="small" x="135" y="172" text-anchor="middle">create / edit / delete files</text>
+      <text class="small" x="135" y="194" text-anchor="middle">tracked + untracked changes</text>
+
+      <rect class="box" x="300" y="80" width="210" height="135" fill="#e2efff"/>
+      <text class="title" x="405" y="118" text-anchor="middle">Staging Area</text>
+      <text class="sub" x="405" y="145" text-anchor="middle">Index</text>
+      <text class="small" x="405" y="172" text-anchor="middle">changes selected</text>
+      <text class="small" x="405" y="194" text-anchor="middle">for the next commit</text>
+
+      <rect class="box" x="570" y="80" width="210" height="135" fill="#ebe3ff"/>
+      <text class="title" x="675" y="118" text-anchor="middle">Local Repository</text>
+      <text class="sub" x="675" y="145" text-anchor="middle">Your commit history</text>
+      <text class="small" x="675" y="172" text-anchor="middle">saved commits on local machine</text>
+      <text class="small" x="675" y="194" text-anchor="middle">branches + history</text>
+
+      <rect class="box" x="840" y="80" width="210" height="135" fill="#ffe9d8"/>
+      <text class="title" x="945" y="118" text-anchor="middle">Remote Repository</text>
+      <text class="sub" x="945" y="145" text-anchor="middle">GitHub / GitLab / Bitbucket</text>
+      <text class="small" x="945" y="172" text-anchor="middle">shared team code</text>
+      <text class="small" x="945" y="194" text-anchor="middle">push and pull here</text>
+
+      <rect class="box" x="300" y="290" width="210" height="120" fill="#ecfff5"/>
+      <text class="title" x="405" y="328" text-anchor="middle">Stash</text>
+      <text class="sub" x="405" y="355" text-anchor="middle">Temporary storage</text>
+      <text class="small" x="405" y="380" text-anchor="middle">save unfinished work</text>
+
+      <!-- Forward flow arrows -->
+      <path class="arrowline" d="M 240 148 L 300 148"/>
+      <text class="cmd" x="270" y="138" text-anchor="middle">git add</text>
+
+      <path class="arrowline" d="M 510 148 L 570 148"/>
+      <text class="cmd" x="540" y="138" text-anchor="middle">git commit</text>
+
+      <path class="arrowline" d="M 780 148 L 840 148"/>
+      <text class="cmd" x="810" y="138" text-anchor="middle">git push</text>
+
+      <!-- Return flow arrows -->
+      <path class="backline" d="M 840 178 C 780 250, 690 250, 570 178"/>
+      <text class="cmd" x="705" y="253" text-anchor="middle">git fetch / git pull</text>
+
+      <path class="backline" d="M 570 190 C 520 250, 455 250, 405 190"/>
+      <text class="cmd" x="490" y="273" text-anchor="middle">git reset</text>
+
+      <path class="backline" d="M 405 190 C 340 250, 235 245, 135 190"/>
+      <text class="cmd" x="265" y="273" text-anchor="middle">git restore</text>
+      <text class="small" x="265" y="292" text-anchor="middle">or switch branch / checkout files</text>
+
+      <!-- Stash arrows -->
+      <path class="stashline" d="M 240 200 C 290 250, 330 282, 370 290"/>
+      <text class="cmd" x="275" y="255" text-anchor="middle">git stash push</text>
+
+      <path class="stashline" d="M 440 290 C 505 250, 520 215, 485 185"/>
+      <text class="cmd" x="532" y="246" text-anchor="middle">git stash pop / apply</text>
+
+      <!-- Notes -->
+      <rect x="25" y="430" width="1030" height="24" rx="12" ry="12" fill="#fff6cf" stroke="#eadca2"/>
+      <text class="small" x="540" y="446" text-anchor="middle">
+        Typical path: edit files → git add → git commit → git push | Temporary path: git stash push → switch task → git stash pop
+      </text>
+    </svg>
+  </div>
+
+  <div class="diagram-legend">
+    <article class="legend-card">
+      <h3>1) Working Directory</h3>
+      <p>This is where you actually edit files in your project. New files, modified files and deleted files first appear here.</p>
+    </article>
+    <article class="legend-card">
+      <h3>2) Staging Area</h3>
+      <p>The staging area is like a preparation zone. You choose exactly what should go into the next commit by using <code>git add</code>. 
+	 Git internally stores staging information in: .git/index </p>
+    </article>
+    <article class="legend-card">
+      <h3>3) Local Repository</h3>
+      <p>After <code>git commit</code>, changes become part of your local Git history. This is stored on your machine and is not yet shared with the team.</p>
+    </article>
+    <article class="legend-card">
+      <h3>4) Remote Repository</h3>
+      <p>This is the shared server copy of the code. Use <code>git push</code> to send work there and <code>git fetch</code> / <code>git pull</code> to get updates.</p>
+    </article>
+    <article class="legend-card">
+      <h3>5) Stash Area</h3>
+      <p>Use <code>git stash</code> when your work is incomplete but you need to switch branches or pull cleanly. It stores temporary changes outside the normal commit flow.</p>
+    </article>
+    <article class="legend-card">
+      <h3>Useful Mental Model</h3>
+      <p><strong>Working Directory</strong> = current files, <strong>Staging Area</strong> = selected changes, <strong>Local Repository</strong> = committed history, <strong>Remote</strong> = team-shared history, <strong>Stash</strong> = temporary parking area.</p>
+    </article>
+  </div>
+</section>
+
+  <section class="level-section basic">
+      <header class="level-header">
+        <div>
+          <span class="level-label">Basic Level</span>
+          <h2>🌱 Basic Level Git Commands</h2>
+          <p>Repository setup, daily changes, commits, branches and remote collaboration.</p>
+        </div>
+        <div class="count">22<small>commands</small></div>
+      </header>
+      <div class="command-grid">
+      <article class="command-card">
+        <div class="command-top">
+          <code>git --version</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Check the installed Git version.</p>
+          <p><strong>When to use:</strong> Use when verifying Git installation or troubleshooting environment setup.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git config --global user.name &quot;Your Name&quot;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Set the author name used in commits.</p>
+          <p><strong>When to use:</strong> Run once on your machine or whenever your Git identity changes.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git config --global user.email &quot;you@example.com&quot;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Set the author email used in commits.</p>
+          <p><strong>When to use:</strong> Use the email connected to your Git hosting account when required.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git clone &lt;repository-url&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Download an existing remote repository.</p>
+          <p><strong>When to use:</strong> Use when starting work on a project already hosted on GitHub, GitLab, Bitbucket, or another server.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git init</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Create a new Git repository in the current folder.</p>
+          <p><strong>When to use:</strong> Use when starting version control for a new local project.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git status</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Show the current branch and changed, staged, or untracked files.</p>
+          <p><strong>When to use:</strong> Run frequently before adding, committing, switching branches, or resolving conflicts.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git diff</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Show unstaged changes in tracked files.</p>
+          <p><strong>When to use:</strong> Review exactly what changed before staging.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git diff --staged</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Show changes already added to the staging area.</p>
+          <p><strong>When to use:</strong> Review what will be included in the next commit.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git add &lt;file-name&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Stage one file for the next commit.</p>
+          <p><strong>When to use:</strong> Use when you want a focused commit containing selected files.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git add .</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Stage all changes under the current directory.</p>
+          <p><strong>When to use:</strong> Use after reviewing the changes and confirming they belong in one commit.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git commit -m &quot;feat: add user API&quot;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Create a commit from staged changes.</p>
+          <p><strong>When to use:</strong> Write a short message describing what the commit changes.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git log --oneline</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Show commit history in a compact format.</p>
+          <p><strong>When to use:</strong> Use for quick history review and finding commit IDs.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git log --oneline --graph --decorate --all</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Display a visual branch and commit graph.</p>
+          <p><strong>When to use:</strong> Useful for understanding merges, branch history and current pointers.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git branch</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> List local branches.</p>
+          <p><strong>When to use:</strong> The current branch is marked with an asterisk.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git switch &lt;branch-name&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Switch to an existing branch.</p>
+          <p><strong>When to use:</strong> Preferred modern command for branch switching.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git switch -c &lt;new-branch-name&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Create and immediately switch to a new branch.</p>
+          <p><strong>When to use:</strong> Use when beginning a feature, bug fix, or experiment.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git branch -d &lt;branch-name&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Safely delete a merged local branch.</p>
+          <p><strong>When to use:</strong> Git refuses deletion when unmerged work may be lost.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git remote -v</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Display remote repository names and URLs.</p>
+          <p><strong>When to use:</strong> Use to verify where fetch and push operations are connected.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git fetch origin</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Download remote commits and branch updates without changing your working branch.</p>
+          <p><strong>When to use:</strong> Use before comparing, merging, or rebasing with remote work.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git pull --ff-only</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Update the current branch only when a fast-forward is possible.</p>
+          <p><strong>When to use:</strong> A safe pull option that avoids creating an unexpected merge commit.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git push -u origin &lt;branch-name&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Push a branch and set its upstream remote.</p>
+          <p><strong>When to use:</strong> Usually used the first time a new branch is pushed.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git push</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Push commits to the configured upstream branch.</p>
+          <p><strong>When to use:</strong> Use after upstream tracking has already been configured.</p>
+        </div>
+      </article>
+    </div>
+    </section>
+    
+    <section class="level-section medium">
+      <header class="level-header">
+        <div>
+          <span class="level-label">Intermediate Level</span>
+          <h2>🛠️ Intermediate Level Git Commands</h2>
+          <p>Team workflows, conflict handling, stashing, undo operations and clean feature branches.</p>
+        </div>
+        <div class="count">25<small>commands</small></div>
+      </header>
+      <div class="command-grid">
+      <article class="command-card">
+        <div class="command-top">
+          <code>git restore &lt;file-name&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Discard unstaged changes in one tracked file.</p>
+          <p><strong>When to use:</strong> Use carefully because the local edits are removed.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git restore .</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Discard all unstaged changes in the current directory.</p>
+          <p><strong>When to use:</strong> Use only after confirming those edits are not needed.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git restore --staged &lt;file-name&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Remove a file from staging while keeping its local changes.</p>
+          <p><strong>When to use:</strong> Useful when a file was added accidentally.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git stash push -m &quot;WIP: payment changes&quot;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Temporarily save uncommitted work with a label.</p>
+          <p><strong>When to use:</strong> Use before switching branches or pulling updates when work is incomplete.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git stash push -u -m &quot;WIP with new files&quot;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Stash tracked and untracked files together.</p>
+          <p><strong>When to use:</strong> Use when newly created files must also be saved temporarily.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git stash list</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> List all saved stashes.</p>
+          <p><strong>When to use:</strong> Use to find the stash you want to restore.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git stash pop</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Apply the latest stash and remove it from the stash list.</p>
+          <p><strong>When to use:</strong> Use when returning to temporarily saved work.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git stash apply stash@{0}</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Apply a specific stash without deleting it.</p>
+          <p><strong>When to use:</strong> Useful when you want to reuse or verify a saved stash.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git merge &lt;branch-name&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Combine another branch into the current branch.</p>
+          <p><strong>When to use:</strong> Use when preserving branch history or following a merge-based team workflow.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git merge --abort</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Cancel a conflicted merge and return to the pre-merge state.</p>
+          <p><strong>When to use:</strong> Use when the merge should be restarted or abandoned.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git rebase origin/main</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Replay current branch commits on top of the latest remote main branch.</p>
+          <p><strong>When to use:</strong> Use on a private feature branch to maintain a clean linear history.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git rebase --continue</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Continue a rebase after resolving conflicts.</p>
+          <p><strong>When to use:</strong> Stage the resolved files first with `git add`.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git rebase --abort</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Cancel the current rebase and restore the previous state.</p>
+          <p><strong>When to use:</strong> Use when the rebase becomes unsafe or too complicated.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git commit --amend --no-edit</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Add staged changes to the most recent commit without changing its message.</p>
+          <p><strong>When to use:</strong> Use only when the latest commit has not been shared, or your team permits rewriting it.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git commit --amend -m &quot;fix: correct validation&quot;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Change the latest commit message.</p>
+          <p><strong>When to use:</strong> This rewrites the latest commit ID.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git revert &lt;commit-id&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Undo a commit by creating a new reverse commit.</p>
+          <p><strong>When to use:</strong> Preferred for changes already pushed to a shared branch.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git reset --soft HEAD~1</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Remove the latest local commit but keep its changes staged.</p>
+          <p><strong>When to use:</strong> Useful when you need to rebuild or split the last unpushed commit.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git reset HEAD~1</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Remove the latest local commit and keep its changes unstaged.</p>
+          <p><strong>When to use:</strong> Useful when you want to edit and restage the changes.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git cherry-pick &lt;commit-id&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Apply one specific commit from another branch.</p>
+          <p><strong>When to use:</strong> Use when only a selected fix or change is required.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git show &lt;commit-id&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Display the metadata and patch for a commit.</p>
+          <p><strong>When to use:</strong> Use during code review, investigation, or debugging.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git blame &lt;file-name&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Show the latest commit and author for each line.</p>
+          <p><strong>When to use:</strong> Useful for understanding why a line changed; avoid using it to assign blame.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git branch -r</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> List remote-tracking branches.</p>
+          <p><strong>When to use:</strong> Use to see branches available on the remote.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git push origin --delete &lt;branch-name&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Delete a branch from the remote repository.</p>
+          <p><strong>When to use:</strong> Use after merging and confirming the remote branch is no longer needed.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git tag -a v1.0.0 -m &quot;Release 1.0.0&quot;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Create an annotated release tag.</p>
+          <p><strong>When to use:</strong> Use for meaningful releases because annotated tags store metadata and a message.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git push origin v1.0.0</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Push one tag to the remote repository.</p>
+          <p><strong>When to use:</strong> Use after creating a release tag locally.</p>
+        </div>
+      </article>
+    </div>
+    </section>
+    
+    <section class="level-section advanced">
+      <header class="level-header">
+        <div>
+          <span class="level-label">Advanced Level</span>
+          <h2>🚀 Advanced Level Git Commands</h2>
+          <p>History cleanup, recovery, debugging, parallel work and repository investigation.</p>
+        </div>
+        <div class="count">19<small>commands</small></div>
+      </header>
+      <div class="command-grid">
+      <article class="command-card">
+        <div class="command-top">
+          <code>git rebase -i HEAD~5</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Interactively edit the most recent five commits.</p>
+          <p><strong>When to use:</strong> Use to squash, reorder, reword, or remove private feature-branch commits.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git push --force-with-lease</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Safely update a remote branch after rewriting local history.</p>
+          <p><strong>When to use:</strong> Prefer this over `--force`; it refuses to overwrite unexpected remote changes.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git reflog</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Show recent movements of HEAD and branch references.</p>
+          <p><strong>When to use:</strong> Use to recover commits lost after reset, rebase, or accidental branch changes.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git branch recovery &lt;commit-id&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Create a recovery branch from a found commit.</p>
+          <p><strong>When to use:</strong> Use after locating the required commit in reflog.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git bisect start</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Begin binary search for the commit that introduced a bug.</p>
+          <p><strong>When to use:</strong> Mark known good and bad commits, then test the commits Git selects.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git bisect good &lt;commit-id&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Mark a commit as working during bisect.</p>
+          <p><strong>When to use:</strong> Helps Git narrow the search range.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git bisect bad &lt;commit-id&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Mark a commit as broken during bisect.</p>
+          <p><strong>When to use:</strong> Defines the bad side of the search range.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git bisect reset</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Finish bisect and return to the original branch.</p>
+          <p><strong>When to use:</strong> Run after identifying the problematic commit.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git log -S &quot;searchText&quot; --oneline</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Find commits that changed the number of occurrences of exact text.</p>
+          <p><strong>When to use:</strong> Useful for discovering when a method, flag, or constant was added or removed.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git log -G &quot;regexPattern&quot; --oneline</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Find commits whose patch matches a regular expression.</p>
+          <p><strong>When to use:</strong> Useful for broader code-history investigations.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git log -- &lt;file-name&gt;</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Show the commit history of one file.</p>
+          <p><strong>When to use:</strong> Use when investigating how a specific file evolved.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git diff main...HEAD</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Show changes introduced by the current branch since it diverged from main.</p>
+          <p><strong>When to use:</strong> Useful before opening or reviewing a pull request.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git worktree add ../hotfix hotfix-branch</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Check out another branch in a separate working directory.</p>
+          <p><strong>When to use:</strong> Use to work on an urgent fix without stashing or switching your current work.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git worktree list</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> List all linked working directories.</p>
+          <p><strong>When to use:</strong> Use to see which branches are open in worktrees.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git worktree remove ../hotfix</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Remove a linked worktree.</p>
+          <p><strong>When to use:</strong> Run after finishing and cleaning the additional working directory.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git clean -n</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Preview untracked files and folders that would be removed.</p>
+          <p><strong>When to use:</strong> Always run this before an actual clean.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git clean -fd</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Delete untracked files and directories.</p>
+          <p><strong>When to use:</strong> Destructive command; use only after reviewing `git clean -n`.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git reset --hard origin/main</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Make the current local branch exactly match remote main.</p>
+          <p><strong>When to use:</strong> Destructive recovery operation; all uncommitted local changes are removed.</p>
+        </div>
+      </article>
+    
+      <article class="command-card">
+        <div class="command-top">
+          <code>git fsck</code>
+          
+        </div>
+        <div class="command-info">
+          <p><strong>What it does:</strong> Check the integrity and connectivity of Git objects.</p>
+          <p><strong>When to use:</strong> Useful when diagnosing repository corruption or locating dangling objects.</p>
+        </div>
+      </article>
+    </div>
+    </section>
+    
+
+  
+<section class="reference-section">
+  <h2>📌 Most Common Feature-Branch Workflow</h2>
+  <p>A practical workflow for starting, updating, reviewing and pushing feature development.</p>
+  <div class="workflow-step"><span>1</span><div><h3>Update the main branch</h3><pre>git switch main
+git fetch origin
+git pull --ff-only</pre><p>Start from the latest stable code before creating a feature branch.</p></div></div>
+  <div class="workflow-step"><span>2</span><div><h3>Create the feature branch</h3><pre>git switch -c feature/user-api</pre><p>Keep feature work isolated from the main branch.</p></div></div>
+  <div class="workflow-step"><span>3</span><div><h3>Review and commit changes</h3><pre>git status
+git diff
+git add .
+git commit -m "feat: add user API"</pre><p>Review changes before creating a focused commit.</p></div></div>
+  <div class="workflow-step"><span>4</span><div><h3>Update before opening the PR</h3><pre>git fetch origin
+git rebase origin/main</pre><p>Replay private feature commits on the latest main branch and resolve conflicts locally.</p></div></div>
+  <div class="workflow-step"><span>5</span><div><h3>Push the branch</h3><pre>git push -u origin feature/user-api</pre><p>Push the branch and configure upstream tracking.</p></div></div>
+</section>
+
+<section class="reference-section">
+  <h2>Fetch Vs Pull</h2>
+  <p>Both communicate with a remote repository, but only pull updates the current branch immediately.</p>
+  <div class="compare-grid">
+    <article class="compare-card">
+      <h3>git fetch</h3>
+      <p><strong>Meaning:</strong> Downloads remote commits and branch references.</p>
+      <p><strong>Current branch:</strong> Not modified.</p>
+      <p><strong>Best use:</strong> Review remote changes before merging or rebasing.</p>
+      <p><strong>Safer for:</strong> Controlled team workflows.</p>
+    </article>
+    <article class="compare-card">
+      <h3>git pull --ff-only</h3>
+      <p><strong>Meaning:</strong> Fetches and updates the current branch only when fast-forward is possible.</p>
+      <p><strong>Current branch:</strong> Updated immediately.</p>
+      <p><strong>Best use:</strong> Updating a branch without creating an unexpected merge commit.</p>
+      <p><strong>Note:</strong> It stops when histories have diverged.</p>
+    </article>
+  </div>
+</section>
+
+<section class="reference-section">
+  <h2>Merge Vs Rebase</h2>
+  <p>Both integrate work from another branch, but they produce different histories.</p>
+  <div class="compare-grid">
+    <article class="compare-card">
+      <h3>Merge</h3>
+      <p><strong>Command:</strong> <code>git merge &lt;branch&gt;</code></p>
+      <p><strong>History:</strong> Preserves the original branch structure.</p>
+      <p><strong>May create:</strong> A merge commit.</p>
+      <p><strong>Best for:</strong> Shared branches and teams that want full branch history.</p>
+    </article>
+    <article class="compare-card">
+      <h3>Rebase</h3>
+      <p><strong>Command:</strong> <code>git rebase origin/main</code></p>
+      <p><strong>History:</strong> Rewrites feature commits into a linear sequence.</p>
+      <p><strong>Best for:</strong> Private feature branches before a pull request.</p>
+      <p><strong>Warning:</strong> Avoid rebasing commits already used by other developers.</p>
+    </article>
+  </div>
+</section>
+
+<section class="reference-section">
+  <h2>Reset Vs Revert</h2>
+  <p>Choose based on whether the commit has already been shared with others.</p>
+  <div class="compare-grid">
+    <article class="compare-card">
+      <h3>Reset</h3>
+      <p><strong>Purpose:</strong> Moves the branch pointer to another commit.</p>
+      <p><strong>Effect:</strong> Rewrites local history.</p>
+      <p><strong>Best for:</strong> Local, unpushed commits.</p>
+      <p><strong>Risk:</strong> Hard reset can permanently discard work.</p>
+    </article>
+    <article class="compare-card">
+      <h3>Revert</h3>
+      <p><strong>Purpose:</strong> Creates a new commit that reverses an earlier commit.</p>
+      <p><strong>Effect:</strong> Preserves existing history.</p>
+      <p><strong>Best for:</strong> Commits already pushed to a shared branch.</p>
+      <p><strong>Team-safe:</strong> Yes, because it does not remove published commits.</p>
+    </article>
+  </div>
+</section>
+
+<section class="reference-section">
+  <h2>Soft Vs Mixed Vs Hard Reset</h2>
+  <p>All three move the branch pointer, but they handle the staging area and working files differently.</p>
+  <table class="command-table">
+    <thead><tr><th>Mode</th><th>Command</th><th>Staging Area</th><th>Working Files</th><th>Use Case</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Soft</strong></td><td><code>git reset --soft HEAD~1</code></td><td>Changes remain staged</td><td>Changes remain</td><td>Rebuild or combine the latest local commit</td></tr>
+      <tr><td><strong>Mixed</strong></td><td><code>git reset HEAD~1</code></td><td>Changes become unstaged</td><td>Changes remain</td><td>Edit and selectively stage the last commit again</td></tr>
+      <tr><td><strong>Hard</strong></td><td><code>git reset --hard HEAD~1</code></td><td>Changes removed</td><td>Changes removed</td><td>Discard an unwanted local commit and its changes</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="reference-section">
+  <h2>Checkout Vs Switch Vs Restore</h2>
+  <p><code>checkout</code> is still supported, but modern Git provides clearer commands with focused responsibilities.</p>
+  <table class="command-table">
+    <thead><tr><th>Command</th><th>Primary Purpose</th><th>Recommended Usage</th></tr></thead>
+    <tbody>
+      <tr><td><code>git switch</code></td><td>Create or change branches</td><td>Use for modern branch navigation, such as <code>git switch main</code> or <code>git switch -c feature/name</code>.</td></tr>
+      <tr><td><code>git restore</code></td><td>Restore file content or unstage files</td><td>Use for file operations, such as <code>git restore file.txt</code> or <code>git restore --staged file.txt</code>.</td></tr>
+      <tr><td><code>git checkout</code></td><td>Older multipurpose branch and file command</td><td>Know it for existing scripts and older repositories, but prefer switch and restore for new daily usage.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="reference-section">
+  <h2>🔔 Safe And Risky Commands</h2>
+  <p>Safe commands mainly inspect or preserve history; risky commands can rewrite history or delete work.</p>
+  <div class="safe-risk-grid">
+    <div class="safe-box">
+      <h3>🛡️ Generally Safe</h3>
+      <ul class="mini-list">
+        <li><code>git status</code> — inspect current state</li>
+        <li><code>git diff</code> — review changes</li>
+        <li><code>git log</code> — inspect history</li>
+        <li><code>git fetch</code> — download remote updates</li>
+        <li><code>git stash</code> — temporarily preserve work</li>
+        <li><code>git revert</code> — safely reverse a shared commit</li>
+      </ul>
+    </div>
+    <div class="risk-box">
+      <h3>⚠️ Use Carefully</h3>
+      <ul class="mini-list">
+        <li><code>git reset --hard</code> — discards local changes</li>
+        <li><code>git clean -fd</code> — deletes untracked files and folders</li>
+        <li><code>git rebase</code> — rewrites commit history</li>
+        <li><code>git commit --amend</code> — changes the latest commit ID</li>
+        <li><code>git push --force-with-lease</code> — replaces remote branch history</li>
+        <li><code>git branch -D</code> — force-deletes an unmerged branch</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="reference-section">
+  <h2>Useful Aliases</h2>
+  <p>Aliases shorten frequently used commands. Keep them readable so team members can understand your workflow.</p>
+  <div class="alias-card"><div><strong>Short status</strong><p>Run <code>git st</code> instead of <code>git status</code>.</p></div><pre>git config --global alias.st status</pre></div>
+  <div class="alias-card"><div><strong>Visual history</strong><p>Displays an easy-to-read commit and branch graph.</p></div><pre>git config --global alias.lg "log --oneline --graph --decorate --all"</pre></div>
+  <div class="alias-card"><div><strong>Short branch listing</strong><p>Run <code>git br</code> to list branches.</p></div><pre>git config --global alias.br branch</pre></div>
+  <div class="alias-card"><div><strong>Short commit command</strong><p>Run <code>git ci -m "message"</code> for a commit.</p></div><pre>git config --global alias.ci commit</pre></div>
+</section>
+
+<section class="reference-section">
+  <h2>ᯓ➤ Good Commit Message Format</h2>
+  <p>Use a short type followed by a clear description of the change.</p>
+  <pre>&lt;type&gt;: &lt;short description&gt;</pre>
+  <table class="command-table">
+    <thead><tr><th>Type</th><th>Purpose</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><strong>feat</strong></td><td>New functionality</td><td><code>feat: add user registration API</code></td></tr>
+      <tr><td><strong>fix</strong></td><td>Bug correction</td><td><code>fix: handle null payment response</code></td></tr>
+      <tr><td><strong>refactor</strong></td><td>Code improvement without behavior change</td><td><code>refactor: simplify order validation</code></td></tr>
+      <tr><td><strong>test</strong></td><td>Test additions or updates</td><td><code>test: add payment service tests</code></td></tr>
+      <tr><td><strong>docs</strong></td><td>Documentation changes</td><td><code>docs: update deployment steps</code></td></tr>
+      <tr><td><strong>chore</strong></td><td>Maintenance work</td><td><code>chore: update build dependencies</code></td></tr>
+      <tr><td><strong>perf</strong></td><td>Performance improvement</td><td><code>perf: reduce product query time</code></td></tr>
+      <tr><td><strong>ci</strong></td><td>CI/CD configuration</td><td><code>ci: add pull request build</code></td></tr>
+    </tbody>
+  </table>
+  <p><strong>Good practice:</strong> Keep the subject concise, use an action-focused description and create one logical change per commit.</p>
+</section>
+
+
+<section class="reference-section">
+  <h2>>_ Git Command Dictionary</h2>
+  <p>A quick final revision of the most important Git commands and what each one means.</p>
+  <table class="command-table">
+    <thead><tr><th>Command</th><th>Simple Description</th></tr></thead>
+    <tbody><tr><td><code>git init</code></td><td>Starts a new Git repository in the current folder.</td></tr><tr><td><code>git clone</code></td><td>Downloads an existing remote repository to your local machine.</td></tr><tr><td><code>git status</code></td><td>Shows the current branch and which files are changed, staged, or untracked.</td></tr><tr><td><code>git add</code></td><td>Moves selected changes into the staging area for the next commit.</td></tr><tr><td><code>git commit</code></td><td>Saves staged changes as a permanent checkpoint in repository history.</td></tr><tr><td><code>git diff</code></td><td>Shows code changes that have not yet been committed.</td></tr><tr><td><code>git log</code></td><td>Displays the commit history of the repository.</td></tr><tr><td><code>git show</code></td><td>Shows the details and code changes of a specific commit.</td></tr><tr><td><code>git branch</code></td><td>Lists, creates, renames, or deletes branches.</td></tr><tr><td><code>git switch</code></td><td>Moves between branches or creates a new branch.</td></tr><tr><td><code>git fetch</code></td><td>Downloads remote updates without changing the current branch.</td></tr><tr><td><code>git pull</code></td><td>Downloads remote updates and integrates them into the current branch.</td></tr><tr><td><code>git push</code></td><td>Uploads local commits to the remote repository.</td></tr><tr><td><code>git merge</code></td><td>Combines another branch into the current branch.</td></tr><tr><td><code>git rebase</code></td><td>Moves current branch commits on top of another branch to create linear history.</td></tr><tr><td><code>git stash</code></td><td>Temporarily saves uncommitted work so you can switch tasks safely.</td></tr><tr><td><code>git restore</code></td><td>Restores file content or removes files from staging.</td></tr><tr><td><code>git reset</code></td><td>Moves the branch pointer backward and can keep or discard local changes.</td></tr><tr><td><code>git revert</code></td><td>Safely reverses a commit by creating a new opposite commit.</td></tr><tr><td><code>git cherry-pick</code></td><td>Copies one specific commit from another branch into the current branch.</td></tr><tr><td><code>git blame</code></td><td>Shows which commit and author last changed each line of a file.</td></tr><tr><td><code>git reflog</code></td><td>Shows recent branch and HEAD movements and helps recover lost commits.</td></tr><tr><td><code>git tag</code></td><td>Marks an important commit, commonly used for releases.</td></tr><tr><td><code>git remote</code></td><td>Shows or manages connections to remote repositories.</td></tr><tr><td><code>git rm</code></td><td>Removes a tracked file from Git and usually from the working folder.</td></tr><tr><td><code>git mv</code></td><td>Renames or moves a tracked file.</td></tr><tr><td><code>git clean</code></td><td>Deletes untracked files and folders from the working directory.</td></tr><tr><td><code>git bisect</code></td><td>Uses binary search to find the commit that introduced a bug.</td></tr><tr><td><code>git worktree</code></td><td>Lets you work on multiple branches in separate folders at the same time.</td></tr><tr><td><code>git config</code></td><td>Reads or changes Git settings such as username, email and aliases.</td></tr><tr><td><code>git fsck</code></td><td>Checks repository objects for corruption or connectivity problems.</td></tr><tr><td><code>git gc</code></td><td>Cleans and optimizes repository storage.</td></tr></tbody>
+  </table>
+</section>
+
+<section id="golden-rules-17" class="section gold">
+      <div class="section-head">
+        <span class="section-icon">⌘</span>
+        <h2>Golden Rules</h2>
+      </div>
+      <div class="section-body">
+        <div class="qa-line">1. Run git status before important operations.</div>
+<div class="qa-line">2. Review git diff before committing.</div>
+<div class="qa-line">3. Fetch before merge or rebase.</div>
+<div class="qa-line">4. Keep commits small and focused.</div>
+<div class="qa-line">5. Write meaningful commit messages.</div>
+<div class="qa-line">6. Prefer revert for pushed commits.</div>
+<div class="qa-line">7. Prefer force-with-lease after rebase.</div>
+<div class="qa-line">8. Do not force-push shared branches.</div>
+<div class="qa-line">9. Use destructive commands only after checking their impact.</div>
+<div class="qa-line">10. Keep feature branches updated with the target branch.</div>
+      </div>
+    </section>
+
+<section class="note">
+  <h2>🚩 Important Team Rules</h2>
+  <p><strong>Private feature branches:</strong> Rebase and amend are normally safe before others depend on those commits.</p>
+  <p><strong>Shared branches:</strong> Prefer <code>git revert</code> instead of rewriting published history.</p>
+  <p><strong>Force push:</strong> Use <code>git push --force-with-lease</code> rather than plain <code>--force</code>.</p>
+  <p><strong>Destructive cleanup:</strong> Preview with <code>git clean -n</code> before running <code>git clean -fd</code>.</p>
+</section>
+
+
+<footer><b style="font-size: 16px;">· © Dynamic Duo Learners ♥ · Modern Git Command Cheat Sheet 📑 · </b><hr> <br>
+<span style="font-family: 'Aparajita';font-size:21px;"> <I> All the best! 🚀 Keep Learning, Keep Practicing and Keep Growing💗 - One step  at a time. 💻✨ </span> <br> <span style="font-size: 28px;"> ≽^• ˕ • ^≼ </span> <br><br>
+</footer>
+</div>
+<script>
+function copyCommand(button) {
+  const code = button.parentElement.querySelector("code").innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    const old = button.innerText;
+    button.innerText = "Copied";
+    setTimeout(() => button.innerText = old, 1200);
+  });
+}
+</script>
+</body>
+</html>
