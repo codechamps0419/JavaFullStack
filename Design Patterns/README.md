@@ -1,6 +1,6 @@
 # Design Patterns - Learning Guide
 
-> **Created by: Dynamic Duo Learners**
+> **Created by: Dynamic Duo Learners 🤜🤛**
 
 This repository is for learning important **Java Design Patterns** in a simple and practical way.
 
@@ -187,8 +187,7 @@ These are more useful when moving deeper into:
 ---
 
 Reference: (Refer. below resource for design pattern learning)
+
 https://refactoring.guru/design-patterns
 
 ---
-
-**Created by: Dynamic Duo Learners 🤜🤛**
