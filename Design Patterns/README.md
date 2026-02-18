@@ -186,4 +186,9 @@ These are more useful when moving deeper into:
 
 ---
 
-**Created by Dynamic Duo Learners**
+Reference: (Refer. below resource for design pattern learning)
+https://refactoring.guru/design-patterns
+
+---
+
+**Created by: Dynamic Duo Learners 🤜🤛**
