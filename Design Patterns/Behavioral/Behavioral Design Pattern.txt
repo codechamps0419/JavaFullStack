@@ -1,0 +1,1166 @@
+BEHAVIORAL DESIGN PATTERNS 
+---------------------------------------
+
+Behavioral Design Patterns are design patterns that focus on communication, responsibility sharing,
+and behavior between objects.
+
+In simple words:
+
+Behavioral patterns answer this question:
+
+"How should objects communicate and divide responsibilities in a flexible and maintainable way?"
+
+Creational patterns focus on object creation.
+Structural patterns focus on object relationships and structure.
+Behavioral patterns focus on object interaction and execution flow.
+
+They help us design better communication between objects without making the system tightly coupled.
+
+
+WHY ARE BEHAVIORAL PATTERNS IMPORTANT IN JAVA?
+----------------------------------------------------------------
+
+In Java applications, especially enterprise and Spring Boot applications, objects do not just exist;
+they also communicate with each other and perform actions together.
+
+For example:
+
+- A service may choose one algorithm at runtime.
+- One object may notify many other objects after an event.
+- A request may be converted into an executable command.
+- A workflow may have fixed steps with customizable behavior.
+- Objects may communicate through a mediator instead of calling each other directly.
+- A collection may be traversed without exposing internal structure.
+- An object's behavior may change depending on its state.
+
+Behavioral patterns are important because they help:
+
+- Reduce complex if-else or switch logic
+- Improve communication between objects
+- Reduce tight coupling
+- Make algorithms interchangeable
+- Support event-driven design
+- Make workflows reusable
+- Improve testability
+- Follow SOLID principles
+
+
+COMMON PROBLEM WITHOUT BEHAVIORAL PATTERNS
+----------------------------------------------------------------
+
+Without behavioral patterns, business logic often becomes tightly coupled and difficult to extend.
+
+Common problems include:
+
+- Large if-else conditions
+- Large switch statements
+- Too many direct object-to-object calls
+- Difficult event handling
+- Duplicate workflow logic
+- Hard-to-test behavior
+- Difficult algorithm replacement
+- Complex communication between multiple objects
+
+Example conceptual problem:
+
+PaymentService contains if-else logic for UPI, Card, Wallet, and NetBanking.
+OrderService directly calls EmailService, SmsService, InventoryService, InvoiceService, and AnalyticsService.
+ReportProcessor has duplicate steps for PDF, Excel, and CSV reports.
+
+Behavioral patterns solve such problems by separating behavior, communication, and responsibilities.
+
+
+MAIN BEHAVIORAL DESIGN PATTERNS
+----------------------------------------------------------------
+
+The main behavioral design patterns are:
+
+1. Chain of Responsibility Pattern
+2. Command Pattern
+3. Iterator Pattern
+4. Mediator Pattern
+5. Observer Pattern
+6. State Pattern
+7. Strategy Pattern
+8. Template Method Pattern
+
+Memento, Interpreter, and Visitor are useful to understand but are asked less frequently
+in normal Java backend interviews.
+
+
+STRATEGY DESIGN PATTERN
+=================================
+
+Basic idea:
+Strategy defines multiple algorithms or behaviors and allows the application to choose one at runtime.
+
+Main purpose:
+Use Strategy when different algorithms can be used for the same operation.
+
+Simple meaning:
+"Put each behavior in a separate class and select the required behavior at runtime."
+
+Problem it solves:
+Without Strategy, we often write large if-else or switch conditions to choose behavior.
+
+For example, payment logic may contain conditions for UPI, Card, Wallet, and NetBanking.
+As more payment modes are added, the class becomes large and difficult to maintain.
+
+Strategy solves this by moving each behavior into a separate strategy class.
+
+Internal working / flow:
+
+1. A common strategy interface is defined.
+2. Each algorithm implements the strategy interface.
+3. Client or service selects the required strategy.
+4. The service calls the common method on the strategy interface.
+5. The selected strategy executes its own behavior.
+6. New strategies can be added without changing existing business logic.
+
+Where it is used:
+
+- Payment method selection
+- Discount calculation
+- Sorting algorithm selection
+- Compression algorithm selection
+- Authentication provider selection
+- Notification channel selection
+- Tax calculation rules
+
+Advantages:
+
+- Removes large if-else or switch logic
+- Makes algorithms interchangeable
+- Supports Open/Closed Principle
+- Improves testability
+- Keeps each behavior separate and clean
+- Runtime selection is possible
+
+Disadvantages:
+
+- Creates more classes
+- Client or context must know which strategy to use
+- Can be overkill for very small logic
+- Too many strategies may increase complexity
+
+Interview preparation points:
+
+- Why Strategy is used
+- How Strategy removes if-else
+- Strategy vs Factory Method
+- Strategy vs State
+- Real project example with payment or discount logic
+- How it supports Open/Closed Principle
+
+
+OBSERVER DESIGN PATTERN
+=================================
+
+Basic idea:
+Observer allows one object to notify multiple dependent objects automatically when something changes.
+
+Main purpose:
+Use Observer when one event should trigger actions in multiple independent objects.
+
+Simple meaning:
+"When one object changes, notify all subscribers."
+
+Problem it solves:
+Without Observer, the main object directly calls all dependent services.
+This creates tight coupling and makes it difficult to add or remove behavior.
+
+For example, after order placement, we may need to send email, send SMS, update inventory, generate invoice,
+and send analytics event.
+
+Observer separates the event producer from event consumers.
+
+Internal working / flow:
+
+1. A subject or publisher maintains a list of observers.
+2. Observers register themselves with the subject.
+3. An event or state change happens in the subject.
+4. The subject notifies all registered observers.
+5. Each observer receives the update.
+6. Each observer performs its own action independently.
+
+Where it is used:
+
+- Event-driven systems
+- Notification systems
+- Order placed events
+- Spring Application Events
+- Kafka or RabbitMQ style pub-sub communication
+- GUI event listeners
+- Cache invalidation listeners
+
+Advantages:
+
+- Reduces coupling between publisher and subscribers
+- Easy to add new observers
+- Supports event-driven design
+- Good for asynchronous communication
+- Improves separation of responsibilities
+
+Disadvantages:
+
+- Debugging event flow can be difficult
+- Notification order may be hard to control
+- Too many observers may affect performance
+- Risk of memory leaks if observers are not removed
+- Unexpected side effects may occur
+
+Interview preparation points:
+
+- Subject and Observer roles
+- Difference between Observer and Pub/Sub
+- Real example using order event
+- How Spring events relate to Observer
+- How Kafka/RabbitMQ are similar conceptually
+- When Observer becomes hard to debug
+
+
+TEMPLATE METHOD DESIGN PATTERN
+=================================
+
+Basic idea:
+Template Method defines the fixed steps of an algorithm in a parent class and lets child classes customize
+some steps.
+
+Main purpose:
+Use Template Method when the overall process is fixed but some steps vary.
+
+Simple meaning:
+"Parent class defines the flow, child classes fill in specific steps."
+
+Problem it solves:
+Different classes may follow the same workflow but implement some steps differently.
+Without Template Method, common workflow code may be duplicated across classes.
+
+For example, file processing may always follow read, validate, transform, and save steps, but reading
+logic may differ for CSV, Excel, and JSON.
+
+Internal working / flow:
+
+1. Parent class defines a template method.
+2. Template method contains fixed steps in a fixed order.
+3. Some steps are common and implemented in the parent class.
+4. Some steps are abstract or customizable.
+5. Child classes provide specific implementation for variable steps.
+6. Client calls the template method and the fixed flow executes.
+
+Where it is used:
+
+- File processing
+- Report generation
+- Data import pipelines
+- Payment processing workflows
+- Spring lifecycle hooks
+- Batch processing
+- Common business process with variable steps
+
+Advantages:
+
+- Reuses common workflow logic
+- Avoids duplicate code
+- Ensures fixed process order
+- Allows controlled customization
+- Good for common algorithms with variable steps
+
+Disadvantages:
+
+- Uses inheritance
+- Less flexible than composition
+- Parent class changes can affect child classes
+- Can become rigid if many steps vary
+- Child classes are tightly linked to parent flow
+
+Interview preparation points:
+
+- What is a template method
+- Fixed flow vs customizable steps
+- Template Method vs Strategy
+- Where it is used in frameworks
+- Why inheritance is both benefit and limitation
+- When not to use Template Method
+
+
+COMMAND DESIGN PATTERN
+===============================
+
+Basic idea:
+Command converts a request into an object so it can be executed, stored, queued, logged, retried, or undone later.
+
+Main purpose:
+Use Command when you want to treat an action as an object.
+
+Simple meaning:
+"Wrap a request or action inside an object."
+
+Problem it solves:
+Sometimes we do not want the sender of a request to directly know the receiver or exact action.
+We may also want to queue, retry, log, schedule, or undo actions.
+
+Command separates the object that requests an action from the object that performs the action.
+
+Internal working / flow:
+
+1. Client creates a command object.
+2. Command object stores the request details and receiver reference.
+3. Invoker receives or stores the command.
+4. Invoker calls execute on the command.
+5. Command calls the actual receiver method.
+6. Receiver performs the real action.
+7. Command can also support undo, retry, or logging.
+
+Where it is used:
+
+- Job queues
+- Task scheduling
+- Retry mechanisms
+- Undo/redo operations
+- Audit logging
+- Remote control actions
+- Transactional command execution
+- Background task execution
+
+Advantages:
+
+- Decouples request sender from receiver
+- Supports queueing and scheduling
+- Supports undo/redo
+- Supports retry and logging
+- Makes actions reusable and manageable
+
+Disadvantages:
+
+- Creates many command classes
+- Can increase boilerplate
+- May be overkill for simple method calls
+- Command hierarchy can become complex
+
+Interview preparation points:
+
+- Meaning of request as an object
+- Roles: Client, Command, Invoker, Receiver
+- Real example with job queue or retry
+- Difference between Command and Strategy
+- How it supports undo/redo
+- When not to use Command
+
+
+CHAIN OF RESPONSIBILITY DESIGN PATTERN
+========================================
+
+Basic idea:
+Chain of Responsibility passes a request through a chain of handlers until one handler processes it
+or all handlers get a chance.
+
+Main purpose:
+Use Chain of Responsibility when multiple handlers may process a request and the sender should not know
+which handler will handle it.
+
+Simple meaning:
+"Pass the request through multiple handlers one by one."
+
+Problem it solves:
+Without this pattern, code may contain many if-else conditions to decide which handler should process
+a request.
+
+For example, request validation may include authentication check, authorization check, input validation,
+rate limit check, and logging.
+
+Chain of Responsibility separates each responsibility into a separate handler.
+
+Internal working / flow:
+
+1. Multiple handlers are arranged in a chain.
+2. Client sends a request to the first handler.
+3. Each handler checks whether it can process the request.
+4. Handler either processes the request or passes it to the next handler.
+5. The request moves through the chain.
+6. Processing stops when appropriate or continues until the end.
+
+Where it is used:
+
+- Servlet filters
+- Spring Security filter chain
+- Request validation pipeline
+- Logging levels
+- Approval workflows
+- Exception handling
+- Middleware pipeline
+- Rate limiting and authentication checks
+
+Advantages:
+
+- Reduces large if-else chains
+- Decouples sender from receiver
+- Each handler has a single responsibility
+- Easy to add, remove, or reorder handlers
+- Good for pipelines and filters
+
+Disadvantages:
+
+- Debugging chain flow can be difficult
+- Request may go unhandled
+- Order of handlers matters
+- Too many handlers can reduce readability
+- Performance overhead if chain is very long
+
+Interview preparation points:
+
+- How request moves through chain
+- Spring Security filter chain example
+- Servlet filter example
+- Difference between Chain of Responsibility and Decorator
+- Why handler order matters
+- When not to use it
+
+
+ITERATOR DESIGN PATTERN
+=============================
+
+Basic idea:
+Iterator provides a standard way to access elements of a collection one by one without exposing its internal structure.
+
+Main purpose:
+Use Iterator when you want to traverse a collection without knowing how it is internally stored.
+
+Simple meaning:
+"Move through a collection one element at a time."
+
+Problem it solves:
+Different collections store data differently.
+Client code should not depend on whether data is stored in an array, list, set, tree, or custom structure.
+
+Iterator hides the internal structure and provides a common traversal mechanism.
+
+Internal working / flow:
+
+1. Collection provides an iterator.
+2. Iterator keeps track of the current position.
+3. Client asks whether the next element exists.
+4. Iterator returns the next element.
+5. Iterator moves its position forward.
+6. Traversal continues until no elements remain.
+
+Where it is used:
+
+- Java Collections Framework
+- List, Set, Queue traversal
+- Custom collection traversal
+- Pagination-like traversal
+- Tree traversal
+- Stream-like processing concepts
+
+Advantages:
+
+- Hides internal collection structure
+- Provides standard traversal
+- Works with different collection types
+- Keeps client code simple
+- Supports custom traversal logic
+
+Disadvantages:
+
+- Simple loops may be enough in some cases
+- Concurrent modification issues can occur
+- Extra iterator object is created
+- Not always needed for simple arrays
+
+Interview preparation points:
+
+- hasNext and next concept
+- How Java collections use Iterator
+- Fail-fast iterator concept
+- Difference between Iterator and for-each
+- Why internal structure is hidden
+- When not to use Iterator
+
+
+STATE DESIGN PATTERN
+==========================
+
+Basic idea:
+State allows an object to change its behavior when its internal state changes.
+
+Main purpose:
+Use State when an object has different behavior depending on its current state.
+
+Simple meaning:
+"Same object behaves differently in different states."
+
+Problem it solves:
+Without State pattern, a class may contain many if-else conditions based on status or state.
+
+For example, an order may behave differently when it is New, Paid, Shipped, Delivered, or Cancelled.
+
+State pattern moves each state-specific behavior into a separate class.
+
+Internal working / flow:
+
+1. Context object maintains current state.
+2. Each state implements a common state interface.
+3. Client calls a method on the context.
+4. Context delegates the behavior to the current state object.
+5. Current state performs state-specific behavior.
+6. State may change the context to another state.
+
+Where it is used:
+
+- Order lifecycle
+- Ticket status management
+- Payment status management
+- Vending machine behavior
+- Workflow engines
+- Document approval status
+- Account status behavior
+
+Advantages:
+
+- Removes state-based if-else logic
+- Keeps state-specific behavior separate
+- Makes transitions easier to manage
+- Improves readability for complex state machines
+- Supports Open/Closed Principle
+
+Disadvantages:
+
+- Creates more classes
+- Can be overkill for simple status fields
+- State transitions must be carefully managed
+- Too many states can make design complex
+
+Interview preparation points:
+
+- Difference between State and Strategy
+- How state changes behavior
+- Real example with order lifecycle
+- How it removes if-else
+- State transition handling
+- When not to use State
+
+
+MEDIATOR DESIGN PATTERN
+=============================
+
+Basic idea:
+Mediator centralizes communication between multiple objects so those objects do not need to communicate
+directly with each other.
+
+Main purpose:
+Use Mediator when many objects interact with each other and direct object-to-object communication creates
+too many dependencies.
+
+Simple meaning:
+"Objects talk through one central mediator instead of talking directly to each other."
+
+Problem it solves:
+Without Mediator, multiple objects may directly know and call each other.
+
+For example, imagine a chat room with many users.
+
+Without Mediator:
+
+UserA directly knows UserB, UserC, UserD.
+UserB directly knows UserA, UserC, UserD.
+UserC directly knows UserA, UserB, UserD.
+
+As the number of objects increases, the number of relationships also increases.
+
+This creates:
+
+- Tight coupling
+- Complex many-to-many communication
+- Difficult maintenance
+- Harder testing
+- More changes when new objects are added
+
+Mediator solves this by introducing one central communication object.
+
+Instead of:
+
+Object A <----> Object B
+Object A <----> Object C
+Object B <----> Object C
+
+we use:
+
+Object A ----Object B ----- > Mediator
+Object C ----/
+
+The objects know the Mediator, but they do not need to know each other directly.
+
+
+Main components:
+
+1. Mediator Interface
+   Defines the communication method used by colleague objects.
+
+2. Concrete Mediator
+   Contains the coordination logic.
+   It knows the participating colleague objects and decides how messages or events should be routed.
+
+3. Colleague
+   An object that communicates through the mediator.
+
+4. Concrete Colleagues
+   Actual participating objects such as User1, User2, User3 or UI components.
+
+
+Internal working / flow:
+
+1. Multiple colleague objects are created.
+
+2. Each colleague receives or knows the mediator.
+
+3. Colleagues do not directly call one another.
+
+4. One colleague sends a message or event to the mediator.
+
+5. The mediator receives that request.
+
+6. The mediator decides which colleague or colleagues should receive the message.
+
+7. The mediator forwards or coordinates the required action.
+
+8. The receiving colleagues react independently.
+
+Simple flow:
+
+Colleague A
+    |
+    | send(message)
+    v
+Mediator
+    |
+    +------> Colleague B
+    |
+    +------> Colleague C
+
+The important point is:
+
+Colleague A does NOT directly call Colleague B or Colleague C.
+
+
+Real-world example:
+Chat Room.
+
+Suppose there are multiple users:
+
+- User A
+- User B
+- User C
+
+Without Mediator, every user may need references to all other users.
+
+With Mediator:
+
+User A
+   |
+   v
+ChatRoom
+   |
+   +----> User B
+   |
+   +----> User C
+
+ChatRoom acts as the Mediator.
+
+Each user only communicates with ChatRoom.
+
+This reduces direct dependencies between users.
+
+
+Another strong real-world example:
+Air Traffic Control.
+
+Airplanes should not independently coordinate every movement with every nearby airplane.
+
+Instead:
+
+Plane A ----Plane B ----- > Air Traffic Control Tower
+Plane C ----/
+
+The control tower acts as the Mediator and coordinates communication between airplanes.
+
+
+Where it is used:
+
+- Chat room applications
+- Air traffic control systems
+- UI component interaction
+- Form validation and UI coordination
+- Workflow engines
+- Event coordination
+- Centralized module communication
+- Reservation or booking coordination
+- Controller-style coordination in desktop/UI applications
+
+
+Advantages:
+
+- Reduces direct dependencies between objects
+- Promotes loose coupling
+- Centralizes communication logic
+- Makes many-to-many communication easier to manage
+- Colleague objects become simpler
+- New colleagues can often be added with fewer changes to existing colleagues
+- Communication rules are easier to locate because they are centralized
+
+
+Disadvantages:
+
+- Mediator can become too large
+- Mediator may become a God class
+- Central communication logic can become complex
+- Too many responsibilities in one mediator reduce maintainability
+- Mediator can become a single point where many changes are required
+- Debugging may depend heavily on understanding mediator logic
+
+
+Important design warning:
+
+Mediator should coordinate communication.
+
+It should NOT become a class that contains all business logic.
+
+Bad design:
+
+Mediator
+  |
+  +-- validation
+  +-- persistence
+  +-- calculations
+  +-- reporting
+  +-- notifications
+  +-- all business rules
+
+This creates a God Object.
+
+Better design:
+
+Mediator
+  |
+  +-- coordinates Object A
+  +-- coordinates Object B
+  +-- coordinates Object C
+
+Each object still owns its own responsibility.
+
+
+Mediator vs Observer:
+
+Observer:
+One subject notifies many subscribers when an event or state change occurs.
+
+Subject
+  |
+  +--> Observer A
+  +--> Observer B
+  +--> Observer C
+
+Mediator:
+Multiple objects communicate through one central coordinator.
+
+Object A ----Object B ----- > Mediator
+Object C ----/
+
+Memory:
+
+Observer
+    -> one-to-many notification
+
+Mediator
+    -> many objects coordinated through one central object
+
+
+Mediator vs Facade:
+
+Facade:
+Provides a simple interface to a complex subsystem.
+
+Mediator:
+Coordinates communication between peer objects.
+
+Facade is mainly about:
+
+"Make a complex subsystem easier for the client to use."
+
+Mediator is mainly about:
+
+"Prevent many objects from depending directly on each other."
+
+
+Mediator vs Chain of Responsibility:
+
+Mediator:
+A central object decides how participating objects communicate.
+
+Chain of Responsibility:
+A request moves through a sequence of handlers.
+
+Mediator:
+
+Object A
+   |
+   v
+Mediator
+   |
+   v
+Object B
+
+Chain:
+
+Request
+   |
+   v
+Handler 1
+   |
+   v
+Handler 2
+   |
+   v
+Handler 3
+
+
+When to use Mediator:
+
+Use Mediator when:
+
+- Many objects communicate with each other
+- Direct references are creating tight coupling
+- Communication rules are spread across many classes
+- You need centralized coordination
+- Adding a new participant currently requires changes in many existing participants
+
+
+When NOT to use Mediator:
+
+Do not use Mediator when:
+
+- Only two or three objects communicate simply
+- Direct communication is already clear and maintainable
+- A mediator would only add unnecessary indirection
+- Communication logic is simple enough that centralization gives no real benefit
+
+
+Interview preparation points:
+-----------------------------------
+
+Q1. What is Mediator Design Pattern?
+
+Ans:
+Mediator is a behavioral design pattern that introduces a central object to coordinate communication
+between multiple objects, reducing direct dependencies between those objects.
+
+
+Q2. What problem does Mediator solve?
+
+Ans:
+It solves complex many-to-many communication where many objects directly depend on one another.
+
+
+Q3. What are the main participants?
+
+Ans:
+The main participants are Mediator, Concrete Mediator, Colleague, and Concrete Colleagues.
+
+
+Q4. How does Mediator reduce coupling?
+
+Ans:
+Colleague objects communicate only with the mediator instead of keeping references to and directly
+calling many other colleague objects.
+
+
+Q5. What is a good real-world example?
+
+Ans:
+A chat room is a common example. Users send messages to the ChatRoom mediator, and the mediator routes
+the messages to other users.
+
+
+Q6. Why is Air Traffic Control a Mediator example?
+
+Ans:
+Aircraft coordinate through the control tower instead of every aircraft communicating independently
+with every other aircraft.
+
+
+Q7. What is the difference between Mediator and Observer?
+
+Ans:
+Observer is mainly one-to-many event notification, while Mediator coordinates communication among
+multiple peer objects through a central object.
+
+
+Q8. What is the biggest disadvantage of Mediator?
+
+Ans:
+The mediator can become too large and turn into a God Object if too much coordination and business
+logic is placed inside it.
+
+
+Q9. When should Mediator not be used?
+
+Ans:
+Do not use it when object communication is already simple and direct communication does not create
+maintenance or coupling problems.
+
+
+30-second interview answer:
+
+"Mediator is a behavioral design pattern used to reduce direct dependencies between multiple objects.
+Instead of objects communicating with each other directly, they communicate through a central mediator.
+For example, in a chat application, users send messages to a ChatRoom mediator and the mediator routes
+them to other users. This converts complex many-to-many dependencies into simpler communication through
+one coordinator. The main advantage is loose coupling, while the main risk is that the mediator can
+become a God Object if too much logic is placed inside it."
+
+
+One-line memory trick:
+
+Mediator Pattern:
+
+"Don't talk to everyone directly — talk through the coordinator."
+
+
+
+COMPARISON OF BEHAVIORAL PATTERNS
+----------------------------------------------------------------
+
+Strategy:
+Use when one algorithm should be selected from many algorithms.
+
+Observer:
+Use when one event should notify multiple subscribers.
+
+Template Method:
+Use when workflow steps are fixed but some steps vary.
+
+Command:
+Use when a request should be treated as an object.
+
+Chain of Responsibility:
+Use when a request should pass through multiple handlers.
+
+Iterator:
+Use when elements should be traversed without exposing internal structure.
+
+State:
+Use when object behavior changes based on internal state.
+
+Mediator:
+Use when many objects should communicate through a central coordinator.
+
+Memento:
+Use when object state should be saved and restored.
+
+Interpreter:
+Use when simple expressions or grammar rules need to be evaluated.
+
+Visitor:
+Use when new operations should be added to a stable object structure.
+
+
+QUICK INTERVIEW COMPARISON
+----------------------------------------------------------------
+
+Strategy vs State:
+Strategy selects an algorithm from outside.
+State changes behavior internally based on object state.
+
+Strategy vs Factory Method:
+Factory creates an object.
+Strategy uses selected behavior or algorithm.
+
+Observer vs Mediator:
+Observer notifies multiple subscribers.
+Mediator coordinates communication between multiple objects.
+
+Command vs Strategy:
+Command represents an action/request.
+Strategy represents an algorithm/behavior.
+
+Template Method vs Strategy:
+Template Method uses inheritance and fixed workflow.
+Strategy uses composition and interchangeable behavior.
+
+Chain of Responsibility vs Decorator:
+Chain passes request through handlers.
+Decorator wraps object to add behavior.
+
+Iterator vs for-each:
+Iterator is the design behind standard traversal.
+For-each is a simpler syntax that often uses iterator internally.
+
+Memento vs Prototype:
+Memento stores object state for restore.
+Prototype copies an object to create a new object.
+
+Visitor vs Strategy:
+Visitor adds operations over object structures.
+Strategy changes algorithm behavior for a task.
+
+
+HOW TO EXPLAIN BEHAVIORAL PATTERNS IN INTERVIEW
+----------------------------------------------------------------
+
+Use this structure:
+
+1. First explain the behavior or communication problem.
+2. Then explain how the pattern separates responsibility.
+3. Then explain the internal flow.
+4. Then give a real project use case.
+5. Then explain advantages and disadvantages.
+6. Finally mention when not to use it.
+
+Example explanation structure:
+
+"Behavioral patterns help define how objects communicate and share responsibilities. They reduce tight
+coupling, remove complex conditional logic, support event-driven communication, and make behavior easier
+to extend and test."
+
+
+MOST IMPORTANT BEHAVIORAL PATTERNS FOR JAVA INTERVIEWS
+----------------------------------------------------------------
+
+Priority 1:
+- Strategy
+- Observer
+- Template Method
+- Command
+- Chain of Responsibility
+
+Priority 2:
+- Iterator
+- State
+
+Priority 3:
+- Mediator
+- Memento
+- Interpreter
+- Visitor
+
+Why Priority 1?
+
+Strategy is commonly used to remove if-else and switch logic.
+Observer is useful for event-driven systems.
+Template Method appears in framework workflows.
+Command is useful in queues, retry, and undo/redo.
+Chain of Responsibility is important in filters and Spring Security.
+
+Why Priority 2?
+
+Iterator is important because Java collections use it.
+State is important for workflow and lifecycle-based systems.
+
+Why Priority 3?
+
+Mediator, Memento, Interpreter, and Visitor are useful but less frequently used directly
+in normal Java backend projects.
+
+
+REAL BACKEND THINKING
+----------------------------------------------------------------
+
+In Java backend development, behavioral patterns appear in many practical scenarios:
+
+- Strategy is used for payment, discount, tax, and authentication selection.
+- Observer is used in events, notifications, and pub-sub systems.
+- Template Method is used in fixed workflows with customizable steps.
+- Command is used in background jobs, retry systems, and task queues.
+- Chain of Responsibility is used in filters, validators, and security chains.
+- Iterator is used in Java collections.
+- State is used in order, payment, ticket, and workflow status systems.
+- Mediator is used when communication needs a central coordinator.
+- Memento is used for undo/rollback style features.
+- Interpreter is used for expression and rule evaluation.
+- Visitor is used for operations over stable object structures.
+
+The main interview message:
+
+"Behavioral patterns help manage object communication and behavior so that the code remains flexible,
+loosely coupled, testable, and easy to extend."
+
+
+COMMON MISTAKES TO AVOID
+----------------------------------------------------------------
+
+Do not say:
+- Strategy and State are the same.
+- Observer and Pub/Sub are exactly the same.
+- Command is only for UI buttons.
+- Template Method and Strategy are the same.
+- Chain of Responsibility is same as Decorator.
+- Iterator is only a loop.
+- Visitor is useful for every object model.
+- More behavioral patterns always mean better design.
+
+Correct understanding:
+- Strategy selects behavior.
+- State changes behavior based on internal state.
+- Observer notifies subscribers.
+- Command wraps a request as an object.
+- Template Method defines fixed workflow.
+- Chain of Responsibility passes request through handlers.
+- Iterator hides collection structure.
+- Mediator centralizes communication.
+- Memento stores state.
+- Interpreter evaluates expressions.
+- Visitor separates operations from object structure.
+- Use patterns only when they solve a real design problem.
+
+
+FINAL REVISION SUMMARY
+----------------------------------------------------------------
+
+Behavioral Design Patterns focus on communication and behavior between objects.
+
+Strategy:
+Choose algorithm or behavior at runtime.
+
+Observer:
+Notify multiple subscribers when an event happens.
+
+Template Method:
+Keep workflow fixed but allow some steps to vary.
+
+Command:
+Represent request/action as an object.
+
+Chain of Responsibility:
+Pass request through multiple handlers.
+
+Iterator:
+Traverse collection without exposing internal structure.
+
+State:
+Change object behavior based on internal state.
+
+Mediator:
+Centralize communication between objects.
+
+Memento:
+Save and restore object state.
+
+Interpreter:
+Interpret custom expressions or grammar.
+
+Visitor:
+Add operations to object structure without changing element classes.
+
+Main benefits:
+- Loose coupling
+- Cleaner object communication
+- Less if-else logic
+- Better responsibility separation
+- Better event handling
+- More reusable workflows
+- Improved testability
+- Better interview-level design thinking
+
+Main warning:
+Do not force behavioral patterns into simple code. Use them only when communication, workflow,
+algorithm selection, state handling, or request processing needs a cleaner design.

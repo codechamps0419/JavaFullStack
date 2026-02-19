@@ -1,0 +1,592 @@
+* CREATIONAL DESIGN PATTERNS
+-----------------------------
+
+Creational Design Patterns are design patterns that deal with object creation.
+
+In normal programming, we often create objects directly using the new keyword. This is fine for simple
+classes, but in large applications, direct object creation everywhere can create problems such as:
+
+- Tight coupling between classes
+- Difficult unit testing
+- Difficult object creation logic maintenance
+- Duplicate object creation code
+- Complex constructors
+- Hard-to-change object creation rules
+- Poor flexibility when new implementations are added
+
+Creational patterns solve these problems by separating object creation logic from business logic.
+
+In simple words:
+
+Creational patterns answer this question:
+
+"How should objects be created in a flexible, reusable, and maintainable way?"
+
+
+WHY ARE CREATIONAL PATTERNS IMPORTANT IN JAVA?
+----------------------------------------------
+Java is an object-oriented language. Almost everything in Java applications is represented as objects.
+
+In enterprise Java and Spring Boot applications, objects may represent:
+
+- Services
+- Repositories
+- Controllers
+- DTOs
+- Configuration objects
+- Request objects
+- Response objects
+- Database connection objects
+- Cache objects
+- Notification handlers
+- Payment processors
+- Cloud provider clients
+
+If object creation is not managed properly, the code becomes hard to maintain.
+
+Creational patterns are important because they help you:
+
+- Create objects without exposing creation logic
+- Reduce dependency on concrete classes
+- Follow SOLID principles
+- Improve testability
+- Improve code flexibility
+- Avoid repeated complex object creation
+- Control object lifecycle
+- Centralize object creation rules
+
+
+COMMON PROBLEM WITHOUT CREATIONAL PATTERNS
+-------------------------------------------
+
+Without creational patterns, business classes directly create required objects.
+
+Example problem conceptually:
+OrderService directly creates EmailNotification.
+OrderService directly creates SmsNotification.
+OrderService directly creates PaymentProcessor.
+OrderService directly creates InvoiceGenerator.
+
+This creates tight coupling.
+
+If tomorrow EmailNotification changes to WhatsAppNotification, or one payment gateway changes to another,
+many parts of the code may need modification.
+
+Creational patterns help by moving creation responsibility to a separate pattern-based structure.
+
+BENEFITS OF CREATIONAL DESIGN PATTERN
+-------------------------------------------
+- Loose coupling
+- Better readability
+- Flexible object creation
+- Centralized creation logic
+- Improved maintainability
+- Better interview-level design thinking
+
+
+MAIN CREATIONAL DESIGN PATTERNS
+--------------------------------
+The main creational design patterns are:
+
+1. Singleton Pattern
+2. Factory Method Pattern
+3. Abstract Factory Pattern
+4. Builder Pattern
+5. Prototype Pattern
+
+Each pattern solves a different object creation problem.
+
+
+1. SINGLETON DESIGN PATTERN
+================================================================
+
+Singleton ensures that only one instance of a class exists in the application and provides a controlled
+way to access that instance.
+
+Main purpose:
+Use Singleton when exactly one shared object is required across the application.
+
+Simple meaning:
+"Create only one object and reuse the same object everywhere."
+
+Problem it solves:
+Sometimes we do not want multiple objects of the same class because multiple objects may waste memory,
+create inconsistent data, or break centralized control.
+
+For example, an application may need one shared configuration manager, one logger, or one cache manager.
+
+Internal working / flow:
+
+1. The class hides its constructor so external classes cannot directly create objects.
+2. The class stores its own single instance.
+3. The class provides a method to access that instance.
+4. When a client asks for the object, the same instance is returned every time.
+5. If lazy initialization is used, the object is created only when first requested.
+6. If eager initialization is used, the object is created when the class is loaded.
+
+Where it is used:
+
+- Logger
+- Configuration manager
+- Cache manager
+- Thread pool manager
+- Application settings
+- Spring singleton beans
+
+Advantages:
+
+- Saves memory because only one object is created
+- Provides centralized access
+- Useful for shared resources
+- Object creation is controlled
+- Avoids unnecessary repeated object creation
+
+Disadvantages:
+
+- Can create global state
+- Can make unit testing difficult
+- Can hide dependencies
+- Can cause thread-safety problems if implemented incorrectly
+- Overuse can make code tightly coupled
+
+Interview preparation points:
+
+Q1. Why is a private constructor used in Singleton?
+Ans: To stop outside classes from creating multiple objects using new.
+
+Q2. What is the difference between eager and lazy Singleton?
+Ans: Eager Singleton creates the object during class loading, while Lazy Singleton creates it only when first requested.
+
+Q3. What is the thread-safety problem in Singleton?
+Ans: In Lazy Singleton, multiple threads may create multiple objects at the same time.
+
+Q4. What is double-checked locking?
+Ans: It checks the instance twice with synchronization to create only one object safely and efficiently.
+
+Q5. What is Enum Singleton?
+Ans: Enum Singleton is the safest Singleton approach in Java because it handles thread safety, serialization, and reflection issues.
+
+Q6. What is the difference between Java Singleton and Spring Singleton?
+Ans: Java Singleton means one object per JVM/classloader, while Spring Singleton means one bean per Spring container.
+
+Q7. Why can Singleton be considered an anti-pattern if overused?
+Ans: Because overuse can create global state, hidden dependencies, tight coupling, and testing problems.
+
+
+2. FACTORY METHOD DESIGN PATTERN
+================================================================
+
+Factory Method creates objects without exposing the object creation logic to the client.
+
+Main purpose:
+Use Factory Method when object creation depends on input, condition, or type.
+
+Simple meaning:
+"Ask a factory to create the object instead of creating it directly."
+
+Problem it solves:
+If client code directly creates concrete classes, it becomes dependent on those classes.
+When a new implementation is added, the client code may need changes.
+
+Factory Method moves object creation logic into a separate factory structure.
+
+Internal working / flow:
+
+1. Client asks the factory for an object.
+2. Client may pass a type, condition, or request.
+3. Factory checks what object is required.
+4. Factory creates the correct implementation.
+5. Factory returns the object using a common interface or parent type.
+6. Client uses the returned object without knowing the concrete class.
+
+Where it is used:
+
+- Notification creation
+- Payment processor creation
+- File parser creation
+- Report generator creation
+- Document converter creation
+- Different service implementation selection
+
+Advantages:
+
+- Removes object creation logic from client code
+- Reduces tight coupling
+- Makes code cleaner
+- Makes it easier to add new implementations
+- Supports programming to interface
+- Centralizes object creation rules
+
+Disadvantages:
+
+- Creates extra classes
+- Factory can become large if many types are added
+- Can be overkill for simple object creation
+- If not designed well, it may still require modification when adding new types
+
+Interview preparation points:
+
+Q1. Why is Factory Method better than directly using new keyword?
+Ans: Factory Method keeps object creation logic in one place instead of spreading new object creation everywhere in business code.
+
+Q2. How does Factory Method reduce coupling?
+Ans: Client code depends on an interface, not concrete classes, so it does not need to know which exact implementation object is created.
+
+Q3. How does Factory Method support Open/Closed Principle?
+Ans: We can add a new implementation class without changing client code, so the code is open for extension and closed for modification.
+
+Q4. What is the difference between Factory Method and Abstract Factory?
+Ans: Factory Method creates one object based on type, while Abstract Factory creates a family of related objects.
+
+Q5. What are real project examples of Factory Method?
+Ans: It is used in notification systems, payment processing, and file parsers, where object creation depends on type like Email/SMS, UPI/Card, or PDF/CSV/Excel.
+
+Q6. When should we not use Factory Method?
+Ans: Do not use Factory Method when object creation is simple and there is only one fixed class, because it adds unnecessary extra code and complexity.
+
+
+3. ABSTRACT FACTORY DESIGN PATTERN
+================================================================
+
+Abstract Factory creates families of related objects without specifying their concrete classes.
+
+Main purpose:
+Use Abstract Factory when your application needs to create multiple related objects that belong to the
+same family.
+
+Simple meaning:
+"Factory of factories that creates related objects together."
+
+Problem it solves:
+Sometimes we do not need just one object. We need a group of related objects that should work together.
+
+For example, if an application supports multiple cloud providers, AWS objects should be created together,
+GCP objects should be created together, and Azure objects should be created together.
+
+Internal working / flow:
+
+1. Client depends on an abstract factory interface.
+2. A concrete factory is selected based on the required family.
+3. The selected factory creates related objects.
+4. Each created object is returned using an interface.
+5. Client works with interfaces and does not depend on concrete classes.
+6. Switching the factory changes the entire family of created objects.
+
+Where it is used:
+
+- Cloud provider integration
+- UI theme components
+- Database-specific object families
+- Payment gateway families
+- Operating system specific components
+- Multi-vendor integrations
+
+Advantages:
+
+- Creates consistent families of related objects
+- Reduces dependency on concrete classes
+- Makes it easy to switch complete product families
+- Improves code organization
+- Supports platform/provider independence
+
+Disadvantages:
+
+- More complex than Factory Method
+- Requires many interfaces and classes
+- Adding a new product type may require changes in all factories
+- Can be over-engineering for simple object creation
+
+Interview preparation points:
+
+Q1. What is the difference between Factory Method and Abstract Factory?
+Ans: Factory Method creates one object, while Abstract Factory creates a family of related objects.
+
+Q2. What is the meaning of object family?
+Ans: Object family means a group of related objects that belong to the same platform, provider, or category and are designed to work together.
+
+Q3. Why is Abstract Factory useful for platform/provider switching?
+Ans: It allows us to switch the complete provider family, like AWS to GCP, without changing the client/business code.
+
+Q4. How does Abstract Factory support loose coupling?
+Ans: Client code depends on factory and product interfaces, not concrete classes like AWSStorage or GCPStorage.
+
+Q5. What are real examples of Abstract Factory?
+Ans: Examples are AWS/GCP/Azure cloud services, Windows/Mac UI components, database-specific DAO objects, and payment gateway families.
+
+Q6. When does Abstract Factory become too complex?
+Ans: It becomes too complex when the system is small or when there are too many interfaces, factories, and product classes without real need.
+
+
+4. BUILDER DESIGN PATTERN
+================================================================
+
+Basic idea:
+Builder creates complex objects step by step.
+
+Main purpose:
+Use Builder when an object has many fields, especially when many fields are optional.
+
+Simple meaning:
+"Build an object step by step instead of using a large constructor."
+
+Problem it solves:
+When a class has many constructor parameters, object creation becomes difficult to read and error-prone.
+This problem is called telescoping constructor problem.
+
+Example conceptual problem:
+
+User(name, email, phone, address, city, country, age, gender, status)
+
+It becomes hard to remember the parameter order and difficult to understand which value represents what.
+
+Internal working / flow:
+
+1. Client starts object creation using a builder.
+2. Required fields are set.
+3. Optional fields are set if needed.
+4. Builder stores the values temporarily.
+5. Client calls build.
+6. Final object is created with selected values.
+7. Final object can be immutable if designed properly.
+
+Where it is used:
+
+- DTO creation
+- Request object creation
+- Response object creation
+- Configuration object creation
+- Immutable object creation
+- Test data creation
+- Lombok @Builder usage
+
+Advantages:
+
+- Improves readability
+- Avoids long constructors
+- Handles optional fields cleanly
+- Helps create immutable objects
+- Reduces mistakes caused by parameter order
+- Makes object creation expressive
+
+Disadvantages:
+
+- Requires extra builder code
+- Can be overkill for small objects
+- Slightly more memory/object creation overhead
+- If overused, simple models become unnecessarily complex
+
+Interview preparation points:
+
+Q1. What is telescoping constructor problem?
+Ans: Telescoping constructor problem happens when a class has many constructor parameters, making object creation hard to read and error-prone.
+
+Q2. Why does Builder improve readability?
+Ans: Builder uses meaningful method names for each field, so object creation becomes clear and easy to understand.
+
+Q3. What is the difference between Builder and constructor?
+Ans: Constructor creates an object directly with parameters, while Builder creates an object step by step with readable field names.
+
+Q4. What is the difference between Builder and Factory?
+Ans: Builder is used to create a complex object step by step, while Factory is used to choose and create the correct implementation object.
+
+Q5. How is Builder useful for immutable objects?
+Ans: Builder collects values first and then creates a final object whose fields cannot be changed after creation.
+
+Q6. What is Lombok @Builder?
+Ans: Lombok @Builder automatically generates builder code, so we can create objects in a clean step-by-step way without writing builder manually.
+
+Q7. When should we not use Builder?
+Ans: Do not use Builder when the object is simple, has very few fields, or object creation is already clear with a normal constructor.
+
+
+5. PROTOTYPE DESIGN PATTERN
+================================================================
+
+Basic idea:
+Prototype creates new objects by copying or cloning an existing object.
+
+Main purpose:
+Use Prototype when object creation is expensive and copying an existing object is easier or faster.
+
+Simple meaning:
+"Create a new object by copying an existing object."
+
+Problem it solves:
+Sometimes creating an object from scratch is expensive because it requires loading data, setting many
+default values, performing calculations, or making external calls.
+
+In such cases, an existing object can be used as a template and copied.
+
+Internal working / flow:
+
+1. A prototype object is created with default or existing state.
+2. Client requests a copy of the prototype.
+3. The prototype creates a copy of itself.
+4. The copied object is returned to the client.
+5. Client modifies the copied object if required.
+6. Original object remains unchanged.
+
+Important concept: Shallow copy vs Deep copy
+
+Shallow copy:
+- Copies the main object
+- Nested object references are shared
+- Changes in nested objects may affect both original and copied object
+
+Deep copy:
+- Copies the main object
+- Also creates separate copies of nested objects
+- Original and copied objects are fully independent
+
+Where it is used:
+
+- Document template copying
+- Game character cloning
+- Configuration template copying
+- Object with expensive initialization
+- Default object templates
+- Form/template duplication
+
+Advantages:
+
+- Faster than creating object from scratch
+- Avoids repeated expensive initialization
+- Useful for template-based object creation
+- Reduces object setup complexity
+
+Disadvantages:
+
+- Deep copy can be difficult
+- Shallow copy may create shared reference bugs
+- Java Cloneable is not very clean
+- Less commonly used in typical backend applications
+- Object copying rules must be carefully designed
+
+Interview preparation points:
+--------------------------------
+Q1. What is object cloning?
+Ans: Object cloning means creating a new object by copying the data of an existing object.
+
+Q2. What is the difference between shallow copy and deep copy?
+Ans: Shallow copy copies only the main object and shares nested object references, 
+while deep copy copies both the main object and nested objects separately.
+
+Q3. What are the problems with Cloneable?
+Ans: Cloneable is confusing because it does not have a clone() method, 
+needs Object.clone(), and can easily create shallow copy bugs.
+
+Q4. What is copy constructor as an alternative?
+Ans: A copy constructor creates a new object by passing an existing object 
+to the constructor and manually copying its fields.
+
+Q5. Where is Prototype actually useful?
+Ans: Prototype is useful when object creation is expensive and we can create 
+new objects faster by copying an existing template object.
+
+Q6. Why is Prototype less common than Factory or Builder?
+Ans: Prototype is less common because cloning can be tricky, especially with deep copy and shared references, 
+while Factory and Builder are simpler and more commonly needed in backend projects.
+
+
+COMPARISON OF CREATIONAL PATTERNS
+----------------------------------
+
+Singleton:
+Use when only one object instance should exist.
+
+Factory Method:
+Use when one object needs to be created based on type or condition.
+
+Abstract Factory:
+Use when a family of related objects needs to be created together.
+
+Builder:
+Use when a complex object with many optional fields needs to be created step by step.
+
+Prototype:
+Use when a new object should be created by copying an existing object.
+
+
+QUICK INTERVIEW COMPARISON
+--------------------------------
+
+Singleton vs Factory Method:
+
+Singleton controls how many objects are created.
+Factory Method controls which object is created.
+
+Builder vs Factory Method:
+
+Builder is used for complex object construction with many fields.
+Factory Method is used for selecting one implementation from multiple implementations.
+
+Factory Method vs Abstract Factory:
+
+Factory Method creates one object.
+Abstract Factory creates a family of related objects.
+
+Prototype vs Builder:
+
+Prototype copies an existing object.
+Builder constructs a new object step by step.
+
+Singleton vs Spring Singleton:
+
+Java Singleton means one object per JVM/classloader based on code implementation.
+Spring Singleton means one bean object per Spring container by default.
+
+
+
+HOW TO EXPLAIN CREATIONAL PATTERNS IN INTERVIEW?
+----------------------------------------------------
+
+Use this structure:
+
+1. First explain the problem.
+2. Then explain what pattern solves it.
+3. Then explain the internal flow.
+4. Then give a real project use case.
+5. Then explain advantage and disadvantage.
+6. Finally mention when not to use it.
+
+Example explanation structure:
+
+"This pattern is used when object creation logic should not be placed directly inside business code.
+It separates object creation from object usage, reduces coupling, and makes the code easier to extend.
+Internally, the client delegates creation responsibility to another class or method, and receives the
+object through an interface or controlled access point."
+
+
+REAL BACKEND THINKING
+-----------------------
+
+In Java backend development, creational patterns are not only theoretical.
+They appear in many real situations:
+
+- Spring creates and manages objects using IoC container.
+- Spring beans are singleton by default.
+- Factory logic is used when selecting service implementation.
+- Builder is used for request/response/configuration objects.
+- Abstract Factory is used when switching provider families.
+- Prototype is useful for copying templates/default objects.
+
+AVOID COMMON MISTAKES
+------------------------
+
+Do not say:
+- Design patterns are ready-made code.
+- Singleton is always good.
+- Factory and Abstract Factory are the same.
+- Builder is only for Lombok.
+- Prototype means only clone method.
+- More patterns always mean better design.
+
+Correct understanding:
+- Patterns are reusable design ideas.
+- Use patterns only when they solve a real problem.
+- Overuse of patterns can make code unnecessarily complex.
+- Simple object creation does not always need a pattern.
+
+
+Note:
+Use patterns only when needed. Do not force design patterns into simple code.

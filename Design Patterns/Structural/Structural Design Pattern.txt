@@ -1,0 +1,792 @@
+* STRUCTURAL DESIGN PATTERNS
+------------------------------------
+
+Structural Design Patterns are design patterns that focus on how classes and objects are connected,
+combined, wrapped, or organized to form larger structures.
+
+In simple words:
+
+Structural patterns answer this question:
+
+"How should classes and objects be arranged together so the system becomes flexible, reusable,
+and easy to maintain?"
+
+Creational patterns focus on object creation.
+Structural patterns focus on object composition and relationship.
+
+They help us design better object structures without making the system tightly coupled or difficult
+to change.
+
+
+WHY ARE STRUCTURAL PATTERNS IMPORTANT IN JAVA?
+-----------------------------------------------
+
+In Java applications, especially enterprise and Spring Boot applications, classes rarely work alone.
+They interact with many other classes, services, APIs, libraries, and frameworks.
+
+For example:
+
+- A service may call another service.
+- A controller may call a facade.
+- A class may wrap another class to add extra behavior.
+- An adapter may connect our system to a third-party API.
+- A proxy may control access to a real object.
+- A composite may represent tree-like data.
+- A decorator may add extra features without changing existing code.
+
+Structural patterns are important because they help:
+
+- Connect incompatible classes
+- Hide system complexity
+- Add new behavior without changing old code
+- Control access to objects
+- Build flexible object structures
+- Reduce tight coupling
+- Improve maintainability
+- Follow SOLID principles
+
+
+3. COMMON PROBLEM WITHOUT STRUCTURAL PATTERNS
+------------------------------------
+
+Without structural patterns, classes may become directly dependent on each other.
+
+This can create problems such as:
+
+- Tight coupling
+- Difficult third-party integration
+- Repeated duplicate code
+- Large service classes
+- Complex object relationships
+- Too much inheritance
+- Hard-to-change code
+- Difficult testing
+
+Example conceptual problem:
+
+OrderService directly calls PaymentService, InventoryService, InvoiceService, NotificationService,
+ShippingService, and external APIs.
+
+Client code becomes complex because it needs to understand too many internal details.
+
+Structural patterns help by organizing relationships between objects in a cleaner way.
+
+
+MAIN STRUCTURAL DESIGN PATTERNS
+------------------------------------
+
+The main structural design patterns are:
+
+1. Adapter Pattern
+2. Bridge Pattern
+3. Composite Pattern
+4. Decorator Pattern
+5. Facade Pattern
+6. Flyweight Pattern
+7. Proxy Pattern
+
+For Java and Spring Boot interviews, the most important ones are:
+
+- Adapter
+- Decorator
+- Facade
+- Proxy
+- Composite
+
+Bridge and Flyweight are useful to understand but are asked less frequently compared to the above.
+
+
+1. ADAPTER DESIGN PATTERN
+================================================================
+
+Adapter design pattern allows two incompatible interfaces to work together.
+
+Main purpose:
+Use Adapter when your application expects one interface, but an existing class or third-party library
+provides a different interface.
+
+Simple meaning:
+"Adapter converts one interface into another interface expected by the client."
+
+Problem it solves:
+Sometimes we cannot directly use an existing class because its method names, input format, or interface
+does not match what our application expects.
+
+Instead of changing the whole application or modifying third-party code, we create an adapter.
+
+Internal working / flow:
+
+1. Client depends on a target interface.
+2. Existing class has a different interface.
+3. Adapter implements the target interface.
+4. Adapter internally calls the existing class.
+5. Client talks to adapter using the expected interface.
+6. Adapter converts the request and delegates it to the actual class.
+
+Where it is used:
+
+- Third-party API integration
+- Payment gateway integration
+- Legacy system integration
+- External vendor SDK integration
+- Data format conversion
+- Wrapping old code with a new interface
+
+Advantages:
+
+- Reuses existing incompatible code
+- Keeps client code clean
+- Reduces changes in existing system
+- Useful for integrating third-party libraries
+- Supports loose coupling
+
+Disadvantages:
+
+- Adds an extra layer
+- Too many adapters can make code harder to follow
+- Does not fix poor design of the old class
+- Can increase maintenance if many vendor APIs are involved
+
+Interview preparation points:
+
+Q1. Why is Adapter used?
+Ans: Adapter is used to make two incompatible interfaces work together 
+without changing existing client code.
+
+Q2. What is the difference between Adapter and Facade?
+Ans: Adapter converts one interface into another expected interface, 
+while Facade provides a simple interface over a complex system.
+
+Q3. What is a real project example of Adapter with third-party API?
+Ans: In payment integration, our application may use a common PaymentProcessor, and RazorpayAdapter 
+or StripeAdapter converts our method call into the third-party API call.
+
+Q4. How does Adapter support loose coupling?
+Ans: Client code depends on a common interface, not directly on third-party or legacy classes.
+
+Q5. How does Adapter help with legacy system integration?
+Ans: Adapter wraps old legacy code and exposes a new interface, 
+so modern code can use it without changing the legacy system.
+
+Q6. When should we not use Adapter?
+Ans: Do not use Adapter when both interfaces are already compatible or 
+when you can directly improve the original code without adding an extra layer.
+
+
+2. COMPOSITE DESIGN PATTERN
+================================================================
+
+Composite allows individual objects and groups of objects to be treated in the same way.
+
+Main purpose:
+Use Composite when you need to represent a tree-like structure.
+
+Simple meaning:
+"Treat single object and group of objects uniformly."
+
+Problem it solves:
+In tree structures, some objects are single items and some objects are containers of other items.
+Without Composite, client code needs separate logic for single objects and groups.
+
+Composite gives both single and group objects a common interface.
+
+Internal working / flow:
+
+1. A common component interface is created.
+2. Leaf objects implement the component interface.
+3. Composite objects also implement the same interface.
+4. Composite objects contain a collection of child components.
+5. Client calls the same method on the component.
+6. If it is a leaf, the leaf handles the request.
+7. If it is a composite, it forwards the request to child components.
+
+Where it is used:
+
+- File and folder system
+- Organization hierarchy
+- Menu and submenu
+- Product category tree
+- Comment and replies
+- UI component tree
+- Permission hierarchy
+
+Advantages:
+
+- Good for tree-like structures
+- Treats individual and group objects uniformly
+- Supports recursive behavior naturally
+- Makes client code simpler
+- Easy to add new component types
+
+Disadvantages:
+
+- Can make design too general
+- Hard to restrict specific child types
+- Not useful for flat structures
+- Debugging recursive structures can be harder
+
+Interview preparation points:
+
+Q1. What is the meaning of leaf and composite?
+Ans: A leaf is a single object with no child objects, 
+while a composite is a group object that contains child objects.
+
+Q2. Why is a common interface used in Composite Pattern?
+Ans: A common interface is used so the client can treat both 
+single objects and group objects in the same way.
+
+Q3. What is a real example of file-folder structure?
+Ans: In a file system, a file is a leaf because it has no children, and 
+a folder is a composite because it can contain files and other folders.
+
+Q4. How does recursion work in Composite Pattern?
+Ans: When a method is called on a folder, the folder calls the same method on all its 
+child files and subfolders repeatedly until all items are processed.
+
+Q5. When should Composite Pattern not be used?
+Ans: Do not use Composite when the data is not tree-like or when single objects 
+and group objects do not need to be treated in the same way.
+
+
+3. DECORATOR DESIGN PATTERN
+================================================================
+
+Decorator adds extra behavior to an object dynamically without changing its original class.
+
+Main purpose:
+Use Decorator when you want to add responsibilities to an object without using many subclasses.
+
+Simple meaning:
+"Wrap an object to add extra features."
+
+Problem it solves:
+If we use inheritance to add every feature combination, the number of subclasses can grow too much.
+Decorator solves this by wrapping objects with additional behavior.
+
+Internal working / flow:
+
+1. A common interface is defined.
+2. Concrete object implements the interface.
+3. Decorator also implements the same interface.
+4. Decorator holds a reference to the original object.
+5. Client calls the decorator.
+6. Decorator adds extra behavior before or after calling the original object.
+7. Multiple decorators can be chained.
+
+Where it is used:
+
+- Java I/O streams
+- Logging wrapper
+- Compression wrapper
+- Encryption wrapper
+- Authentication wrapper
+- Data transformation
+- Adding optional features dynamically
+
+Advantages:
+
+- Adds behavior without changing original class
+- Flexible alternative to inheritance
+- Supports Open/Closed Principle
+- Allows runtime behavior extension
+- Avoids subclass explosion
+
+Disadvantages:
+
+- Creates many small wrapper classes
+- Debugging decorator chains can be difficult
+- Object structure can become complex
+- Order of decorators may matter
+
+Interview preparation points:
+
+- Difference between Decorator and inheritance
+- How Java I/O uses Decorator
+- How Decorator supports Open/Closed Principle
+- Difference between Decorator and Proxy
+- When not to use Decorator
+
+
+4.FACADE DESIGN PATTERN
+================================================================
+
+Facade provides a simple interface to a complex subsystem.
+
+Main purpose:
+Use Facade when client code should not know the internal complexity of multiple services or classes.
+
+Simple meaning:
+"Provide one simple entry point for a complex system."
+
+Problem it solves:
+In large applications, one operation may require calling multiple services.
+If the client directly calls all those services, the client becomes complex and tightly coupled.
+
+Facade hides the complexity and provides a simple method for the client.
+
+Internal working / flow:
+
+1. Client calls a simple facade method.
+2. Facade receives the request.
+3. Facade coordinates multiple internal services/classes.
+4. Each subsystem performs its responsibility.
+5. Facade returns the final result to the client.
+6. Client does not know internal subsystem details.
+
+Where it is used:
+
+- Order placement flow
+- API Gateway
+- Service layer in Spring Boot
+- Complex library wrapper
+- Payment processing flow
+- Report generation flow
+- Microservice orchestration
+
+Advantages:
+
+- Simplifies client code
+- Hides complex subsystem details
+- Reduces coupling between client and subsystem
+- Improves readability
+- Provides clean entry point
+
+Disadvantages:
+
+- Facade can become a God class
+- May hide too much logic
+- Can become tightly coupled with many subsystem classes
+- Extra layer may be unnecessary for simple systems
+
+Interview preparation points:
+
+- Why Facade is used
+- Difference between Facade and Adapter
+- Real project example with order flow
+- How Facade reduces client complexity
+- Risk of Facade becoming God class
+- When not to use Facade
+
+
+5. PROXY DESIGN PATTERN
+================================================================
+
+Proxy provides a substitute or placeholder object to control access to a real object.
+
+Main purpose:
+Use Proxy when you want to add control before or after accessing the real object.
+
+Simple meaning:
+"Proxy stands between client and real object."
+
+Problem it solves:
+Sometimes direct access to an object is not desirable.
+We may want to add security, logging, transaction handling, lazy loading, caching, or remote access logic.
+
+Proxy allows this without changing the real object.
+
+Internal working / flow:
+
+1. Client calls the proxy object.
+2. Proxy performs extra logic such as security check, logging, or transaction handling.
+3. Proxy calls the real object.
+4. Real object performs actual business logic.
+5. Proxy may perform after-logic.
+6. Response is returned to the client.
+
+Where it is used:
+
+- Spring AOP
+- Transaction management
+- Security authorization
+- Lazy loading
+- Remote service proxy
+- Logging
+- Caching
+- Hibernate proxy objects
+
+Advantages:
+
+- Controls access to real object
+- Adds extra behavior without changing real class
+- Useful for cross-cutting concerns
+- Supports lazy loading
+- Important in Spring framework
+
+Disadvantages:
+
+- Adds extra abstraction
+- Debugging can be confusing
+- Performance overhead may exist
+- Spring self-invocation can bypass proxy
+- Proxy behavior may not be obvious to developers
+
+Interview preparation points:
+
+- How Proxy works internally
+- Spring AOP proxy
+- @Transactional internal flow
+- JDK dynamic proxy vs CGLIB proxy
+- Difference between Proxy and Decorator
+- Self-invocation problem in Spring
+- When not to use Proxy
+
+
+COMPARISON OF STRUCTURAL PATTERNS
+------------------------------------
+
+Adapter:
+Use when two incompatible interfaces need to work together.
+
+Bridge:
+Use when abstraction and implementation should vary independently.
+
+Composite:
+Use when single objects and groups should be treated the same way.
+
+Decorator:
+Use when extra behavior should be added dynamically.
+
+Facade:
+Use when a simple interface is needed over a complex subsystem.
+
+Flyweight:
+Use when many similar objects should share common data to save memory.
+
+Proxy:
+Use when access to a real object should be controlled.
+
+
+QUICK INTERVIEW COMPARISON
+------------------------------------
+
+Adapter vs Facade:
+Adapter changes an interface to make incompatible code work.
+Facade simplifies access to a complex subsystem.
+
+Decorator vs Proxy:
+Decorator adds new behavior or features.
+Proxy controls access to the real object.
+
+Composite vs Decorator:
+Composite is used for tree structures.
+Decorator is used for wrapping objects to add behavior.
+
+Bridge vs Adapter:
+Bridge is designed upfront to separate abstraction and implementation.
+Adapter is usually added later to make incompatible interfaces work.
+
+Flyweight vs Singleton:
+Flyweight shares many small reusable objects with common state.
+Singleton ensures only one instance of a class exists.
+
+Facade vs Proxy:
+Facade hides complexity of multiple classes.
+Proxy controls access to one real object.
+
+
+HOW TO EXPLAIN STRUCTURAL PATTERNS IN INTERVIEW
+------------------------------------
+
+Use this structure:
+
+1. First explain the structural problem.
+2. Then explain how the pattern organizes classes/objects.
+3. Then explain the internal flow.
+4. Then give a real project use case.
+5. Then explain advantages and disadvantages.
+6. Finally mention when not to use it.
+
+Example explanation structure:
+
+"Structural patterns help us organize relationships between classes and objects. They allow us to connect
+incompatible interfaces, wrap objects, hide subsystem complexity, control access to real objects, and
+represent tree-like structures. They improve flexibility and reduce tight coupling."
+
+
+
+REAL BACKEND THINKING
+------------------------------------
+
+In Java backend development, structural patterns appear in many practical scenarios:
+
+- Adapter is used to integrate different external APIs.
+- Proxy is used internally by Spring AOP and transaction management.
+- Facade is used to simplify complex service flows.
+- Decorator is used to add features without changing existing classes.
+- Composite is used for hierarchical data such as categories, menus, and comments.
+- Flyweight is used when memory optimization is needed.
+- Bridge is used when abstraction and implementation must vary separately.
+
+The main interview message:
+
+"Structural patterns help organize class and object relationships so that systems remain flexible,
+loosely coupled, and easier to maintain."
+
+
+COMMON MISTAKES TO AVOID
+------------------------------------
+
+Do not say:
+- Adapter and Facade are the same.
+- Proxy and Decorator are the same.
+- Facade means only service class.
+- Decorator means only inheritance.
+- Composite is useful for all data structures.
+- Flyweight is same as Singleton.
+- More structural patterns always mean better design.
+
+Correct understanding:
+- Adapter solves interface incompatibility.
+- Facade hides complexity.
+- Proxy controls access.
+- Decorator adds behavior.
+- Composite handles tree structures.
+- Flyweight saves memory.
+- Bridge separates abstraction from implementation.
+- Use patterns only when they solve a real design problem.
+
+
+
+FINAL REVISION SUMMARY
+------------------------------------
+
+Structural Design Patterns focus on how objects and classes are connected.
+
+Adapter:
+Connect incompatible interfaces.
+
+Bridge:
+Separate abstraction from implementation.
+
+Composite:
+Represent tree-like object structures.
+
+Decorator:
+Add behavior dynamically by wrapping objects.
+
+Facade:
+Provide a simple interface over complex subsystems.
+
+Flyweight:
+Share common data to save memory.
+
+Proxy:
+Control access to a real object.
+
+Main benefits:
+- Loose coupling
+- Better object relationships
+- Cleaner integration
+- Better maintainability
+- Less duplicate code
+- More flexible architecture
+- Improved interview-level design thinking
+
+Main warning:
+Do not force structural patterns into simple code. Use them only when object relationships,
+integration, wrapping, or access control require a cleaner design.
+
+
+================================================================================
+BRIDGE DESIGN PATTERN
+================================================================================
+
+- WHAT IT DOES:
+  Bridge is a structural design pattern that separates an abstraction from its
+  implementation so both can vary independently.
+
+- WHY IT IS USED:
+  It is used when you have two dimensions of change in a design and you do not
+  want class explosion through inheritance.
+
+  Example problem:
+  Suppose we have Notification as one hierarchy:
+      EmailNotification
+      SmsNotification
+
+  and MessageSender as another variation:
+      BasicSender
+      SecureSender
+
+  If we combine everything using inheritance, we may end up with:
+      BasicEmailNotification
+      SecureEmailNotification
+      BasicSmsNotification
+      SecureSmsNotification
+
+  As more abstractions and implementations are added, the number of classes
+  grows rapidly.
+
+  Bridge solves this by splitting:
+      Abstraction
+      and
+      Implementation
+
+  and connecting them through composition.
+
+- MAIN IDEA:
+  "Prefer composition over combining every variation through inheritance."
+
+- HOW IT WORKS:
+  Bridge has two sides:
+
+  1. Abstraction
+     This is the high-level view used by the client.
+
+  2. Implementor
+     This is the lower-level implementation interface.
+
+  The abstraction holds a reference to the implementor and delegates part of
+  the work to it.
+
+  Structure:
+
+      Abstraction --------------------> Implementor
+           |                                 |
+           |                                 |
+      RefinedAbstraction              ConcreteImplementorA
+                                      ConcreteImplementorB
+
+  So instead of inheritance creating all combinations, we connect the two
+  hierarchies through composition.
+
+- REAL-WORLD EXAMPLE:
+  Notification system with different message types and sending channels.
+
+  Abstraction side:
+      Notification
+      AlertNotification
+      PromotionNotification
+
+  Implementation side:
+      MessageSender
+      EmailSender
+      SmsSender
+
+  This allows combinations like:
+      AlertNotification + EmailSender
+      AlertNotification + SmsSender
+      PromotionNotification + EmailSender
+      PromotionNotification + SmsSender
+
+  without creating separate subclasses for each combination.
+
+- JAVA CODE EXAMPLE:
+
+```java
+interface MessageSender {
+    void sendMessage(String title, String content);
+}
+
+class EmailSender implements MessageSender {
+    @Override
+    public void sendMessage(String title, String content) {
+        System.out.println("Sending EMAIL -> " + title + ": " + content);
+    }
+}
+
+class SmsSender implements MessageSender {
+    @Override
+    public void sendMessage(String title, String content) {
+        System.out.println("Sending SMS -> " + title + ": " + content);
+    }
+}
+
+abstract class Notification {
+    protected MessageSender sender;
+
+    public Notification(MessageSender sender) {
+        this.sender = sender;
+    }
+
+    public abstract void notifyUser(String message);
+}
+
+class AlertNotification extends Notification {
+    public AlertNotification(MessageSender sender) {
+        super(sender);
+    }
+
+    @Override
+    public void notifyUser(String message) {
+        sender.sendMessage("ALERT", message);
+    }
+}
+
+class PromotionNotification extends Notification {
+    public PromotionNotification(MessageSender sender) {
+        super(sender);
+    }
+
+    @Override
+    public void notifyUser(String message) {
+        sender.sendMessage("PROMOTION", message);
+    }
+}
+
+public class BridgePatternDemo {
+    public static void main(String[] args) {
+        Notification alertEmail =
+                new AlertNotification(new EmailSender());
+
+        Notification promoSms =
+                new PromotionNotification(new SmsSender());
+
+        alertEmail.notifyUser("Server CPU usage is high.");
+        promoSms.notifyUser("Flat 20% discount on premium plan.");
+    }
+}
+```
+
+- STEP-BY-STEP FLOW:
+  1. Client creates a concrete implementor, for example EmailSender.
+  2. Client creates a concrete abstraction, for example AlertNotification.
+  3. The abstraction receives the implementor through constructor injection.
+  4. Client calls notifyUser() on the abstraction.
+  5. The abstraction performs its own high-level behavior.
+  6. It delegates the low-level sending work to the implementor.
+  7. The implementor executes the actual delivery logic.
+
+- WHERE AND WHEN TO USE IT:
+  Use Bridge when:
+  1. You have two independent dimensions of variation.
+  2. Inheritance is causing class explosion.
+  3. You want to switch implementations at runtime.
+  4. You want abstraction and implementation to evolve separately.
+
+  Typical use cases:
+  - Notification type + delivery channel
+  - Shape + drawing API
+  - Remote control + device
+  - Document type + rendering engine
+  - Payment abstraction + provider integration
+
+- ADVANTAGES:
+  1. Avoids class explosion.
+  2. Follows composition over inheritance.
+  3. Abstraction and implementation can change independently.
+  4. Easier to extend both sides.
+  5. Better separation of concerns.
+
+- DISADVANTAGES:
+  1. Adds extra abstraction layers.
+  2. Slightly more complex than a simple inheritance design.
+  3. Can feel unnecessary if there is only one variation.
+
+- INTERVIEW POINTS:
+  1. Bridge is NOT just another wrapper pattern; its purpose is to separate
+     abstraction and implementation.
+  2. The key sign for Bridge is "two dimensions of change".
+  3. Bridge uses composition to connect those two hierarchies.
+  4. Bridge is commonly confused with Adapter:
+     - Adapter makes incompatible interfaces work together.
+     - Bridge is designed upfront to separate abstraction from implementation.
+  5. Bridge is also different from Decorator:
+     - Decorator adds responsibilities dynamically.
+     - Bridge separates two orthogonal hierarchies.
+
+- ONE-LINE MEMORY TRICK:
+  Bridge Pattern:
+  "Two independent hierarchies connected using composition."
+
