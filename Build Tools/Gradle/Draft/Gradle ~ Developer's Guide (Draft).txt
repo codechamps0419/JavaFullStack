@@ -1,0 +1,673 @@
+© Dynamic Duo Learners
+
+Gradle Developers Guide
+================================
+
+
+© Dynamic Duo Learners
+
+Gradle Developer's Guide
+===========================
+
+~ WHAT GRADLE IS AND WHY JAVA DEVELOPERS USE IT
+--------------------------------------------------
+
+Gradle is a build automation tool used to compile, test, package and publish Java applications. 
+
+A Gradle build is organized around projects, tasks, plugins and dependency configurations.
+- Compile Java code and create JAR or WAR files.
+- Resolve and manage dependencies.
+- Run unit and integration tests.
+- Build Spring Boot applications.
+- Manage multi-project repositories. A multi-project build manages several related modules from one root build.
+- Run consistent builds locally and in CI.
+
+
+~ IMPORTANT GRADLE FILES
+--------------------------------------------------
+
+Command / Configuration:
+
+
+orders-service/
+├── build.gradle
+├── settings.gradle
+├── gradle.properties
+├── gradlew
+├── gradlew.bat
+├── gradle/wrapper/
+├── src/main/java/
+├── src/main/resources/
+├── src/test/java/
+└── build/
+
+- build.gradle or build.gradle.kts defines plugins, dependencies and tasks.
+- settings.gradle defines the root build and included subprojects.
+- gradle.properties contains Gradle properties and JVM settings.
+- gradlew and gradlew.bat are Wrapper scripts.
+- build contains compiled output and reports.
+
+
+~ GROOVY DSL AND KOTLIN DSL
+--------------------------------------------------
+
+Command / Configuration:
+------------------------------
+
+// Groovy DSL: build.gradle
+plugins {
+    id 'java'
+}
+
+group = 'com.example'
+version = '1.0.0'
+------------------------------
+Command / Configuration:
+------------------------------
+
+// Kotlin DSL: build.gradle.kts
+plugins {
+    java
+}
+
+group = "com.example"
+version = "1.0.0"
+
+Groovy DSL uses .gradle files. Kotlin DSL uses .gradle.kts files and offers stronger IDE type assistance.
+A Java developer should be able to read both.
+
+
+~ GRADLE WRAPPER
+--------------------------------------------------
+
+The Gradle Wrapper is the recommended way to run a build. It downloads and uses the Gradle version configured by the project.
+
+Command / Configuration:
+
+
+# Linux or macOS
+./gradlew clean build
+
+# Windows
+gradlew.bat clean build
+
+./gradlew --version
+
+gradle wrapper --gradle-version <version>
+
+Run these commands from the project root folder where gradlew or gradlew.bat is present.
+Commit the Wrapper scripts, JAR and properties file to source control.
+
+
+~ PLUGINS
+--------------------------------------------------
+
+Plugins add tasks, dependency configurations and conventions to a Gradle project.
+
+Command / Configuration:
+
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '<spring-boot-version>'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+- java — builds Java applications.
+- java-library — adds API and implementation separation.
+- application — runs Java applications and creates distributions.
+- org.springframework.boot — builds Spring Boot applications.
+- jacoco — creates coverage reports. JaCoCo measures Java test code coverage.
+- maven-publish — publishes artifacts.
+
+
+~ TASKS AND TASK DEPENDENCIES
+--------------------------------------------------
+
+A task is the basic unit of Gradle work.
+
+Command / Configuration:
+
+
+./gradlew tasks
+./gradlew help --task test
+./gradlew compileJava
+./gradlew test
+./gradlew build
+./gradlew clean
+
+
+Command / Configuration:
+
+
+tasks.register('hello') {
+    doLast {
+        println 'Hello from Gradle'
+    }
+}
+
+tasks.register('prepareApp') {
+    dependsOn tasks.named('test')
+}
+
+Prefer lazy registration with tasks.register and tasks.named .
+
+
+~ GRADLE BUILD LIFECYCLE
+--------------------------------------------------
+
+A Gradle build has three phases:
+1. Initialization — reads settings and determines participating projects.
+2. Configuration — evaluates build scripts and prepares the task graph.
+3. Execution — runs selected tasks and dependencies.
+Gradle executes a task graph rather than Maven-style fixed phases.
+
+Command / Configuration:
+
+
+./gradlew build --info
+./gradlew build --dry-run
+
+
+
+~ IMPORTANT JAVA TASKS
+--------------------------------------------------
+
+- compileJava — compiles production Java code.
+- test — runs unit tests.
+- jar — creates a standard JAR.
+- check — runs verification tasks.
+- build — assembles outputs and runs checks.
+- clean — deletes the build directory.
+
+Command / Configuration:
+
+
+./gradlew clean build
+./gradlew build -x test
+./gradlew test --tests OrderServiceTest
+./gradlew test --tests OrderServiceTest.shouldCreateOrder
+
+
+
+~ DEPENDENCIES AND CONFIGURATIONS
+--------------------------------------------------
+
+Command / Configuration:
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+- implementation — compile and runtime dependency hidden from consumers.
+- api — exposed to consumers of a Java library.
+- compileOnly — available only during compilation.
+- runtimeOnly — available only at runtime.
+- annotationProcessor — processors such as Lombok or MapStruct.
+- testImplementation — compile and runtime dependency for tests.
+
+
+~ API VS IMPLEMENTATION
+--------------------------------------------------
+
+api exposes a dependency to consumers of your module, while implementation keeps it internal to the module.
+Use api when the dependency appears in the public types or method signatures of a reusable library. Use implementation when it is an internal detail.
+
+Command / Configuration:
+
+
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    api 'com.fasterxml.jackson.core:jackson-databind:<version>'
+    implementation 'org.apache.commons:commons-lang3:<version>'
+}
+
+
+
+~ DEPENDENCY INSPECTION AND CONFLICT RESOLUTION
+--------------------------------------------------
+
+Dependency inspection shows why a library and version were selected, while conflict resolution decides which version wins when multiple versions are requested.
+
+Command / Configuration:
+
+
+./gradlew dependencies
+./gradlew dependencies --configuration runtimeClasspath
+
+./gradlew dependencyInsight \
+  --dependency jackson-databind \
+  --configuration runtimeClasspath
+
+Use dependencyInsight before forcing a version or adding an exclusion.
+
+Command / Configuration:
+
+
+dependencies {
+    implementation('example:legacy-library:2.0.0') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
+}
+
+
+
+~ BOMS, PLATFORMS AND VERSION CATALOGS
+--------------------------------------------------
+
+A platform or BOM aligns related dependency versions. A version catalog centralizes aliases and versions.
+
+Command / Configuration:
+
+
+dependencies {
+    implementation platform(
+        'org.springframework.boot:spring-boot-dependencies:<version>'
+    )
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+}
+
+
+Command / Configuration:
+
+
+# gradle/libs.versions.toml
+[versions]
+mapstruct = "<version>"
+
+[libraries]
+mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
+
+
+
+~ REPOSITORIES AND CREDENTIALS
+--------------------------------------------------
+
+Repositories are locations from which Gradle downloads dependencies, while credentials securely authenticate access to private repositories.
+
+Command / Configuration:
+
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url = uri('https://repo.example.com/maven-releases')
+        credentials {
+            username = providers.environmentVariable('REPO_USER').get()
+            password = providers.environmentVariable('REPO_PASSWORD').get()
+        }
+    }
+}
+
+Gradle caches dependencies under GRADLE_USER_HOME , normally ~/.gradle . Never commit credentials in build scripts.
+
+
+~ GRADLE PROPERTIES
+--------------------------------------------------
+
+Command / Configuration:
+
+
+# gradle.properties
+org.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8
+org.gradle.parallel=true
+org.gradle.caching=true
+
+
+Command / Configuration:
+
+
+./gradlew build -Penvironment=dev
+./gradlew test -Dspring.profiles.active=test
+
+Use environment variables or CI secrets for sensitive values.
+
+
+~ JAVA TOOLCHAINS
+--------------------------------------------------
+
+Java Toolchains select the JDK used for compile, test and Javadoc tasks, improving consistency across developer machines and CI.
+
+Command / Configuration:
+
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+
+
+~ TESTING AND JACOCO
+--------------------------------------------------
+
+JaCoCo is a Java code-coverage tool that measures which lines, branches, and classes are exercised by tests.
+
+Command / Configuration:
+
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+plugins {
+    id 'jacoco'
+}
+
+tasks.named('test') {
+    finalizedBy tasks.named('jacocoTestReport')
+}
+
+
+Command / Configuration:
+
+
+./gradlew test
+./gradlew check
+./gradlew jacocoTestReport
+
+Use a separate source set or JVM Test Suite when integration tests need independent lifecycle and dependencies.
+
+
+~ GRADLE WITH SPRING BOOT
+--------------------------------------------------
+
+Command / Configuration:
+
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '<spring-boot-version>'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+
+Command / Configuration:
+
+
+./gradlew bootRun
+./gradlew clean build
+./gradlew bootJar
+java -jar build/libs/orders-service.jar
+./gradlew bootBuildImage
+
+bootJar creates the executable Spring Boot JAR. bootBuildImage creates an OCI image using Buildpacks.
+
+
+~ MULTI-PROJECT BUILDS
+--------------------------------------------------
+
+A multi-project build manages several related Gradle modules from one root project with shared configuration and coordinated tasks.
+
+Command / Configuration:
+
+
+// settings.gradle
+rootProject.name = 'commerce-platform'
+include 'common-domain'
+include 'orders-service'
+include 'payments-service'
+
+
+Command / Configuration:
+
+
+// orders-service/build.gradle
+dependencies {
+    implementation project(':common-domain')
+}
+
+
+Command / Configuration:
+
+
+./gradlew build
+./gradlew :orders-service:build
+./gradlew :orders-service:test
+
+A project dependency affects both classpath and build order. Prefer convention plugins in a build-logic included build for shared conventions.
+
+
+~ BUILD PERFORMANCE AND CACHING
+--------------------------------------------------
+
+- Incremental build skips unchanged task work.
+- Build cache reuses task outputs.
+- Configuration cache reuses configuration results for compatible builds.
+- Parallel execution runs independent work concurrently.
+- Daemon keeps a warm Gradle JVM.
+
+Command / Configuration:
+
+
+./gradlew build --build-cache
+./gradlew build --configuration-cache
+./gradlew build --parallel
+./gradlew build --scan
+
+Profile before optimizing, and verify custom tasks and plugins are compatible with the configuration cache.
+
+
+~ PUBLISHING JAVA LIBRARIES
+--------------------------------------------------
+
+Publication means packaging a project’s reusable output—such as a JAR, POM, metadata, or source archive—and 
+uploading it to a repository so other projects can consume it as a dependency.
+
+Command / Configuration:
+
+
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+
+Command / Configuration:
+
+
+./gradlew publish
+./gradlew publishToMavenLocal
+
+Published release versions should be immutable, and credentials should come from CI secrets.
+
+
+~ GRADLE IN CI/CD
+--------------------------------------------------
+
+Command / Configuration:
+
+
+./gradlew --no-daemon --stacktrace clean build
+./gradlew --no-daemon publish
+
+- Always use the Wrapper.
+- Cache Gradle dependencies carefully.
+- Run checks before publishing.
+- Inject credentials from the CI secret store.
+- Publish immutable versions.
+- Consider dependency verification and Wrapper validation.
+
+
+~ GRADLE TROUBLESHOOTING
+--------------------------------------------------
+
+Command / Configuration:
+
+./gradlew build --stacktrace
+./gradlew build --info
+./gradlew build --debug
+./gradlew dependencies
+./gradlew dependencyInsight --dependency <name> --configuration runtimeClasspath
+./gradlew tasks
+./gradlew properties
+./gradlew build --refresh-dependencies
+./gradlew --stop
+
+- Works in IDE but not terminal: compare Wrapper, JDK, Toolchain and IDE settings.
+- Wrong version: use dependencyInsight.
+- Dependency cannot resolve: check repositories, proxy and credentials.
+- Task not found: verify the plugin and inspect tasks.
+- Java compatibility failure: check the JDK running Gradle and the Java Toolchain.
+- Slow build: use Build Scan or profiling before changing flags.
+
+
+~ GRADLE BEST PRACTICES FOR JAVA DEVELOPERS
+--------------------------------------------------
+
+- Commit and use the Gradle Wrapper.
+- Use Java Toolchains.
+- Prefer implementation over api unless consumers need the dependency.
+- Use lazy task registration.
+- Keep credentials outside build scripts.
+- Use BOMs or platforms for dependency alignment.
+- Use version catalogs for shared aliases and versions.
+- Inspect dependency conflicts before forcing versions.
+- Use convention plugins for shared multi-project logic. A multi-project build manages several related modules from one root build.
+- Declare inputs and outputs for custom tasks.
+- Upgrade Gradle through the Wrapper and test plugin compatibility.
+
+
+~ FREQUENTLY ASKED GRADLE INTERVIEW QUESTIONS
+--------------------------------------------------
+
+Q: What is Gradle?
+A: Gradle is a build automation tool used to compile code, run tests, manage dependencies, 
+package applications, and automate build tasks. It supports Groovy DSL and Kotlin DSL.
+
+Q: What is the Gradle Wrapper?
+A: The Gradle Wrapper runs the exact Gradle version configured for the project. 
+It avoids the need for a global Gradle installation and keeps builds consistent across developers and CI servers.
+
+Q: build.gradle vs settings.gradle?
+A: build.gradle configures a project; settings.gradle defines the build and included projects.
+
+Q: Groovy DSL vs Kotlin DSL?
+A: Two languages for Gradle scripts. Kotlin DSL provides static typing and stronger IDE assistance.
+
+Q: What is a Gradle task?
+A: A unit of build work such as compiling, testing or packaging.
+
+Q: What are the three build phases?
+A: Initialization, configuration and execution.
+
+Q: Gradle vs Maven lifecycle?
+A: Gradle executes a task graph; Maven invokes ordered lifecycle phases.
+
+Q: What does build do?
+A: It assembles outputs and runs verification tasks.
+
+Q: implementation vs api?
+A: implementation hides the dependency from consumers; api exposes it as part of a library contract.
+
+Q: compileOnly vs runtimeOnly?
+A: compileOnly is available only for compilation; runtimeOnly only at runtime.
+
+Q: What is annotationProcessor?
+A: The dependency configuration for compile-time annotation processors.
+
+Q: How do you inspect dependency conflicts?
+A: Use dependencies and dependencyInsight.
+
+Q: What is a BOM or platform?
+A: A BOM, or Bill of Materials, keeps versions of related libraries aligned. It allows a project to use 
+compatible dependency versions without declaring each version separately.
+
+Q: What is a version catalog?
+A: A Version Catalog stores dependency aliases, plugin aliases, and versions in one place, usually in libs.versions.toml. 
+It reduces duplication across build files.
+
+Q: What are Java Toolchains?
+A: Gradle configuration that selects the JDK used by Java tasks.
+
+Q: What is task configuration avoidance?
+A: Lazy registration and configuration of only required tasks.
+
+Q: What is the Gradle Daemon?
+A: A long-lived process that speeds subsequent builds.
+
+Q: Incremental build vs build cache?
+A: Incremental execution skips unchanged work; build cache reuses outputs from earlier builds.
+
+Q: What is configuration cache?
+A: The Configuration Cache stores the result of the configuration phase so later builds can skip repeated configuration work.
+
+Q: How do multi-project builds work?
+A: settings.gradle includes subprojects and project dependencies control classpath and order.
+
+Q: What is a convention plugin?
+A: A reusable plugin containing shared build conventions.
+
+Q: bootJar vs jar?
+A: bootJar creates an executable Spring Boot archive; jar creates a normal Java archive.
+
+Q: How do you skip tests?
+A: Use ./gradlew build -x test.
+
+Q: How do you run one test?
+A: Use ./gradlew test --tests followed by a class or method pattern.
+
+Q: How should credentials be managed?
+A: Use environment variables, user properties or CI secret storage.
+
+Q: Why can IDE and CLI differ?
+A: They may use different JDKs, Wrapper settings or environments.
+
+Q: How do you refresh dependencies?
+A: Use --refresh-dependencies only when rechecking cache is necessary.
+
+Q: How do you improve performance?
+A: Use lazy tasks, correct inputs/outputs, caches and profiling.
+
+Q: Why use --no-daemon in CI?
+A: It avoids retaining a process on short-lived agents; persistent agents may choose differently.
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+KEEP LEARNING. KEEP BUILDING.
+
+All the best! Keep learning, keep building, and keep improving—just like Gradle, 
+let every step in your journey make the next build stronger, faster, and better.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+

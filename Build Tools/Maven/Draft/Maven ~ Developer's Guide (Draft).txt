@@ -1,0 +1,761 @@
+© Dynamic Duo Learners
+
+Maven Developer's Guide
+===========================
+
+A practical, compact guide to Maven fundamentals, dependencies, plugins, multi-module builds, 
+testing, CI/CD, troubleshooting, and interview preparation.
+
+
+~ MAVEN FOUNDATIONS
+-----------------------------
+
+What is Maven?:
+Apache Maven is a build and project-management tool used widely for Java applications. 
+It describes the project through a POM, follows standard build lifecycles, resolves 
+dependencies and delegates build work to plugins.
+
+Features:
+---------
+
+Build automation:
+Compiles code, runs tests, packages artifacts and supports publishing.
+
+Dependency management:
+Downloads direct and transitive libraries from repositories.
+
+Standard layout:
+Uses familiar source, test, resource and output folders.
+
+Project model:
+Stores coordinates, properties, dependencies and plugins in pom.xml.
+
+Plugin ecosystem:
+Most Maven tasks are implemented as plugin goals.
+
+Reproducibility:
+Pinned versions and shared configuration reduce machine differences.
+
+Flow: Source → → → Maven → → → Compile → → → Test → → → Package
+
+Note: Maven is not merely a command runner; it is the build model for the project.
+
+
+~ SETUP AND FIRST COMMANDS
+-----------------------------
+
+Command / Configuration:
+----------------------------------------------------------------------------------------------------
+java -version  # Shows the installed Java version.
+mvn -version  # Shows the Maven version, Java version, and Maven home.
+mvn --help  # Displays Maven command-line options.
+
+mvn help:effective-settings  # Shows the final Maven settings after merging all settings files.
+mvn help:effective-pom  # Shows the final POM after inheritance, profiles, and defaults are applied.
+
+----------------------------------------------------------------------------------------------------
+
+JAVA_HOME:
+Selects the JDK used to launch Maven.
+
+PATH:
+Determines which global Maven command is used.
+
+Local repository:
+Usually ~/.m2/repository; caches artifacts and plugins.
+
+settings.xml:
+Stores mirrors, proxies, credentials and user profiles.
+
+Important: Common issue: IntelliJ IDEA and the terminal may use different Maven or JDK installations.
+
+
+~ STANDARD PROJECT STRUCTURE
+-----------------------------
+
+Command / Configuration:
+
+orders-service/
+├── pom.xml
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   └── resources/
+│   └── test/
+│       ├── java/
+│       └── resources/
+└── target/
+
+
+src/main/java:
+Production Java source.
+
+src/main/resources:
+Runtime configuration and resources.
+
+src/test/java:
+Test source.
+
+src/test/resources:
+Test-only files.
+
+target:
+Compiled classes, reports and packaged artifacts.
+
+pom.xml:
+The project descriptor used by Maven.
+
+Note: Convention over configuration: standard folders require less custom plugin setup.
+
+
+~ UNDERSTANDING POM.XML
+-----------------------------
+
+Command / Configuration:
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="
+           http://maven.apache.org/POM/4.0.0
+           https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.dynamicduo</groupId>
+    <artifactId>orders-service</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+</project>
+
+
+groupId:
+Organization or project namespace.
+
+artifactId:
+The module or artifact name.
+
+version:
+The project version.
+
+packaging:
+Artifact type such as jar, war or pom.
+
+properties:
+Reusable values for versions and settings.
+
+parent:
+A POM whose configuration can be inherited.
+
+Flow: groupId → : → artifactId → : → version
+
+
+~ LIFECYCLES AND PHASES
+-----------------------------
+
+Maven has three built-in lifecycles: clean , default and site . The default lifecycle handles the normal build and deployment flow.
+
+Flow: validate → → → compile → → → test → → → package → → → verify → → → install → → → deploy
+
+Phase | Purpose
+--------------------
+validate | Checks project structure and required information.
+compile | Compiles production source.
+test | Runs unit tests.
+package | Creates the JAR, WAR or other artifact.
+verify | Runs additional validation and integration checks.
+install | Adds the artifact to the local repository.
+deploy | Publishes the artifact to a remote repository.
+
+Command / Configuration:
+
+mvn clean  # Deletes the target directory and previous build output.
+mvn test  # Compiles the project and runs unit tests.
+mvn package  # Runs tests and creates the JAR or WAR inside target.
+mvn clean verify  # Removes old output and runs the complete build with verification checks.
+mvn install  # Builds the project and stores the artifact in the local Maven repository.
+mvn deploy  # Publishes the built artifact to a configured remote repository.
+
+
+Note: Rule: running a phase also runs all earlier phases in the same lifecycle.
+
+
+~ PLUGINS, GOALS AND EXECUTIONS
+-----------------------------
+
+Plugin:
+A package containing one or more Maven goals.
+
+Goal:
+A concrete task such as compiler:compile or dependency:tree.
+
+Execution:
+Binds plugin goals to lifecycle phases.
+
+Phase:
+A lifecycle stage that can trigger multiple goals.
+
+Command / Configuration:
+
+# Direct plugin goals
+mvn dependency:tree  # Displays direct and transitive dependencies as a tree.
+mvn help:effective-pom  # Shows the final POM after inheritance, profiles, and defaults are applied.
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.14.1</version>
+            <configuration>
+                <release>21</release>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+
+
+Note: Difference: package is a phase; dependency:tree is a goal.
+
+
+~ DEPENDENCIES AND SCOPES
+-----------------------------
+
+Command / Configuration:
+
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+
+
+Scope -> Use:
+
+compile --> Default. Available during compile, test and runtime.
+provided --> Available for compile/test but expected from the runtime.
+runtime --> Needed during test/runtime, not compilation.
+test --> Available only to tests.
+import --> Imports dependency management from a BOM POM.
+
+Important: Avoid system scope: local filesystem paths make builds non-portable.
+
+
+~ TRANSITIVE DEPENDENCIES
+-----------------------------
+
+Flow: Your Project → → → Library A → → → Library B
+A transitive dependency is a library required by one of your direct dependencies. Maven reads dependency metadata and includes it automatically.
+
+Nearest definition:
+The version nearest to the current project is generally selected.
+
+Same depth:
+Declaration order can influence mediation when depth is equal.
+
+Direct declaration:
+Use it when your code intentionally depends on the library.
+
+Exclusion:
+Remove an unwanted transitive dependency at its source.
+
+Command / Configuration:
+
+mvn dependency:tree  # Displays direct and transitive dependencies as a tree.
+mvn dependency:tree -Dincludes=org.slf4j  # Shows only dependencies related to org.slf4j.
+
+<exclusions>
+    <exclusion>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+    </exclusion>
+</exclusions>
+
+
+
+~ DEPENDENCYMANAGEMENT AND BOMS
+--------------------------------
+
+Command / Configuration:
+
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson</groupId>
+            <artifactId>jackson-bom</artifactId>
+            <version>2.19.0</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+
+<dependencies>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+    </dependency>
+</dependencies>
+
+
+BOM:
+A POM providing a compatible set of versions.
+
+Version alignment:
+Keeps modules on consistent library versions.
+
+Managed only:
+A managed dependency is not added until declared.
+
+Parent control:
+A parent can manage versions for all child modules.
+
+
+~ REPOSITORIES AND SETTINGS.XML
+-----------------------------
+
+Local repository:
+Developer cache under ~/.m2/repository.
+
+Maven Central:
+Default public repository for many artifacts.
+
+Remote repository:
+A server that stores project dependencies or releases.
+
+Repository manager:
+Company proxy such as Nexus or Artifactory.
+
+Mirror:
+Redirects repository requests to another server.
+
+Server credentials:
+Stored in settings.xml, not in pom.xml.
+
+Command / Configuration:
+
+<settings>
+    <mirrors>
+        <mirror>
+            <id>company-mirror</id>
+            <mirrorOf>*</mirrorOf>
+            <url>https://repo.example.com/maven-public</url>
+        </mirror>
+    </mirrors>
+
+    <servers>
+        <server>
+            <id>company-releases</id>
+            <username>${env.REPO_USER}</username>
+            <password>${env.REPO_PASSWORD}</password>
+        </server>
+    </servers>
+</settings>
+
+
+Important: Never commit credentials to a POM or source repository.
+
+
+~ MAVEN PROFILES
+-----------------------------
+
+Command / Configuration:
+
+<profiles>
+    <profile>
+        <id>integration-tests</id>
+        <properties>
+            <skip.integration.tests>false</skip.integration.tests>
+        </properties>
+    </profile>
+</profiles>
+
+mvn verify -Pintegration-tests  # Runs the verify phase with the integration-tests profile enabled.
+mvn help:active-profiles  # Lists the Maven profiles currently active.
+
+
+Good uses:
+Optional checks, build flags and platform-specific setup.
+
+Poor uses:
+Hiding unrelated production runtime configuration.
+
+Activation:
+Explicit, property-based, JDK, OS or file activation.
+
+Debugging:
+Use help:active-profiles to see what is active.
+
+
+~ PARENT POM AND MULTI-MODULE BUILDS
+---------------------------------------
+
+Command / Configuration:
+
+commerce-platform/
+├── pom.xml
+├── common-domain/
+│   └── pom.xml
+├── orders-service/
+│   └── pom.xml
+└── payments-service/
+    └── pom.xml
+
+
+Command / Configuration:
+
+<packaging>pom</packaging>
+
+<modules>
+    <module>common-domain</module>
+    <module>orders-service</module>
+    <module>payments-service</module>
+</modules>
+
+
+Parent POM:
+Provides inherited properties and management.
+
+Aggregator POM:
+Lists modules for a combined build.
+
+Reactor:
+The modules loaded for the current build.
+
+Build order:
+Derived from inter-module dependencies.
+
+pluginManagement:
+Shares plugin versions without forcing execution.
+
+Partial build:
+Use -pl and -am for selected modules.
+
+Command / Configuration:
+
+mvn clean verify  # Removes old output and runs the complete build with verification checks.
+mvn -pl orders-service -am clean verify  # Builds orders-service and the modules it depends on.
+mvn -rf :orders-service verify  # Resumes a failed reactor build from orders-service.
+
+
+
+~ TESTING WITH MAVEN
+-----------------------------
+
+Surefire:
+Runs unit tests in the test phase.
+
+Failsafe:
+Runs integration tests around integration-test and verify.
+
+JaCoCo:
+Measures Java code coverage.
+
+Reports:
+Written below target/surefire-reports and target/failsafe-reports.
+
+Command / Configuration:
+
+mvn test  # Compiles the project and runs unit tests.
+mvn verify
+
+# Skip execution but compile tests
+mvn package -DskipTests  # Skips test execution but still compiles test code.
+
+# Skip test compilation and execution
+mvn package -Dmaven.test.skip=true  # Skips both test compilation and test execution.
+
+
+Important: Interview trap: the two skip options do not behave the same way.
+
+
+~ MAVEN WITH SPRING BOOT
+-----------------------------
+
+Command / Configuration:
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+    </plugins>
+</build>
+
+
+Command / Configuration:
+
+./mvnw spring-boot:run  # Runs the Spring Boot application using Maven Wrapper.
+./mvnw clean package  # Cleans the project and creates the application package using Maven Wrapper.
+java -jar target/orders-service.jar  # Runs the packaged Spring Boot JAR.
+
+./mvnw spring-boot:build-image  # Creates an OCI container image for the Spring Boot application.
+
+
+Boot parent:
+Provides dependency and plugin management.
+
+Boot plugin:
+Creates executable Spring Boot archives.
+
+Boot BOM:
+Allows managed versions without using the parent.
+
+Build image:
+Creates an OCI image with Buildpacks.
+
+
+~ WRAPPER, ENFORCER AND TOOLCHAINS
+---------------------------------------
+
+Maven Wrapper:
+Wrapper scripts let a project download and run its configured Maven version.
+
+Command / Configuration:
+
+mvn wrapper:wrapper  # Generates Maven Wrapper files for the project.
+
+./mvnw clean verify  # Runs a complete verified build on Linux or macOS using Maven Wrapper.
+mvnw.cmd clean verify  # Runs a complete verified build on Windows using Maven Wrapper.
+
+Run location: Run these commands from the project root folder where mvnw or mvnw.cmd is present.
+
+Maven Enforcer:
+The Enforcer Plugin can reject unsupported Java or Maven versions and enforce dependency rules.
+
+Maven Toolchains:
+Toolchains let build plugins use a chosen JDK independently from the JDK that launched Maven.
+
+Command / Configuration:
+
+<toolchains>
+    <toolchain>
+        <type>jdk</type>
+        <provides>
+            <version>21</version>
+            <vendor>temurin</vendor>
+        </provides>
+        <configuration>
+            <jdkHome>/opt/jdks/temurin-21</jdkHome>
+        </configuration>
+    </toolchain>
+</toolchains>
+
+
+Note: Good combination: Wrapper controls Maven, Enforcer validates rules and Toolchains select the build JDK.
+
+
+~ MAVEN IN CI/CD
+-----------------------------
+
+Flow: Checkout → → → Wrapper → → → Verify → → → Package → → → Publish
+
+Command / Configuration:
+
+./mvnw --batch-mode --no-transfer-progress clean verify  # Runs a CI-friendly verified build with reduced console output.
+./mvnw --batch-mode deploy  # Publishes artifacts in non-interactive CI mode.
+
+
+Wrapper:
+Uses the project-selected Maven version.
+
+Batch mode:
+Produces CI-friendly non-interactive logs.
+
+Local-repository cache:
+Speeds downloads when managed carefully.
+
+Secrets:
+Inject repository credentials from CI storage.
+
+Verification:
+Run tests and checks before publication.
+
+Immutable release:
+Never overwrite a released artifact version.
+
+
+~ TROUBLESHOOTING MAVEN BUILDS
+-----------------------------
+
+Command / Configuration:
+
+mvn -e clean verify  # Runs the build and prints full error stack traces.
+mvn -X clean verify  # Runs the build with detailed debug logging.
+
+mvn dependency:tree  # Displays direct and transitive dependencies as a tree.
+mvn dependency:analyze  # Finds used-but-undeclared and declared-but-unused dependencies.
+
+mvn help:effective-pom  # Shows the final POM after inheritance, profiles, and defaults are applied.
+mvn help:effective-settings  # Shows the final Maven settings after merging all settings files.
+mvn help:active-profiles  # Lists the Maven profiles currently active.
+
+mvn -U clean verify  # Forces Maven to check for updated snapshots and releases before building.
+
+
+Problem | Check:
+
+Dependency not found --> Coordinates, mirror, proxy, network and credentials.
+Wrong version --> dependency:tree, BOM, management and exclusions.
+Works only in IDE --> IDE JDK, Maven, profiles and generated sources.
+Java release error --> Active JDK, compiler release and Toolchains.
+Tests not running --> Naming, Surefire/Failsafe and skip flags.
+Corrupt local artifact --> Remove only the affected ~/.m2 path and retry.
+
+
+~ BEST PRACTICES
+-----------------------------
+
+Key Points:
+- ✓ Commit Maven Wrapper files
+- ✓ Pin plugin versions
+- ✓ Use BOMs or dependencyManagement
+- ✓ Run clean verify in CI
+- ✓ Keep credentials outside the POM
+- ✓ Use a repository manager
+- ✓ Use compiler release
+- ✓ Limit implicit profiles
+- ✓ Inspect dependency convergence
+- ✓ Separate unit and integration tests
+- ✓ Avoid system scope
+- ✓ Never overwrite releases
+
+
+~ MAVEN 4 AWARENESS
+-----------------------------
+
+Migration mindset:
+  First make the project clean on a current Maven 3 release, remove warnings, pin important plugins 
+and test Maven 4 in CI before changing shared developer environments.
+
+Java 17:
+Maven 4 requires Java 17 to run.
+
+Stricter validation:
+Some configurations that warned in Maven 3 may fail.
+
+Lifecycle evolution:
+Maven 4 evolves lifecycle and reactor behaviour.
+
+Toolchains:
+Use Toolchains when build JDK requirements differ.
+
+Compatibility:
+Test custom plugins and extensions.
+
+Gradual adoption:
+Validate in CI before organization-wide migration.
+
+
+~ MAVEN INTERVIEW QUESTIONS AND ANSWERS
+-----------------------------------------
+
+Q: What is Maven?
+A: Maven is a build and project-management tool used to compile code, run tests, manage dependencies, package applications, and publish artifacts.
+
+Q: What is a POM?
+A: A POM is the pom.xml file that defines project coordinates, dependencies, plugins, properties, and build configuration.
+
+Q: What are Maven coordinates?
+A: Maven coordinates identify an artifact using groupId, artifactId, and version. Packaging and classifier may provide additional identification.
+
+Q: Phase vs goal?
+A: A phase is a stage in a Maven lifecycle. A goal is a specific task provided by a plugin.
+
+Q: What happens during mvn package?
+A: Maven runs the package phase and every earlier phase in the default lifecycle, including compile and test.
+
+Q: package vs install vs deploy?
+A: package creates the artifact, install stores it in the local repository, and deploy publishes it to a remote repository.
+
+Q: What is a transitive dependency?
+A: A transitive dependency is a library required by one of the project’s direct dependencies and resolved automatically by Maven.
+
+Q: How does Maven resolve conflicts?
+A: Maven normally uses the nearest dependency definition. Direct declarations and dependencyManagement can control the selected version.
+
+Q: dependencies vs dependencyManagement?
+A: dependencies adds libraries to the project classpath. dependencyManagement defines versions and defaults without adding the libraries automatically.
+
+Q: What is a BOM?
+A: A BOM is a POM that manages a compatible set of dependency versions.
+
+Q: compile vs provided scope?
+A: compile dependencies are available during compilation and runtime. provided dependencies are available for compilation but must be supplied by the runtime environment.
+
+Q: Why avoid system scope?
+A: system scope uses machine-specific file paths, making builds difficult to share and reproduce.
+
+Q: What is the local repository?
+A: The local repository is Maven’s local artifact cache, usually stored at ~/.m2/repository.
+
+Q: settings.xml vs pom.xml?
+A: pom.xml contains project configuration. settings.xml contains user or environment configuration such as mirrors, proxies, profiles, and credentials.
+
+Q: What is a mirror?
+A: A mirror redirects repository requests to another repository, commonly a company Nexus or Artifactory server.
+
+Q: What is pluginManagement?
+A: pluginManagement defines shared plugin versions and configuration without automatically running those plugins.
+
+Q: Parent vs aggregator POM?
+A: A parent POM provides inherited configuration. An aggregator POM lists modules that should be built together.
+
+Q: What is the reactor?
+A: The reactor is the set of modules Maven loads, orders, and builds during a multi-module build.
+
+Q: What do -pl and -am mean?
+A: -pl selects specific modules, and -am also builds the selected modules’ required dependencies.
+
+Q: Surefire vs Failsafe?
+A: Surefire runs unit tests during the test phase. Failsafe runs integration tests during integration-test and verify.
+
+Q: -DskipTests vs maven.test.skip?
+A: -DskipTests skips test execution but normally compiles tests. -Dmaven.test.skip=true skips both test compilation and execution.
+
+Q: What is Maven Wrapper?
+A: Maven is a build and project-management tool used to compile code, run tests, manage dependencies, package applications, and publish artifacts.
+
+Q: What are Toolchains?
+A: Toolchains allow Maven plugins to use a selected JDK independently from the JDK used to launch Maven.
+
+Q: Why does IDE build but CLI fail?
+A: The IDE and command line may use different Maven versions, JDKs, settings files, profiles, or generated-source configuration.
+
+Q: How do you debug conflicts?
+A: Use mvn dependency:tree to find the dependency path, then control the version with dependencyManagement, a direct dependency, or a targeted exclusion.
+
+Q: What does clean verify do?
+A: clean removes previous build output, and verify runs the build through compilation, testing, packaging, integration checks, and verification.
+
+Q: How should credentials be managed?
+A: Store credentials in settings.xml, environment variables, or CI secret storage. Do not place them in pom.xml.
+
+Q: How do you speed up Maven?
+A: Use Maven Wrapper, cache the local repository in CI, use suitable parallel builds, and avoid unnecessary clean builds during local development.
+
+Q: Snapshot vs release?
+A: A snapshot version can change as development continues. A release version must remain immutable.
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+KEEP LEARNING • KEEP BUILDING • KEEP GROWING
+
+All the best! Keep learning, keep building, and keep improving - just like Maven, 
+let every step bring structure, consistency and confidence to your development journey.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
