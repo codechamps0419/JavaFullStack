@@ -21,7 +21,7 @@ public class JfrMonitoringInspectionDemo {
             System.out.println("1. Is Java Flight Recorder available? " + isAvailable);
 
             if (isAvailable) {
-                var activeRecordings = FlightRecorder.getRecordings();
+                var activeRecordings = FlightRecorder.getFlightRecorder().getRecordings();
                 System.out.println("2. Active JFR Recording Sessions Count: " + activeRecordings.size());
 
                 if (activeRecordings.isEmpty()) {
