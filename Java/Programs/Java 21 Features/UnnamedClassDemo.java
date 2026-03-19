@@ -7,6 +7,8 @@ Demonstrates Java 21 Unnamed Classes and Instance Main Methods (JEP 445 - Previe
 1. Implicitly declared unnamed top-level class.
 2. Instance main method (`void main()`) without static modifier or String[] args array.
 3. Direct top-level helper methods and fields accessible within the unnamed class scope.
+
+Note: use --enable-preview to enable preview APIs and run this program (If not then you will get errors)
 */
 
 // No package statement or class declaration required!

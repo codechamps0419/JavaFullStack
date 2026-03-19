@@ -4,6 +4,19 @@
 Demonstrates Java 21 Scoped Values vs ThreadLocal Context Propagation:
 1. Highlights legacy ThreadLocal usage with mutable state and manual cleanup requirements.
 2. Demonstrates modern Java 21 ScopedValue usage offering immutability, thread safety, and automatic scope cleanup.
+
+* NOTE:
+* StructuredTaskScope is a preview API in Java 21.
+* Compile and run with --enable-preview using JDK 21.
+* 
+* Structured Concurrency was introduced as a preview API in Java 21 through JEP 453. 
+* It provides a structured way to manage related concurrent tasks, including their lifecycle, cancellation and
+* exception handling. 
+* We can use it by enabling preview features during compilation and execution. However, since preview APIs 
+* may change between Java releases, I would avoid introducing them into critical production systems 
+* without evaluating compatibility and organizational policies.
+* For production applications running Java 21, I would generally prefer stable APIs such as Virtual Threads 
+* with ExecutorService or CompletableFuture, depending on the requirement.
 */
 
 package com.codechamps.concurrency;

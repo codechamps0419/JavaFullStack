@@ -52,7 +52,9 @@ public class SwitchPatternMatchingDomainDemo {
         return switch (request) {
             case GetRequest(String path) -> "Routing GET request to path: " + path;
             case PostRequest(String path, String body) -> "Routing POST request to path: " + path + " with body size: " + body.length();
-            case UnknownRequest _ -> "Handling unsupported/unknown request gracefully.";
+            case UnknownRequest req -> "Handling unsupported/unknown request gracefully.";
+            //Java 22 & more: 
+            //case UnknownRequest _ -> "Handling unsupported/unknown request gracefully.";
             // No default needed because Request is sealed and all implementations are covered!
         };
     }
