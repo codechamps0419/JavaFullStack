@@ -12,7 +12,7 @@ package com.codechamps.stream;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class StreamEvolutionDemo.java {
+public class StreamEvolutionDemo {
 
     public static void main(String[] args) {
         System.out.println("--- Java 11 vs Java 17 Stream API Enhancements ---\n");
@@ -56,7 +56,7 @@ public class StreamEvolutionDemo.java {
         // --- JAVA 17 mapMulti() DEMO ---
         // mapMulti replaces complex flatMap patterns for conditional one-to-many filtering & expansion.
         System.out.println("3. Java 17 mapMulti() Demonstration:");
-        List<String> expandedTags = List.of("Java11", "Java17", "Spring").stream()
+        List expandedTags = List.of("Java11", "Java17", "Spring").stream()
                 .mapMulti((tag, consumer) -> {
                     consumer.accept(tag.toUpperCase());
                     if (tag.contains("17")) {
