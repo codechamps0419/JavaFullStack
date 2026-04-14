@@ -1,0 +1,4 @@
+Sample Engineering Runbook (convert this to PDF before uploading)
+Production deployments are approved by the on-call engineering lead. The pipeline runs unit tests, integration tests, security scans and a staging smoke test before a production deployment.
+For an incident, the on-call engineer creates an incident ticket, checks dashboard alerts and traces, and escalates to the incident commander if the outage lasts longer than 15 minutes.
+This is FICTIONAL EXAMPLE CONTENT for local demonstration only.

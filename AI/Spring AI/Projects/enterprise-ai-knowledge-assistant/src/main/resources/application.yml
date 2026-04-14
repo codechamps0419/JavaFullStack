@@ -1,0 +1,57 @@
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: docpilot
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/entknowledge}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:Learn@2026}
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 1
+    locations: classpath:db/migration
+
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 15MB
+
+  ai:
+    model:
+      chat: ${AI_PROVIDER:openai}
+      embedding: ${AI_PROVIDER:openai}
+
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      base-url: https://openrouter.ai/api
+      chat:
+        options:
+          model: ${OPENAI_CHAT_MODEL:openai/gpt-oss-20b}
+          temperature: 0.1
+      embedding:
+        options:
+          model: openai/text-embedding-3-small
+          dimensions: 1536
+
+    azure:
+      openai:
+        api-key: ${AZURE_OPENAI_API_KEY:unused}
+        endpoint: ${AZURE_OPENAI_ENDPOINT:https://example.openai.azure.com/}
+        chat:
+          options:
+            deployment-name: ${AZURE_CHAT_DEPLOYMENT:gpt-4o-mini}
+        embedding:
+          options:
+            deployment-name: ${AZURE_EMBEDDING_DEPLOYMENT:text-embedding-3-small}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

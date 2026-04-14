@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>DocPilot AI</title>
+    <style>
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: #071326;
+            color: #e9f3ff;
+            font: 15px system-ui, Segoe UI, Arial
+        }
+
+        header {
+            padding: 20px 26px;
+            border-bottom: 1px solid #244665;
+            display: flex;
+            justify-content: space-between
+        }
+
+        b {
+            color: #4dd7de
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns:240px 1fr 410px;
+            min-height: calc(100vh - 66px)
+        }
+
+        aside, .chat {
+            padding: 24px;
+            background: #091c32;
+            border-right: 1px solid #294561
+        }
+
+        main {
+            padding: 24px
+        }
+
+        .chat {
+            border-left: 1px solid #294561;
+            border-right: 0
+        }
+
+        .panel {
+            background: #10253c;
+            border: 1px solid #2a4f6a;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 15px
+        }
+
+        input, select, button, textarea {
+            width: 100%;
+            border-radius: 7px;
+            background: #152e49;
+            color: white;
+            border: 1px solid #366077;
+            padding: 12px;
+            margin: 8px 0
+        }
+
+        button {
+            background: #136a7b;
+            cursor: pointer;
+            font-weight: bold
+        }
+
+        button:hover {
+            background: #178ba0
+        }
+
+        .doc {
+            border-bottom: 1px solid #284763;
+            padding: 13px 3px
+        }
+
+        .meta {
+            color: #9ab2c7;
+            font-size: 12px
+        }
+
+        .answer {
+            white-space: pre-wrap;
+            line-height: 1.6
+        }
+
+        .message {
+            margin: 12px 0;
+            padding: 12px;
+            border-radius: 10px;
+            background: #17334c
+        }
+
+        small {
+            color: #83cbd6
+        }
+
+        h2 {
+            font-size: 18px
+        }
+
+        label {
+            font-size: 13px;
+            color: #b5c9d9
+        }
+
+        @media (max-width: 1100px) {
+            .layout {
+                grid-template-columns:1fr
+            }
+
+            .chat, aside {
+                border: 0;
+                border-bottom: 1px solid #244665
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div>✦ <b>DocPilot AI</b> &nbsp; / Enterprise Knowledge</div>
+    <div class="meta">Secure RAG workspace</div>
+</header>
+<div class="layout">
+    <aside><h2>Workspace</h2><label>Username</label><input id="username" value="aprajita"><label>Password</label><input
+            id="password" type="password" placeholder="Demo password">
+        <button onclick="login()">Connect</button>
+        <p id="identity" class="meta">Enter demo credentials</p>
+        <div class="panel"><small>Demo users</small>
+            <p>aprajita / aprajita123!<br>hrushikesh / hrushikesh123!<br>rekha / rekha123!<br>admin / admin123!</p>
+            <small>Local development only</small></div>
+    </aside>
+    <main>
+        <h2>Documents
+            <button style="width:auto;float:right" onclick="loadDocs()">Refresh</button>
+        </h2>
+        <div class="panel"><h2>Upload PDF</h2><input type="file" accept="application/pdf" id="file"><label>Access
+            policy</label><select id="visibility">
+            <option>PRIVATE</option>
+            <option>TEAM</option>
+            <option>PUBLIC</option>
+        </select><label>Team for TEAM visibility</label><select id="team">
+            <option>ENGINEERING</option>
+            <option>HR</option>
+        </select>
+            <button onclick="upload()">Upload and index</button>
+            <p id="uploadStatus" class="meta"></p></div>
+        <div class="panel"><h2>Indexed documents</h2>
+            <div id="docs">Sign in to view documents.</div>
+        </div>
+    </main>
+    <section class="chat"><h2>Document Intelligence</h2>
+        <p class="meta">Answers are grounded in documents you can access.</p>
+        <div id="messages" style="min-height:280px"></div>
+        <textarea id="question" rows="3" placeholder="What is our leave policy?"></textarea>
+        <button onclick="ask()">Ask AI</button>
+    </section>
+</div>
+<script>
+    let auth = '';
+    const $ = id => document.getElementById(id);
+    const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[c]));
+
+    async function api(path, opt = {}) {
+        const r = await fetch(path, {...opt, headers: {Authorization: 'Basic ' + auth, ...(opt.headers || {})}});
+        if (!r.ok) throw Error(r.status + ' ' + await r.text());
+        return r.status === 204 ? null : r.json()
+    }
+
+    async function login() {
+        auth = btoa($('username').value + ':' + $('password').value);
+        try {
+            const u = await api('/api/me');
+            $('identity').textContent = 'Connected as ' + u.username + ' | ' + u.roles.join(', ');
+            await loadDocs()
+        } catch (e) {
+            $('identity').textContent = 'Login failed: ' + e.message
+        }
+    }
+
+    async function loadDocs() {
+        try {
+            const docs = await api('/api/documents');
+            $('docs').innerHTML = docs.length ? docs.map(d => `<div class="doc"><strong>${escapeHtml(d.filename)}</strong><p class="meta">${escapeHtml(d.visibility)} · ${escapeHtml(d.owner)} · ${d.page_count} pages</p><button style="max-width:100px" onclick="removeDoc('${d.id}')">Delete</button></div>`).join('') : 'No accessible documents indexed.'
+        } catch (e) {
+            $('docs').textContent = e.message
+        }
+    }
+
+    async function removeDoc(id) {
+        if (!confirm('Delete document?')) return;
+        try {
+            await api('/api/documents/' + id, {method: 'DELETE'});
+            loadDocs()
+        } catch (e) {
+            alert(e.message)
+        }
+    }
+
+    async function upload() {
+        const f = $('file').files[0];
+        if (!f) return alert('Choose a PDF');
+        const fd = new FormData();
+        fd.append('file', f);
+        fd.append('visibility', $('visibility').value);
+        fd.append('team', $('team').value);
+        $('uploadStatus').textContent = 'Indexing and generating embeddings...';
+        try {
+            const r = await api('/api/documents', {method: 'POST', body: fd});
+            $('uploadStatus').textContent = `Indexed ${r.filename}: ${r.pages} pages, ${r.chunks} chunks`;
+            loadDocs()
+        } catch (e) {
+            $('uploadStatus').textContent = e.message
+        }
+    }
+
+    async function ask() {
+        let q = $('question').value.trim();
+        if (!q) return;
+        const area = $('messages');
+        area.innerHTML += `<div class="message"><small>You</small><div>${escapeHtml(q)}</div></div>`;
+        try {
+            const r = await api('/api/ask', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({question: q})
+            });
+            area.innerHTML += `<div class="message"><small>DocPilot Assistant</small><div class="answer">${escapeHtml(r.answer || 'No answer')}</div><hr>${(r.citations || []).map((c, i) => `<small>[SOURCE ${i + 1}] ${escapeHtml(c.filename)} · Page ${c.page}</small><p class="meta">${escapeHtml(c.excerpt).slice(0, 180)}...</p>`).join('')}</div>`
+        } catch (e) {
+            area.innerHTML += `<div class="message">${escapeHtml(e.message)}</div>`
+        }
+    }
+</script>
+</body>
+</html>

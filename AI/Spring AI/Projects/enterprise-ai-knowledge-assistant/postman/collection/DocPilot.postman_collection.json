@@ -1,0 +1,478 @@
+{
+  "info": {
+    "_postman_id": "823094b8-031a-4485-b62c-9c32abae71bd",
+    "name": "DocPilot Enterprise AI",
+    "description": "Local Spring Boot project. Import this collection, set Basic Auth variables, and select a local PDF for upload. Default user Aprajita.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "48418049",
+    "_collection_link": "https://go.postman.co/collection/48418049-823094b8-031a-4485-b62c-9c32abae71bd?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "01 Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/actuator/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "actuator",
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 Who Am I - Aprajita",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 Who Am I - Hrushikesh",
+      "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "hrushikesh",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "{{auth_password_0a4z}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "04 Who Am I - Rekha",
+      "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "rekha",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "{{auth_password_0hcg}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "05 Who Am I - Admin",
+      "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "admin",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "{{auth_password_183e}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "06 List documents",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/documents",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "documents"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "07 Upload PRIVATE PDF",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": [
+                "/H:/STS WS/enterprise-ai-knowledge-assistant/sample-docs/employee-policy.pdf"
+              ]
+            },
+            {
+              "key": "visibility",
+              "value": "PRIVATE",
+              "type": "text"
+            },
+            {
+              "key": "team",
+              "value": "ENGINEERING",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/documents",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "documents"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "08 Upload TEAM Engineering PDF",
+      "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "admin",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "{{auth_password_183e}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": [
+                "/H:/STS WS/enterprise-ai-knowledge-assistant/sample-docs/engineering-runbook.pdf"
+              ]
+            },
+            {
+              "key": "visibility",
+              "value": "TEAM",
+              "type": "text"
+            },
+            {
+              "key": "team",
+              "value": "ENGINEERING",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/documents",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "documents"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "09 Upload PUBLIC PDF",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": [
+                "/H:/STS WS/enterprise-ai-knowledge-assistant/sample-docs/engineering-runbook.pdf"
+              ]
+            },
+            {
+              "key": "visibility",
+              "value": "PUBLIC",
+              "type": "text"
+            },
+            {
+              "key": "team",
+              "value": "",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/documents",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "documents"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "10 Ask AI - Leave policy",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"question\": \"How many annual paid leave days are available according to employee-policy.pdf?\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/ask",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "ask"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "11 Ask AI - Technical documentation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"question\": \"What is the process described in the engineering runbook?\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/ask",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "ask"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "12 Verify PRIVATE access - Hrushikesh",
+      "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "hrushikesh",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "{{auth_password_0a4z}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"question\": \"What is the leave policy in Aprajita private document?\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/ask",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "ask"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "13 Delete document by ID",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/documents/{{documentId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "documents",
+            "{{documentId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "username",
+        "value": "{{username}}",
+        "type": "string"
+      },
+      {
+        "key": "password",
+        "value": "{{password}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "username",
+      "value": "aprajita"
+    },
+    {
+      "key": "password",
+      "value": "aprajita123!"
+    },
+    {
+      "key": "documentId",
+      "value": "REPLACE_WITH_DOCUMENT_UUID"
+    },
+    {
+      "key": "auth_password_0a4z",
+      "secret": true
+    },
+    {
+      "key": "auth_password_0hcg",
+      "secret": true
+    },
+    {
+      "key": "auth_password_183e",
+      "secret": true
+    }
+  ]
+}

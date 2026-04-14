@@ -1,0 +1,4 @@
+Sample HR Policy (convert this to PDF before uploading)
+Employees receive 20 days of annual paid leave per calendar year. Leave requests must be submitted through the internal HR portal at least three working days before the intended leave date. Emergency leave should be reported to the employee's manager as soon as reasonably possible.
+Employees must use multi-factor authentication for company email, VPN and production systems. Passwords must never be shared. Suspected phishing emails should be reported to the security team.
+This is FICTIONAL EXAMPLE CONTENT for local demonstration only.
