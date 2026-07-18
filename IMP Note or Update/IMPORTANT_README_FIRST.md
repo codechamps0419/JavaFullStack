@@ -76,7 +76,7 @@ Thank you for your patience and understanding while I continue improving the con
 
 
 
-**Note: Once you have read this message, please delete the "IMP Note or Update" folder and all its contents directly via the GitHub UI.** 
+**Note: Once you have read this message, please delete the "IMP Note or Update" folder and all its contents directly via the GitHub UI.**
 
-**This folder was temporarily created to provide context regarding the current issue and explain why certain files are missing or notes are marked as fully completed.**
+**This folder was temporarily created to provide context regarding the current issue and explain why certain files are missing or notes are not showing as fully completed.**
 
