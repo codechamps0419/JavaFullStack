@@ -60,7 +60,7 @@ Visit our GitHub profile to explore repositories covering areas such as:
 
 ## 🟣 A Small Note
 
-We have built these repositories to make technical learning more structured, practical and accessible. 
+We have built these repositories to make technical learning more structured, practical and accessible.
 
 Thank you for your patience and understanding while I continue improving the content.
 
@@ -71,4 +71,12 @@ Thank you for your patience and understanding while I continue improving the con
 **Keep learning. Keep practising. Keep growing. 🚀**
 
 — **Dynamic Duo Leaners**
+
+
+
+
+
+**Note: Once you have read this message, please delete the "IMP Note or Update" folder and all its contents directly via the GitHub UI.** 
+
+**This folder was temporarily created to provide context regarding the current issue and explain why certain files are missing or notes are marked as fully completed.**
 
