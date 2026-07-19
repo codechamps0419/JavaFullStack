@@ -22,4 +22,5 @@ short query meanings, expected outputs and collection state after write operatio
 
 **Creator: Dynamic Duo Learners**
 
-*Keep learning, keep growing and keep practicing — one concept and one query at a time. All the best, Passionate Buddies!🌷*
+*Keep learning 👩🏻‍💻, keep growing 📈 and keep practicing — one concept and one query at a time ⛁* 
+*All the best, Passionate Buddies!🌺(•ᴗ•)*
