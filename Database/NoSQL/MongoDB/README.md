@@ -18,12 +18,8 @@ short query meanings, expected outputs and collection state after write operatio
 
 > **Best way to learn:** Use the **notes for understanding** and the **Query Handbook for practice**. Both are designed to be used together.
 
-## Who Is This For?
-
-Useful for developers and learners who want practical MongoDB knowledge, especially for backend development.
-
 ---
 
 **Creator: Dynamic Duo Learners**
 
-*Keep learning, keep growing and keep practicing — one concept and one query at a time. 🌷*
+*Keep learning, keep growing and keep practicing — one concept and one query at a time. All the best, Passionate Buddies!🌷*
